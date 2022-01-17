@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Jonathan Viañan y Aritz Arrieta
  */
+@XmlRootElement
 public class Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;

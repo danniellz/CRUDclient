@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Jonathan Viñan
  */
 //Coleccion de queries para realizar operaciones en la base de datos.
+@XmlRootElement
 public class Trabajador extends Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;
