@@ -1,5 +1,6 @@
-package GESREClient.logic;
+package GESRE.factoria;
 
+import GESRE.implementacion.SignableImplement;
 import signable.Signable;
 
 /**

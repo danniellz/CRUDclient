@@ -1,4 +1,4 @@
-package GESREClient.logic;
+package GESRE.implementacion;
 
 import exceptions.ConnectionException;
 import exceptions.DatabaseNotFoundException;

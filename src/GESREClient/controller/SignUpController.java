@@ -1,11 +1,11 @@
 package GESREClient.controller;
 
-import exceptions.ConnectionException;
-import exceptions.DatabaseNotFoundException;
-import exceptions.IncorrectPasswordException;
-import exceptions.MaxConnectionException;
-import exceptions.UserAlreadyExistException;
-import exceptions.UserNotFoundException;
+//import exceptions.ConnectionException;
+//import exceptions.DatabaseNotFoundException;
+//import exceptions.IncorrectPasswordException;
+//import exceptions.MaxConnectionException;
+//import exceptions.UserAlreadyExistException;
+//import exceptions.UserNotFoundException;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -30,9 +30,9 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.WindowEvent;
-import signable.Signable;
-import GESREClient.logic.SignableFactory;
-import user.User;
+//import signable.Signable;
+import GESRE.factoria.SignableFactory;
+//import user.User;
 
 /**
  * FXML Controller class the view SingUp
@@ -142,7 +142,7 @@ public class SignUpController {
 
         disableButtonWhenTextFieldsEmpty();
         signInHl.addEventHandler(ActionEvent.ACTION, this::clickHyperlink);
-        registerBtn.setOnAction(this::registerValidation);
+//        registerBtn.setOnAction(this::registerValidation);
         passwordTxt.focusedProperty().addListener(this::focusChanged);
         repeatPasswordTxt.focusedProperty().addListener(this::focusChangeRepeatPassword);
         //Show window (asynchronous)
@@ -438,7 +438,7 @@ public class SignUpController {
      * Executes action when Sign Up button pressed.
      *
      * @param event determines which event has happened.
-     */
+     *
     private void registerValidation(ActionEvent event) {
         LOG.info("Clicked on button register");
         boolean errorPassEqual = false;
