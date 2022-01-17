@@ -13,7 +13,7 @@ import static org.testfx.matcher.base.NodeMatchers.isEnabled;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import org.testfx.matcher.control.LabeledMatchers;
 import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
-import GESREClient.GESREClient;
+import GESRE.aplication.GESREClient;
 
 /**
  * Test for the SignIn Window IT

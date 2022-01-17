@@ -18,7 +18,7 @@ import static org.testfx.matcher.base.NodeMatchers.isEnabled;
 import static org.testfx.matcher.base.NodeMatchers.isFocused;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
-import GESREClient.GESREClient;
+import GESRE.aplication.GESREClient;
 
 /**
  * Test for the SignUp Window IT
