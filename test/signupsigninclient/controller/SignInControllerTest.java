@@ -13,7 +13,7 @@ import static org.testfx.matcher.base.NodeMatchers.isEnabled;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import org.testfx.matcher.control.LabeledMatchers;
 import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
-import GESREClient.SignUpSignInClient;
+import GESREClient.GESREClient;
 
 /**
  * Test for the SignIn Window IT
@@ -31,7 +31,7 @@ public class SignInControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setUpClass() throws TimeoutException {
         FxToolkit.registerPrimaryStage();
-        FxToolkit.setupApplication(SignUpSignInClient.class);
+        FxToolkit.setupApplication(GESREClient.class);
     }
 
     /**

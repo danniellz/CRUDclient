@@ -9,7 +9,7 @@ import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
-import GESREClient.SignUpSignInClient;
+import GESREClient.GESREClient;
 
 /**
  * Test class for LogOutController class
@@ -28,7 +28,7 @@ public class LogOutControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setUpClass() throws TimeoutException {
         FxToolkit.registerPrimaryStage();
-        FxToolkit.setupApplication(SignUpSignInClient.class);
+        FxToolkit.setupApplication(GESREClient.class);
     }
     
     /**

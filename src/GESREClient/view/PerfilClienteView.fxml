@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane id="piezaPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="signupsigninclient.controller.LogOutController">
+   <children>
+       <fx:include fx:id="hBoxMenu" source="menu.fxml" />
+      <Label fx:id="messageLbl" alignment="CENTER" contentDisplay="CENTER" layoutX="157.0" layoutY="202.0" minHeight="-Infinity" prefHeight="17.0" text="Usuario" wrapText="true" />
+      <Label layoutX="155.0" layoutY="284.0" text="Nombre Completo" />
+      <Label layoutX="159.0" layoutY="369.0" text="Correo" />
+      <Label layoutX="343.0" layoutY="60.0" text="PERFIL">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="468.0" layoutY="199.0" text="Contraseña" />
+      <Label layoutX="468.0" layoutY="284.0" text="Repite Contraseña" />
+      <TextField layoutX="155.0" layoutY="314.0" />
+      <TextField layoutX="468.0" layoutY="236.0" />
+      <TextField layoutX="468.0" layoutY="322.0" />
+      <TextField layoutX="155.0" layoutY="234.0" />
+      <TextField layoutX="159.0" layoutY="396.0" />
+      <Label layoutX="155.0" layoutY="125.0" text="DATOS">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="468.0" layoutY="122.0" text="CAMBIAR CONTRASEÑA">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+   </children>
+</Pane>

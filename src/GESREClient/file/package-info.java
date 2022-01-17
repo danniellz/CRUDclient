@@ -1,4 +1,4 @@
 /**
- * This is the package containig property files
+ * Este paquete contiene los archivos de propiedades
  */
 package GESREClient.file;

@@ -1,4 +1,4 @@
 /**
- * This is the package containig the main class
+ * Este paquete contiene la clase MAIN
  */
 package GESREClient;
