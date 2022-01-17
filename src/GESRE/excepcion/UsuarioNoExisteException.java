@@ -3,18 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package GERSE.excepcion;
+package GESRE.excepcion;
 
 /**
  *
  * @author Jonathan Viñan
  */
-public class EmailNoExisteException extends Exception {
+public class UsuarioNoExisteException extends Exception {
 
     /**
      * Constructor vacío.
      */
-    public EmailNoExisteException() {
-        super("El email que se ha buscado no existe en la base de datos");
+    public UsuarioNoExisteException() {
+        super("El usuario que se ha buscado no existe en la base de datos");
     }
 }

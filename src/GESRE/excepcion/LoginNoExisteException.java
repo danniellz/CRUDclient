@@ -3,17 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package GERSE.excepcion;
+package GESRE.excepcion;
 
 /**
  *
  * @author Jonathan Viñan
  */
-public class LoginExisteException  extends Exception{
-     /**
+public class LoginNoExisteException extends Exception {
+
+    /**
      * Constructor vacío.
      */
-    public LoginExisteException() {
-        super("El login que se ha buscado ya existe en la base de datos");
+    public LoginNoExisteException() {
+        super("El login que se ha buscado no existe en la base de datos");
     }
 }
