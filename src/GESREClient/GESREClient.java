@@ -15,7 +15,7 @@ import GESREClient.controller.SignInController;
  * @author Daniel Brizuela
  * @version 1.0
  */
-public class SignUpSignInClient extends Application{
+public class GESREClient extends Application{
     //LOGGER
     private static final Logger LOG = Logger.getLogger(SignInController.class.getName());
     /**

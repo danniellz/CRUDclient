@@ -1,4 +1,4 @@
 /**
- * This is the package containig classes that control javafx windows
+ * Este paquete contiene las clases que controlan las ventanas FXML
  */
 package GESREClient.controller;
