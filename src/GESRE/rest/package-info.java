@@ -1,4 +1,4 @@
 /**
  * Este paquete contiene los RESTful de las entidades
  */
-package restful;
+package GESRE.rest;

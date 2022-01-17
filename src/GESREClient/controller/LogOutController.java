@@ -18,7 +18,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import user.User;
+import GESREClient.entidades.Cliente;
 
 /**
  * Log Out Controller
@@ -60,7 +60,7 @@ public class LogOutController {
      * @param root Contains the FXML
      * @param user
      */
-    public void initStage(Parent root, User user) {
+    public void initStage(Parent root, Cliente c) {
         try {
             LOG.info("Initializing stage...");
             //Creates a new Scene
@@ -74,7 +74,7 @@ public class LogOutController {
             //Controls
             logOutItem.setOnAction(this::handleLogOut);
             exitItem.setOnAction(this::handleExit);
-            messageLbl.setText("Hello " + user.getFullName() + ", you have succesfully logged in!!");
+            messageLbl.setText("Hello " + c.getFullName() + ", you have succesfully logged in!!");
             messageLbl.setTextAlignment(TextAlignment.CENTER);
             //Show window (asynchronous)
             stage.show();

@@ -1,11 +1,6 @@
 package GESREClient.controller;
 
-import exceptions.ConnectionException;
-import exceptions.DatabaseNotFoundException;
-import exceptions.IncorrectPasswordException;
-import exceptions.MaxConnectionException;
-import exceptions.UserAlreadyExistException;
-import exceptions.UserNotFoundException;
+
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -26,10 +21,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import signable.Signable;
-import GESREClient.logic.SignableFactory;
-import user.User;
 
+import GESRE.factoria.SignableFactory;
 /**
  * SignIn window controller class
  *
@@ -81,7 +74,7 @@ public class SignInController {
             stage.setResizable(false);
             stage.setOnCloseRequest(this::handleCloseRequest);
             //Controls
-            loginBtn.addEventHandler(ActionEvent.ACTION, this::handleButtonLogin);
+//            loginBtn.addEventHandler(ActionEvent.ACTION, this::handleButtonLogin);
             signUpHl.addEventHandler(ActionEvent.ACTION, this::handleSignUpHyperLink);
             userTxt.textProperty().addListener(this::handleUserControl);
             passwordTxt.textProperty().addListener(this::handlePasswordControl);
@@ -103,7 +96,7 @@ public class SignInController {
      *
      * @param buttonPress Action event at pressing the login button
      */
-    private void handleButtonLogin(ActionEvent buttonPress) {
+  /*  private void handleButtonLogin(ActionEvent buttonPress) {
         username = userTxt.getText();
         password = passwordTxt.getText();
         try {
@@ -120,15 +113,15 @@ public class SignInController {
                 passwordTxt.setStyle("-fx-border-color: #DC143C	; -fx-border-width: 1.5px ;");
             } else {
                 LOG.info("Proccesing User Info...");
-                User user = new User();
-                user.setLogin(username);
-                user.setPassword(password);
+                //User user = new User();
+                //user.setLogin(username);
+               // user.setPassword(password);
 
                 //Get the SignableImplement from the factory and save it into the Signable interface
-                Signable sign = SignableFactory.getSignable();
+               // Signable sign = SignableFactory.getSignable();
 
                 //Save user data and send it to the signIn method then return the user object with all the data
-                user = sign.signIn(user);
+               // user = sign.signIn(user);
                 LOG.info("User data retrieved!");
 
                 //Open LogOut Window if the SignIn Process is well
@@ -142,8 +135,8 @@ public class SignInController {
                     //Set the stage
                     logOutController.setStage(stage);
                     //initialize the window
-                    LOG.info("Sending data for: " + user.getFullName());
-                    logOutController.initStage(root, user);
+                 //   LOG.info("Sending data for: " + user.getFullName());
+                 //   logOutController.initStage(root, user);
                 } catch (IOException ex) {
                     LOG.log(Level.SEVERE, "Error Starting LogOut Window", ex);
                 }
