@@ -11,10 +11,11 @@ package GESRE.excepcion;
  */
 public class EmailExisteException extends Exception {
 
+    
     /**
      * Constructor vacío.
      */
     public EmailExisteException() {
-        super("El email que se ha buscado ya existe en la base de datos");
+        super("El email ya existe en la base de datos");
     }
 }

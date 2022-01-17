@@ -1,4 +1,4 @@
 /**
- * Este paquete contiene la clase MAIN
+ * Este paquete contiene la clase segurodad
  */
 package GESRE.seguridad;
