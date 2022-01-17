@@ -22,7 +22,6 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import GESRE.factoria.SignableFactory;
 /**
  * SignIn window controller class
  *

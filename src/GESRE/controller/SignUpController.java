@@ -30,9 +30,6 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.WindowEvent;
-//import signable.Signable;
-import GESRE.factoria.SignableFactory;
-//import user.User;
 
 /**
  * FXML Controller class the view SingUp
