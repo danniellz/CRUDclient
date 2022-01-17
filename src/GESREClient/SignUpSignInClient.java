@@ -1,4 +1,4 @@
-package signupsigninclient;
+package GESREClient;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -7,7 +7,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
-import signupsigninclient.controller.SignInController;
+import GESREClient.controller.SignInController;
 
 /**
  * class responsible for starting the application

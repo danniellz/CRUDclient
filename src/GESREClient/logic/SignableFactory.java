@@ -1,4 +1,4 @@
-package signupsigninclient.logic;
+package GESREClient.logic;
 
 import signable.Signable;
 

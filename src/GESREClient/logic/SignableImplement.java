@@ -1,4 +1,4 @@
-package signupsigninclient.logic;
+package GESREClient.logic;
 
 import exceptions.ConnectionException;
 import exceptions.DatabaseNotFoundException;

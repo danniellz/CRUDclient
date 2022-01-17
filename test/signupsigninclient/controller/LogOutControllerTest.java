@@ -9,7 +9,7 @@ import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
-import signupsigninclient.SignUpSignInClient;
+import GESREClient.SignUpSignInClient;
 
 /**
  * Test class for LogOutController class

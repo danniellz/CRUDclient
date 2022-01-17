@@ -1,4 +1,4 @@
-package signupsigninclient.controller;
+package GESREClient.controller;
 
 import exceptions.ConnectionException;
 import exceptions.DatabaseNotFoundException;
@@ -27,7 +27,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import signable.Signable;
-import signupsigninclient.logic.SignableFactory;
+import GESREClient.logic.SignableFactory;
 import user.User;
 
 /**
