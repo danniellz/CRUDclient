@@ -1,4 +1,4 @@
-package GESREClient.controller;
+package GESRE.controller;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import GESREClient.entidades.Cliente;
+import GESRE.entidades.Cliente;
 
 /**
  * Log Out Controller

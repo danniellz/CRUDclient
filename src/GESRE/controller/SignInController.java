@@ -1,4 +1,4 @@
-package GESREClient.controller;
+package GESRE.controller;
 
 
 import java.io.IOException;

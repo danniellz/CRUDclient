@@ -1,4 +1,4 @@
-package GESREClient;
+package GESRE.aplication;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -7,7 +7,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
-import GESREClient.controller.SignInController;
+import GESRE.controller.SignInController;
 
 /**
  * class responsible for starting the application

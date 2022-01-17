@@ -1,4 +1,4 @@
 /**
  * Este paquete contiene la clase MAIN
  */
-package GESREClient;
+package GESRE.aplication;

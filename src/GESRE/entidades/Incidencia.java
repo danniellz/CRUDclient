@@ -1,4 +1,4 @@
-package GESREClient.entidades;
+package GESRE.entidades;
 
 import java.io.Serializable;
 import java.util.Objects;

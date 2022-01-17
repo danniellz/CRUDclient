@@ -1,4 +1,4 @@
-package GESREClient.entidades;
+package GESRE.entidades;
 
 /**
  * Clase enumeracion con los estados de las incidencias

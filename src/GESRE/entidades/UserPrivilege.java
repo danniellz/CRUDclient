@@ -1,4 +1,4 @@
-package GESREClient.entidades;
+package GESRE.entidades;
 
 /**
  * Clase que declara el privilegio del usuario.

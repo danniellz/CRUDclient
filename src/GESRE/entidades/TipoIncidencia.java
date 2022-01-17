@@ -1,4 +1,4 @@
-package GESREClient.entidades;
+package GESRE.entidades;
 
 /**
  * Clase enumeracion que determina el tipo de incidencia

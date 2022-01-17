@@ -1,4 +1,4 @@
-package GESREClient.controller;
+package GESRE.controller;
 
 //import exceptions.ConnectionException;
 //import exceptions.DatabaseNotFoundException;
