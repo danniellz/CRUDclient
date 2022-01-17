@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane fx:id="signUpPanel" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="signupsigninclient.controller.SignUpController">
+    <children>
+        <Label fx:id="signUpLbl" layoutX="55.0" layoutY="40.0" text="Sign Up">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+
+        <Label fx:id="userLbl" layoutX="57.0" layoutY="90.0" text="User" />
+
+        <TextField fx:id="userTxt" layoutX="174.0" layoutY="87.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="20.0" prefWidth="150.0" promptText="example">
+            <tooltip>
+                <Tooltip text="Insert you user name" />
+            </tooltip>
+        </TextField>
+
+        <Label fx:id="fullNameLbl" layoutX="57.0" layoutY="132.0" text="Full name" />
+
+        <TextField fx:id="fullNameTxt" layoutX="174.0" layoutY="128.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="20.0" prefWidth="150.0" promptText="Example Example">
+            <tooltip>
+                <Tooltip text="Full name without numbers or special characters" />
+            </tooltip>
+        </TextField>
+
+        <Label fx:id="emailLbl" layoutX="57.0" layoutY="174.0" text="Email" />
+
+        <TextField fx:id="emailTxt" layoutX="174.0" layoutY="170.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="20.0" prefWidth="150.0" promptText="example@example.com">
+            <tooltip>
+                <Tooltip text="Enter a valid email" />
+            </tooltip>
+        </TextField>
+
+        <Label fx:id="passwordLbl" layoutX="54.0" layoutY="214.0" text="Password" />
+
+        <PasswordField fx:id="passwordTxt" layoutX="174.0" layoutY="210.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="20.0" prefWidth="150.0" promptText="********">
+            <tooltip>
+                <Tooltip text="Enter a minimum of 6 characters" />
+            </tooltip>
+        </PasswordField>
+
+        <Label fx:id="repeatPasswordLbl" layoutX="54.0" layoutY="258.0" text="Repeat Password" />
+
+        <PasswordField fx:id="repeatPasswordTxt" layoutX="174.0" layoutY="254.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="20.0" prefWidth="150.0" promptText="********">
+            <tooltip>
+                <Tooltip text="It must be the same password of above" />
+            </tooltip>
+        </PasswordField>
+        <Hyperlink fx:id="signInHl" layoutX="160.0" layoutY="296.0" text="Do you have an account? Sign In">
+            <font>
+                <Font name="System Italic" size="12.0" />
+            </font>
+            <tooltip>
+                <Tooltip text="Sign In" />
+            </tooltip>
+        </Hyperlink>
+
+        <Button fx:id="registerBtn" layoutX="454.0" layoutY="317.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="82.0" text="REGISTER">
+
+            <font>
+                <Font name="System Bold" size="12.0" />
+            </font>
+        </Button>
+        
+        <Label fx:id="userErrorLbl" alignment="CENTER" layoutX="350.0" layoutY="92.0" text="22222222222222222" wrapText="true">
+         <font>
+            <Font size="11.0" />
+         </font></Label>
+        <Label fx:id="fullNameErrorLbl" alignment="CENTER" layoutX="350.0" layoutY="133.0" text="122222222222222" wrapText="true">
+         <font>
+            <Font size="11.0" />
+         </font></Label>
+        <Label fx:id="emailErrorLbl" alignment="CENTER" layoutX="350.0" layoutY="175.0" text="1222222222222" wrapText="true">
+         <font>
+            <Font size="11.0" />
+         </font></Label>
+        <Label fx:id="passwordErrorLbl" alignment="CENTER" layoutX="350.0" layoutY="215.0" text="12222222222222222222222222" wrapText="true">
+         <font>
+            <Font size="11.0" />
+         </font></Label>
+        <Label fx:id="repeatPasswordErrorLbl" alignment="CENTER" layoutX="350.0" layoutY="250.0" text="122222222222222222" wrapText="true">
+         <font>
+            <Font size="11.0" />
+         </font></Label>
+    </children>
+    <opaqueInsets>
+        <Insets />
+    </opaqueInsets>
+</Pane>

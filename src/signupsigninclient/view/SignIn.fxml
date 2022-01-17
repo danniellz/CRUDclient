@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane id="signInPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="signupsigninclient.controller.SignInController">
+   <children>
+      <Label id="signInLbl" layoutX="95.0" layoutY="58.0" text="Sign In">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <Label id="userLbl" layoutX="95.0" layoutY="162.0" prefHeight="17.0" prefWidth="30.0" text="User" />
+      <TextField fx:id="userTxt" layoutX="184.0" layoutY="158.0" prefHeight="25.0" prefWidth="294.0" promptText="Username">
+         <tooltip>
+            <Tooltip text="Enter your username" />
+         </tooltip>
+      </TextField>
+      <Label id="passwordLbl" layoutX="95.0" layoutY="217.0" text="Password" />
+      <PasswordField fx:id="passwordTxt" layoutX="184.0" layoutY="213.0" prefHeight="25.0" prefWidth="294.0" promptText="********">
+         <tooltip>
+            <Tooltip text="Enter your password" />
+         </tooltip>
+      </PasswordField>
+      <Button fx:id="loginBtn" layoutX="478.0" layoutY="333.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="82.0" text="LOGIN">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Hyperlink fx:id="signUpHl" layoutX="184.0" layoutY="248.0" text="You still do not have an account? Sign Up">
+         <font>
+            <Font name="System Italic" size="12.0" />
+         </font>
+      </Hyperlink>
+      <Label fx:id="errorLbl" layoutX="184.0" layoutY="124.0" prefHeight="17.0" prefWidth="294.0" />
+   </children>
+</Pane>
