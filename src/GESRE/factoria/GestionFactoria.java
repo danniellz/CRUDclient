@@ -26,6 +26,6 @@ public class GestionFactoria {
 
         TrabajadorGestion trabajadorGestion = new TrabajadorGestionImplementation();
 
-        return ;
+        return trabajadorGestion;
     }
 }
