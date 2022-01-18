@@ -5,8 +5,8 @@
  */
 package GESRE.factoria;
 
-import GESRE.implementacion.TrabajadorGestionImplementation;
-import GESRE.interfaces.TrabajadorGestion;
+import GESRE.implementacion.TrabajadorManagerImplementacion;
+import GESRE.interfaces.TrabajadorManager;
 import java.util.logging.Logger;
 
 /**
@@ -21,10 +21,15 @@ public class GestionFactoria {
      */
     private static final Logger LOGGER = Logger.getLogger("implementaciones.GestionFactoria");
 
-    public static TrabajadorGestion getTrabajadorGestion() {
+    /**
+     * Método que crea una nueva implementación para la gestión de profesores.
+     *
+     * @return la implementación.
+     */
+    public static TrabajadorManager getTrabajadorGestion() {
         LOGGER.info("GestionFactoria: Creando la implementacion de Trabajador");
 
-        TrabajadorGestion trabajadorGestion = new TrabajadorGestionImplementation();
+        TrabajadorManager trabajadorGestion = new TrabajadorManagerImplementacion();
 
         return trabajadorGestion;
     }

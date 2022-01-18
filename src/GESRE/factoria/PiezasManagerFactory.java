@@ -6,5 +6,5 @@ package GESRE.factoria;
  * @version 1.0
  */
 public class PiezasManagerFactory {
-    
+
 }
