@@ -9,20 +9,21 @@ import GESRE.entidades.Trabajador;
 import java.util.Collection;
 
 /**
+ * Interfaz de lógica que encapsula métodos para la gestión de trabajadores.
  *
  * @author Jonathan Viñan
  */
 public interface TrabajadorManager {
 
     /**
-     * Método que añade un nuevo libro creado.
+     * Método que añade un nuevo trabajador creado.
      *
      * @param trabajdor Objeto trabajadior que se va a añadir.
      */
     public void createTrabajador(Trabajador trabajdor);
 
     /**
-     * Método que actualiza la información de un libro existente.
+     * Método que actualiza la información de un trabajador existente.
      *
      * @param trabajador Objeto trabajador que se va a actualizar.
      */
@@ -31,16 +32,17 @@ public interface TrabajadorManager {
     /**
      * Método que elimina un Trabajador existente.
      *
-     * @param trabajador El objeto Libro que se va a eliminar.
+     * @param trabajador El objeto Trabajador que se va a eliminar.
      */
     public void removeTrabajador(Trabajador trabajador);
 
     /**
      * Método que obtiene información de un Trabajador existente por nombre.
      *
-     * @param id El fullname del trabajador del que se quiere obtener la
+     * @param id El id del trabajador del que se quiere obtener la
      * información.
-     * @return Objeto Trabajador con la información del trabajador buscado.
+     * @return Objeto Trabajador con la informacion del trabajador
+     * buscado.
      */
     public Trabajador findTrabajador(Integer id);
 
@@ -48,7 +50,7 @@ public interface TrabajadorManager {
      * Método que busca un Trabajador por el nombre.
      *
      * @param name
-     * @return Colección de los libros existentes.
+     * @return Colección de los trabajadores existentes.
      */
     public Collection<Trabajador> buscarTrabajadorPorNombre(String name);
 
@@ -60,9 +62,10 @@ public interface TrabajadorManager {
     public Collection<Trabajador> buscarTodosLosTrabajadores();
 
     /**
-     * Método que busca todos los trabajadores qque no hayan recogido ninguna incidencia.
+     * Método que busca todos los trabajadores que no hayan recogido ninguna
+     * incidencia.
      *
-     * @return Colección de los trabajadores sin incidencas buscados.
+     * @return Colección de los trabajadores sin incidencas.
      */
     public Collection<Trabajador> trabajadoresSinIncidencias();
 }

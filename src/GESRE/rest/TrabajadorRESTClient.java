@@ -12,6 +12,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 
 /**
+ * Cliente REST de Jersey generado para el recurso REST:TrabajadorRESTClient [usuario].
+ * Contiene métodos necesarios para invocar un servicio web RESTful de trabajador
+ * que resida en un servidor Glassfish.< br >
+ *
  * Jersey REST client generated for REST resource:TrabajadorFacadeREST
  * [entidades.trabajador]<br>
  * USAGE:
@@ -22,7 +26,7 @@ import javax.ws.rs.core.GenericType;
  *        client.close();
  * </pre>
  *
- * @author JonY
+ * @author Jonathan viñan
  */
 public class TrabajadorRESTClient {
 
