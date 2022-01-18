@@ -127,7 +127,7 @@ public class TrabajadorManagerImplementacion implements TrabajadorManager {
         try {
             LOGGER.info("TrabajadorManagerImplementation: Buscando todos los trabajadores");
             //Solicitar a webClient los datos de todos los trabajadores de la bace de datos
-            trabajadores = webClient.buscarTodosLosTrabajadores_XML(new GenericType<List<Trabajador>>() {
+            trabajadores = this.webClient.buscarTodosLosTrabajadores_XML(new GenericType<List<Trabajador>>() {
             });
         } catch (ClientErrorException e) {
             LOGGER.severe(e.getMessage());

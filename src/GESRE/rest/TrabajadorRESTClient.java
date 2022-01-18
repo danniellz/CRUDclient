@@ -35,7 +35,7 @@ public class TrabajadorRESTClient {
     /**
      * Coge el URI de un archivo de propiedades.
      */
-    private static final String BASE_URI = ResourceBundle.getBundle("archivos.config").getString("RESTFUL_URI");
+    private static final String BASE_URI = ResourceBundle.getBundle("GESRE.archivos.config").getString("RESTFUL_URI");
 
     /**
      * Construye un TrabajadorRESTClient. Crea un cliente web RESTful y
@@ -43,7 +43,7 @@ public class TrabajadorRESTClient {
      */
     public TrabajadorRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI).path("trabajador");//entidades.trabajador
+        webTarget = client.target(BASE_URI).path("entidades.trabajador");//entidades.trabajador
     }
 
     /**

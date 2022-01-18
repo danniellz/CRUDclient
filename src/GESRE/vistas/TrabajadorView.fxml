@@ -14,61 +14,66 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane id="piezaPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="signupsigninclient.controller.LogOutController">
-   <children>
-      <Pane layoutX="12.0" layoutY="35.0" prefHeight="265.0" prefWidth="776.0" style="-fx-background-color: lightgrey; -fx-border-color: black;">
-         <children>
-            <Button layoutX="650.0" layoutY="154.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="112.0" text="Eliminar" />
-            <Button layoutX="650.0" layoutY="119.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="112.0" text="Modificar" />
-            <Button layoutX="650.0" layoutY="195.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Limpiar" />
-            <Label layoutX="46.0" layoutY="22.0" text="GESTIÓN DE TRABAJADORES">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Label>
-            <Label layoutX="21.0" layoutY="69.0" text="Nombre completo" />
-            <TextField fx:id="txtNombreCompleto" layoutX="21.0" layoutY="86.0" prefHeight="25.0" prefWidth="341.0" />
-            <Label layoutX="21.0" layoutY="131.0" prefHeight="25.0" prefWidth="334.0" text="Email" />
-            <TextField fx:id="txtNombreCompleto1" layoutX="21.0" layoutY="152.0" prefHeight="25.0" prefWidth="341.0" />
-            <Label layoutX="388.0" layoutY="69.0" prefHeight="17.0" prefWidth="219.0" text="Nombre de Usuario" />
-            <TextField fx:id="txtNombreCompleto2" layoutX="388.0" layoutY="86.0" prefHeight="25.0" prefWidth="219.0" />
-            <Label layoutX="388.0" layoutY="131.0" prefHeight="17.0" prefWidth="219.0" text="Contraseña" />
-            <TextField fx:id="txtNombreCompleto21" layoutX="388.0" layoutY="152.0" prefHeight="25.0" prefWidth="219.0" />
-            <TextField fx:id="txtNombreCompleto11" layoutX="22.0" layoutY="214.0" prefHeight="25.0" prefWidth="66.0" />
-            <Label layoutX="21.0" layoutY="199.0" prefHeight="17.0" prefWidth="81.0" text="Precio/Hora" />
-            <TextField fx:id="txtNombreCompleto211" layoutX="388.0" layoutY="213.0" prefHeight="25.0" prefWidth="219.0" />
-            <Label layoutX="388.0" layoutY="195.0" prefHeight="17.0" prefWidth="219.0" text="Repite contraseña" />
-            <Separator layoutX="369.0" layoutY="73.0" orientation="VERTICAL" prefHeight="180.0" prefWidth="13.0">
-               <effect>
-                  <Lighting bumpInput="$null">
-                     <light>
-                        <Light.Distant />
-                     </light>
-                  </Lighting>
-               </effect>
-               <cursor>
-                  <Cursor fx:constant="DEFAULT" />
-               </cursor>
-            </Separator>
-            <Button layoutX="650.0" layoutY="85.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="112.0" text="Añadir" />
-            <DatePicker layoutX="158.0" layoutY="213.0" />
-            <Label layoutX="158.0" layoutY="199.0" prefHeight="17.0" prefWidth="174.0" text="Fecha de contrato" />
-            <Button layoutX="650.0" layoutY="227.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Informe" />
-            <Label layoutX="88.0" layoutY="219.0" text="€" />
-         </children>
-      </Pane>
-       <fx:include fx:id="hBoxMenu" source="menu.fxml" />
-      <TableView layoutX="13.0" layoutY="342.0" prefHeight="251.0" prefWidth="776.0">
-        <columns>
-            <TableColumn prefWidth="183.99993896484375" text="Nombre Usuario" />
-          <TableColumn prefWidth="276.6666669845581" text="Nombre completo" />
-            <TableColumn prefWidth="130.00003051757812" text="Fecha Contrato" />
-            <TableColumn minWidth="0.0" prefWidth="206.66671752929688" text="Precio Hora" />
-        </columns>
-      </TableView>
-      <Button layoutX="635.0" layoutY="310.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="143.0" text="Gestionar Clientes" />
-      <Button layoutX="334.0" layoutY="310.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Buscar" />
-      <TextField fx:id="txtNombreCompleto22" layoutX="143.0" layoutY="310.0" prefHeight="25.0" prefWidth="184.0" promptText="Buscar Trabajador" />
-      <ComboBox layoutX="13.0" layoutY="310.0" prefHeight="25.0" prefWidth="125.0" promptText="Filtro" />
-   </children>
+<Pane id="trabajadorPanel" fx:id="paneGeneralTrabajador" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.GestionTrabajadorViewController">
+    <children>
+        <Pane fx:id="fxPane" layoutX="12.0" layoutY="35.0" prefHeight="265.0" prefWidth="776.0" style="-fx-background-color: lightgrey; -fx-border-color: black;">
+            <children>
+                <Label fx:id="lblTitulo" layoutX="46.0" layoutY="22.0" text="GESTIÓN DE TRABAJADORES">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+                <Label fx:id="lblNombreCompleto" layoutX="21.0" layoutY="69.0" prefHeight="17.0" prefWidth="334.0" text="Nombre completo" />
+                <TextField fx:id="txtNombreCompleto" layoutX="18.0" layoutY="86.0" prefHeight="25.0" prefWidth="341.0" />
+                <Label fx:id="lblErrorNombreCompleto" layoutX="21.0" layoutY="111.0" prefHeight="17.0" prefWidth="334.0" />
+                <Label fx:id="lblEmail" layoutX="21.0" layoutY="131.0" prefHeight="25.0" prefWidth="334.0" text="Email" />
+                <TextField fx:id="txtEmail" layoutX="21.0" layoutY="152.0" prefHeight="25.0" prefWidth="341.0" />
+                <Label fx:id="lblErrorEmail" layoutX="21.0" layoutY="177.0" prefHeight="17.0" prefWidth="334.0" />
+                <Label fx:id="lblPrecioHora" layoutX="21.0" layoutY="199.0" prefHeight="17.0" prefWidth="81.0" text="Precio/Hora" />
+                <TextField fx:id="txtPrecioHora" alignment="TOP_RIGHT" layoutX="22.0" layoutY="214.0" prefHeight="25.0" prefWidth="66.0" promptText="0.0" />
+                <Label fx:id="lblErrorPrecioHora" layoutX="21.0" layoutY="243.0" prefHeight="17.0" prefWidth="131.0" />
+                <Label fx:id="lblFechaContrato" layoutX="158.0" layoutY="199.0" prefHeight="17.0" prefWidth="174.0" text="Fecha de contrato" />
+                <DatePicker fx:id="datePikerFechaContrato" layoutX="158.0" layoutY="213.0" promptText="dd/mm/aaaa" />
+                <Label fx:id="lblErrorFechaContrato" layoutX="158.0" layoutY="243.0" prefHeight="17.0" prefWidth="131.0" />
+                <Label fx:id="lblNombreUsuario" layoutX="388.0" layoutY="69.0" prefHeight="17.0" prefWidth="219.0" text="Nombre de Usuario" />
+                <TextField fx:id="txtNombreUsuario" layoutX="388.0" layoutY="86.0" prefHeight="25.0" prefWidth="219.0" />
+                <Label fx:id="lblErrorNombreUsuario" layoutX="388.0" layoutY="111.0" prefHeight="17.0" prefWidth="219.0" />
+                <Label fx:id="lblContrasenia" layoutX="388.0" layoutY="131.0" prefHeight="17.0" prefWidth="219.0" text="Contraseña" />
+                <TextField fx:id="txtContrasenia" layoutX="388.0" layoutY="152.0" prefHeight="25.0" prefWidth="219.0" />
+                <Label fx:id="lblErrorContrasenia" layoutX="388.0" layoutY="177.0" prefHeight="17.0" prefWidth="219.0" />
+                <Label fx:id="lblRepiteContrasenia" layoutX="388.0" layoutY="195.0" prefHeight="17.0" prefWidth="219.0" text="Repite contraseña" />
+                <TextField fx:id="txtRepiteContrasenia" layoutX="388.0" layoutY="213.0" prefHeight="25.0" prefWidth="219.0" />
+                <Label fx:id="lblErrorRepiteContrasenia" layoutX="388.0" layoutY="234.0" prefHeight="17.0" prefWidth="219.0" />
+                <Button fx:id="btnAnadir" layoutX="650.0" layoutY="85.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="112.0" text="Añadir" />
+                <Button fx:id="btnModificar" layoutX="650.0" layoutY="119.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="112.0" text="Modificar" />
+                <Button fx:id="btnEliminar" layoutX="650.0" layoutY="154.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="112.0" text="Eliminar" />
+                <Button fx:id="btnLimpiar" layoutX="650.0" layoutY="195.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Limpiar" />
+                <Separator layoutX="369.0" layoutY="73.0" orientation="VERTICAL" prefHeight="180.0" prefWidth="13.0">
+                    <effect>
+                        <Lighting bumpInput="$null">
+                            <light>
+                                <Light.Distant />
+                            </light>
+                        </Lighting>
+                    </effect>
+                </Separator>
+                <Button layoutX="650.0" layoutY="227.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Informe" />
+                <Label layoutX="88.0" layoutY="219.0" text="€" />
+            </children>
+        </Pane>
+        <fx:include fx:id="hBoxMenu" source="menu.fxml" />
+        <ComboBox fx:id="cbxFiltro" layoutX="12.0" layoutY="310.0" prefHeight="25.0" prefWidth="125.0" promptText="Filtro" />
+        <TextField fx:id="txtBuscar" layoutX="142.0" layoutY="310.0" prefHeight="25.0" prefWidth="184.0" promptText="Buscar Trabajador" />
+        <Button fx:id="btnBuscar" layoutX="334.0" layoutY="310.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Buscar" />
+        <Button fx:id="btnGEstionarClientes" layoutX="635.0" layoutY="310.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="143.0" text="Gestionar Clientes" />
+        <TableView fx:id="tablaTrabajadores" layoutX="13.0" layoutY="342.0" prefHeight="251.0" prefWidth="776.0">
+            <columns>
+                <TableColumn fx:id="nombreUsuarioCL" prefWidth="183.99993896484375" text="Nombre Usuario" />
+                <TableColumn fx:id="nombreCompletoCL" prefWidth="276.6666669845581" text="Nombre completo" />
+                <TableColumn fx:id="fechaContratoCL" prefWidth="130.00003051757812" text="Fecha Contrato" />
+                <TableColumn fx:id="PrecioHoraCL" minWidth="0.0" prefWidth="206.66671752929688" text="Precio Hora" />
+            </columns>
+        </TableView>
+      <Label fx:id="lblErrorBuscar" layoutX="401.0" layoutY="314.0" prefHeight="17.0" prefWidth="219.0" />
+    </children>
 </Pane>
