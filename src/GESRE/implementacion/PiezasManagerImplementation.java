@@ -39,9 +39,8 @@ public class PiezasManagerImplementation implements PiezasManager {
     public Collection<Pieza> findAllPiezaByTrabajadorId(Pieza pieza, Integer idTrabajador) {
         List<Pieza> piezas = null;
         try {
-            LOG.log(Level.INFO, "PiezaManager: Buscando todas las piezas del trabajador {0} from REST service (XML).", pieza.getTrabajador().getFullName());
-            piezas = webClient.findAllPiezaByTrabajadorId_xml(new GenericType<List<Pieza>>() {
-            }, idTrabajador);
+            LOG.log(Level.INFO, "PiezaManager: Buscando todas las piezas del trabajador con ID: "+idTrabajador);
+            piezas = webClient.findAllPiezaByTrabajadorId_xml(new GenericType<List<Pieza>>() {}, idTrabajador);
         } catch (ClientErrorException ex) {
             LOG.log(Level.SEVERE, "PiezasManager: Error al intentar buscar todas las piezas del trabajador", ex.getMessage());
         }
@@ -58,10 +57,10 @@ public class PiezasManagerImplementation implements PiezasManager {
     public Collection<Pieza> findAllPiezaByStock(Pieza pieza, Integer idTrabajador) {
         List<Pieza> piezas = null;
         try {
-            LOG.log(Level.INFO, "PiezaManager: Buscando todas las piezas del trabajador '{0}' ", pieza.getTrabajador().getFullName());
+            LOG.log(Level.INFO, "PiezaManager: Buscando todas las piezas en Stock del trabajador con ID: "+idTrabajador);
             piezas = webClient.findAllPiezaInStock_xml(new GenericType<List<Pieza>>() {}, idTrabajador);
         } catch (ClientErrorException ex) {
-            LOG.log(Level.SEVERE, "PiezasManager: Error al intentar buscar todas las piezas del trabajador", ex.getMessage());
+            LOG.log(Level.SEVERE, "PiezasManager: Error al intentar buscar todas las piezas en stock", ex.getMessage());
         }
         return piezas;
     }
@@ -76,10 +75,10 @@ public class PiezasManagerImplementation implements PiezasManager {
     public Collection<Pieza> findAllPiezaByName(Pieza pieza, String nombre) {
         List<Pieza> piezas = null;
         try {
-            LOG.log(Level.INFO, "PiezaManager: Buscando todas las piezas del trabajador '{0}' ", pieza.getTrabajador().getFullName());
+            LOG.log(Level.INFO, "PiezaManager: Buscando todas las piezas con el nombre: "+nombre);
             piezas = webClient.findAllPiezaByName_xml(new GenericType<List<Pieza>>() {}, nombre);
         } catch (ClientErrorException ex) {
-            LOG.log(Level.SEVERE, "PiezasManager: Error al intentar buscar todas las piezas del trabajador", ex.getMessage());
+            LOG.log(Level.SEVERE, "PiezasManager: Error al intentar buscar todas las piezas por nombre", ex.getMessage());
         }
         return piezas;
     }

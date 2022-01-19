@@ -10,41 +10,41 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane id="piezaPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="signupsigninclient.controller.LogOutController">
+<Pane id="piezaPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.PiezaViewController">
     <children>
         <Pane layoutX="12.0" layoutY="36.0" prefHeight="154.0" prefWidth="776.0" style="-fx-background-color: lightgrey; -fx-border-color: black;">
             <children>
                 <Label layoutX="40.0" layoutY="65.0" text="Nombre" />
-                <TextField layoutX="46.0" layoutY="91.0" prefHeight="25.0" prefWidth="160.0" />
-                <TextField layoutX="457.0" layoutY="90.0" prefHeight="25.0" prefWidth="79.0" />
+                <TextField fx:id="txtNombre" layoutX="46.0" layoutY="91.0" prefHeight="25.0" prefWidth="160.0" />
+                <TextField fx:id="txtStock" layoutX="457.0" layoutY="90.0" prefHeight="25.0" prefWidth="79.0" />
                 <Label layoutX="297.0" layoutY="69.0" text="Descripción" />
                 <Label layoutX="457.0" layoutY="69.0" text="Stock" />
-                <Button layoutX="626.0" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Añadir" />
-                <Button layoutX="626.0" layoutY="47.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Borrar" />
-                <Button layoutX="626.0" layoutY="80.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Editar" />
-                <Button layoutX="626.0" layoutY="118.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Limpiar" />
+                <Button fx:id="btnAnadir" layoutX="626.0" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Añadir" />
+                <Button fx:id="btnBorrar" layoutX="626.0" layoutY="47.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Borrar" />
+                <Button fx:id="btnEditar" layoutX="626.0" layoutY="80.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Editar" />
+                <Button fx:id="btnLimpiar" layoutX="626.0" layoutY="118.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Limpiar" />
                 <Label layoutX="33.0" layoutY="28.0" text="GESTIÓN DE PIEZAS">
                     <font>
                         <Font name="System Bold" size="18.0" />
                     </font>
                 </Label>
-                <TextArea layoutX="229.0" layoutY="90.0" prefHeight="52.0" prefWidth="197.0" />
+                <TextArea fx:id="txtADescripcion" layoutX="229.0" layoutY="90.0" prefHeight="52.0" prefWidth="197.0" />
             </children>
         </Pane>
         <fx:include fx:id="hBoxMenu" source="menu.fxml" />
-        <TableView fx:id="piezaTb" layoutY="273.0" prefHeight="327.0" prefWidth="800.0">
+        <TableView fx:id="tablaPiezas" layoutY="273.0" prefHeight="327.0" prefWidth="800.0">
             <columns>
-                <TableColumn prefWidth="180.0" text="Nombre" />
-                <TableColumn prefWidth="477.60003662109375" text="Descripción" />
-                <TableColumn minWidth="0.0" prefWidth="146.39990234375" text="Stock" />
+                <TableColumn fx:id="nombreCl" prefWidth="180.0" text="Nombre" />
+                <TableColumn fx:id="descripcionCl" prefWidth="477.60003662109375" text="Descripción" />
+                <TableColumn fx:id="stockCl" minWidth="0.0" prefWidth="146.39990234375" text="Stock" />
             </columns>
         </TableView>
-        <TextField layoutX="273.0" layoutY="232.0" prefHeight="25.0" prefWidth="160.0" promptText="Nombre de la Pieza" />
+        <TextField fx:id="txtNombreFiltro" layoutX="273.0" layoutY="232.0" prefHeight="25.0" prefWidth="160.0" promptText="Nombre de la Pieza" />
         <Label layoutX="28.0" layoutY="236.0" text="Buscar por:" />
-        <ComboBox layoutX="101.0" layoutY="232.0" prefWidth="150.0" />
-        <Button layoutX="595.0" layoutY="232.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Ver Incidencias" />
-        <Button layoutX="462.0" layoutY="232.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Buscar" />
-        <Button layoutX="703.0" layoutY="232.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="85.0" text="Infome" />
+        <ComboBox fx:id="cbxFiltro" layoutX="101.0" layoutY="232.0" prefWidth="150.0" />
+        <Button fx:id="btnGestionIncidencia" layoutX="595.0" layoutY="232.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Gestionar Incidencias" />
+        <Button fx:id="btnBuscar" layoutX="462.0" layoutY="232.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Buscar" />
+        <Button fx:id="btnInforme" layoutX="703.0" layoutY="232.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="85.0" text="Infome" />
         <Label fx:id="messageLbl" alignment="CENTER" contentDisplay="CENTER" layoutX="211.0" layoutY="198.0" minHeight="-Infinity" prefHeight="26.0" prefWidth="378.0" />
     </children>
 </Pane>

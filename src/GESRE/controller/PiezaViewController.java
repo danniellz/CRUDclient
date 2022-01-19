@@ -1,20 +1,31 @@
 package GESRE.controller;
 
+import GESRE.entidades.Pieza;
+import GESRE.factoria.GestionFactoria;
+import GESRE.interfaces.PiezasManager;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -27,11 +38,66 @@ import javafx.stage.WindowEvent;
  * @version 1.0
  */
 public class PiezaViewController {
+
     //LOGGER
     private static final Logger LOG = Logger.getLogger(PiezaViewController.class.getName());
 
-    //Atributos
+    //********TEXT FIELDS********
+    @FXML
+    private TextField txtNombre;
+    @FXML
+    private TextField txtDescripcion;
+    @FXML
+    private TextField txtStock;
+    @FXML
+    private TextField txtNombreFiltro;
+
+    //********COMBOBOX********
+    @FXML
+    private ComboBox<String> cbxFiltro;
+
+    //********BUTTON********
+    @FXML
+    private Button btnAnadir;
+    @FXML
+    private Button btnEditar;
+    @FXML
+    private Button btnBorrar;
+    @FXML
+    private Button btnLimpiar;
+    @FXML
+    private Button btnBuscar;
+    @FXML
+    private Button btnGestionIncidencia;
+
+    //********TABLE********
+    @FXML
+    private TableView<Pieza> tablaPiezas;
+
+    //********TABLE COLUM********
+    @FXML
+    private TableColumn<Pieza, String> nombreCl;
+    @FXML
+    private TableColumn<Pieza, String> descripcionCl;
+    @FXML
+    private TableColumn<Pieza, Integer> stockCl;
+
+    private ObservableList<Pieza> datosPieza;
+
+    //********STAGE********
     private Stage stage;
+
+    //********MENU********
+    @FXML
+    private MenuItem cerrarSesion;
+    @FXML
+    private MenuItem salir;
+
+    /**
+     * Variable que hace una llamada al método que gestiona los grupos de la
+     * factoría.
+     */
+    PiezasManager piezasManager = GestionFactoria.getPiezaManager();
 
     /**
      * Establece el Stage de PiezaView
@@ -46,22 +112,56 @@ public class PiezaViewController {
      * Inicializar Ventana
      *
      * @param root Contiene el FXML
+     * @param idTrabajador
      */
-    public void initStage(Parent root) {
+    public void initStage(Parent root, Integer idTrabajador) {
+        Pieza pieza = null;
         try {
             LOG.info("Inicializando Stage...");
-            //Creates a new Scene
+            //Crear nueva Scene
             Scene scene = new Scene(root);
-            //Associate the scene to window(stage)
+            //Asociar la Scene a una ventana
             stage.setScene(scene);
-            //Window properties
+            //Propiedades de la ventana
             stage.setTitle("Gestión de Piezas");
             stage.setResizable(false);
-            stage.setOnCloseRequest(this::handleCloseRequest);
-            //Controls
-            /*logOutItem.setOnAction(this::handleLogOut);
-            exitItem.setOnAction(this::handleExit);*/
-            //Show window (asynchronous)
+
+            //Estado inicial de los controles
+            btnAnadir.setDisable(true);
+            btnEditar.setDisable(true);
+            btnBorrar.setDisable(true);
+            btnLimpiar.setDisable(true);
+            btnBuscar.setDisable(true);
+            btnLimpiar.setDisable(true);
+            stage.setOnCloseRequest(this::handleSalir);
+
+            //Listeners de los TextField al cambiar el texto, textProperty
+            /*txtNombre.textProperty().addListener(this::handleValidarTexto);
+            txtDescripcion.textProperty().addListener(this::handleValidarTexto);
+            txtStock.textProperty().addListener(this::handleValidarTexto);
+            txtNombreFiltro.textProperty().addListener(this::handleValidarTexto);*/
+            //Definir columnas de la tabla trabajador
+            
+            //Establecer el valor que aparecera dentro de la celda
+            nombreCl.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+            descripcionCl.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+            stockCl.setCellValueFactory(new PropertyValueFactory<>("stock"));
+
+            //Llenar la tabla de datos con todas las piezas de un trabajador
+            datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByTrabajadorId(pieza, idTrabajador));
+            tablaPiezas.setItems(datosPieza);
+
+            //Listeners
+            //btnLimpiar.setOnAction(this::handleBtnLimpiar);
+            //btnAnadir.setOnAction(this::handleBtnAnadir);
+            //btnModificar.setOnAction(this::handleBtnModificar);
+            //btnEliminar.setOnAction(this::handleBtnEliminar);
+            //btnBuscar.setOnAction(this::handleBtnBuscar);
+            //mnCerrarSesion.setOnAction(this::handleCerrarSesion);
+            //cerrarSesion.setOnAction(this::handleCerrarSesion);
+            //salir.setOnAction(this::handleSalir);
+
+            //Mostrar ventana (asincrona)
             stage.show();
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Error al inicializar Stage", e);
@@ -74,7 +174,7 @@ public class PiezaViewController {
      *
      * @param closeEvent evento de ventana
      */
-    public void handleCloseRequest(WindowEvent closeEvent) {
+    public void handleSalir(WindowEvent closeEvent) {
         try {
             LOG.info("Confirmando cierre de ventana...");
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -99,25 +199,25 @@ public class PiezaViewController {
      *
      * @param logOutEvent Log Out action event
      */
-    public void handleLogOut(ActionEvent logOutEvent) {
+    public void handleCerrarSesion(ActionEvent logOutEvent) {
         try {
-            //Presionar en la opcion "Cerrar Sesión" mostrará una ventana de confirmación
-            LOG.info("Confirmando 'Cerrar Sesión'...");
+            //Pressing the LogOut option will show an Alert to confirm it
+            LOG.info("Log Out button clicked");
+            LOG.info("Confirm Log Out");
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setHeaderText("¿Estás seguro de querer Salir?");
-            alert.setTitle("Cerrar Sesión");
+            alert.setHeaderText("¿Are you sure you want to log out?");
+            alert.setTitle("Log Out");
             Optional<ButtonType> option = alert.showAndWait();
             if (option.get() == ButtonType.OK) {
-                //confirma la accion
-                LOG.info("Cerrando Sesión...");
+                LOG.info("Logging out...");
                 startSignInWindow(stage);
             } else {
-                LOG.info("'Cerrar Sesión' cancelado");
-                //Cancela el evento en proceso
+                LOG.info("Log Out Canceled");
+                //Cancel the event process
                 logOutEvent.consume();
             }
         } catch (IOException ex) {
-            LOG.log(Level.SEVERE, "Error al intentar Cerrar Sesión", ex);
+            LOG.log(Level.SEVERE, "Log Out error", ex);
         }
     }
 
@@ -125,13 +225,14 @@ public class PiezaViewController {
      * Llamar a este método abrirá la ventana de SignIn
      *
      * @param primaryStage objeto Stage (Ventana)
-     * @throws IOException salta una excepcion si la ventana de SignIn falla en abrirse
+     * @throws IOException salta una excepcion si la ventana de SignIn falla en
+     * abrirse
      */
     private void startSignInWindow(Stage primaryStage) throws IOException {
         try {
             LOG.info("Abriendo ventana SignIn...");
             //Carga el archivo FXML
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/signupsigninclient/view/SignIn.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/SignIn.fxml"));
             Parent root = (Parent) loader.load();
             //Obtiene el controlador
             SignInController signinController = ((SignInController) loader.getController());
@@ -142,9 +243,35 @@ public class PiezaViewController {
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "Error al intentar abrir la ventana de SignUp", ex);
         }
+
     }
-    
-    public static void main(String[] args) {
-        launch(args);
+
+    /**
+     * Llamar a este método limpiara todos los campos si están informados
+     */
+    private void limpiar() {
+        txtNombre.setText("");
+        txtDescripcion.setText("");
+        txtStock.setText("");
+        txtNombreFiltro.setText("");
+
+        btnAnadir.setDisable(true);
+        btnLimpiar.setDisable(true);
+
+        txtNombre.requestFocus();
     }
+
+    /**
+     * Comprueba si algún campo de texto está vacio
+     *
+     * @return devuelve un booleano si esta vacio o no
+     */
+    private boolean comprobarCampoVacio() {
+        boolean vacio = false;
+        if (txtNombre.getText().isEmpty() || txtDescripcion.getText().isEmpty() || txtStock.getText().isEmpty()) {
+            vacio = true;
+        }
+        return vacio;
+    }
+
 }
