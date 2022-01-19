@@ -5,14 +5,16 @@
  */
 package GESRE.factoria;
 
+import GESRE.implementacion.PiezasManagerImplementation;
 import GESRE.implementacion.TrabajadorGestionImplementation;
+import GESRE.interfaces.PiezasManager;
 import GESRE.interfaces.TrabajadorGestion;
 import java.util.logging.Logger;
 
 /**
  * Clase de factoría que gestiona las implementaciones.
  *
- * @author Jonathan Viñan
+ * @author Jonathan, Daniel
  */
 public class GestionFactoria {
 
@@ -23,9 +25,13 @@ public class GestionFactoria {
 
     public static TrabajadorGestion getTrabajadorGestion() {
         LOGGER.info("GestionFactoria: Creando la implementacion de Trabajador");
-
         TrabajadorGestion trabajadorGestion = new TrabajadorGestionImplementation();
-
         return trabajadorGestion;
+    }
+
+    public static PiezasManager getPiezaManager() {
+        LOGGER.info("GestionFactoria: Creando la implementacion de Piezas");
+        PiezasManager piezaManager = new PiezasManagerImplementation();
+        return piezaManager;
     }
 }
