@@ -8,6 +8,7 @@ package GESRE.rest;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 
 /**
  * Jersey REST client generated for REST resource:IncidenciaFacadeREST
@@ -33,7 +34,7 @@ public class IncidenciaRestCliente {
         webTarget = client.target(BASE_URI).path("entidades.incidencia");
     }
 
-    public <T> T findIncidenciaDeUnUsuario(Class<T> responseType, String idUsuario) throws ClientErrorException {
+    public <T> T findIncidenciaDeUnUsuario(GenericType<T> responseType, String idUsuario) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("InciUsuario/{0}", new Object[]{idUsuario}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -43,13 +44,13 @@ public class IncidenciaRestCliente {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public <T> T find(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T find(GenericType<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findIncidenciaDeUnTrabajador(Class<T> responseType, String idUsuario) throws ClientErrorException {
+    public <T> T findIncidenciaDeUnTrabajador(GenericType<T> responseType, String idUsuario) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("InciTrabajador/{0}", new Object[]{idUsuario}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -59,13 +60,13 @@ public class IncidenciaRestCliente {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public <T> T findIncidenciaAcabadaDeUnUsuario(Class<T> responseType, String idUsuario) throws ClientErrorException {
+    public <T> T findIncidenciaAcabadaDeUnUsuario(GenericType<T> responseType, String idUsuario) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("InciAcabadaUsuario/{0}", new Object[]{idUsuario}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findAll(Class<T> responseType) throws ClientErrorException {
+    public <T> T findAll(GenericType<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
