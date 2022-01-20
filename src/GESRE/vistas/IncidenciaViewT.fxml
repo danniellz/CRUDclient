@@ -51,7 +51,8 @@
             <TableColumn prefWidth="111.0" text="Fecha Recogida" />
         </columns>
       </TableView>
-      <Button id="Informe" layoutX="612.0" layoutY="213.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Informe" />
+      <Button id="Informe" layoutX="674.0" layoutY="213.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Informe" />
       <ToggleButton layoutX="45.0" layoutY="213.0" mnemonicParsing="false" text="Incidencias Recogidas" />
+      <Button layoutX="569.0" layoutY="213.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="95.0" text="Gestion Pieza" />
    </children>
 </Pane>

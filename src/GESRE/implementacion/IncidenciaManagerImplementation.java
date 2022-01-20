@@ -34,7 +34,7 @@ public class IncidenciaManagerImplementation implements IncidenciaManager {
             });
 
         } catch (ClientErrorException e) {
-            LOGGER.severe(e.getMessage());
+            LOGGER.severe(e.getMessage()+"findAll()");
         }
         return incidencias;
 
