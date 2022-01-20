@@ -6,11 +6,17 @@
 package GESRE.controller;
 
 import GESRE.entidades.Trabajador;
+import static GESRE.entidades.UserPrivilege.TRABAJADOR;
+import static GESRE.entidades.UserStatus.ENABLED;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.TrabajadorManager;
+import GESRE.interfaces.UsuarioManager;
+import java.util.Collection;
+import java.util.Date;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
@@ -32,6 +38,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -75,6 +82,11 @@ public class GestionTrabajadorViewController {
      * Atributo estático y constante que guarda el patron correcto del usuario.
      */
     public static final Pattern VALID_USUARIO = Pattern.compile("^[A-Z0-9]+$", Pattern.CASE_INSENSITIVE);
+    /**
+     * Atributo estático y constante que guarda el patron correcto de isbn y
+     * cantidad total.
+     */
+    public static final Pattern VALID_NUMERO = Pattern.compile("^[0-9]", Pattern.CASE_INSENSITIVE);
 
     //********PANE********
     /**
@@ -176,7 +188,11 @@ public class GestionTrabajadorViewController {
     @FXML
     private TableColumn<Trabajador, Float> PrecioHoraCL;
 
-    private ObservableList<Trabajador> trabajadoresObservableList ;
+    private ObservableList<Trabajador> trabajadoresObservableList;
+
+    UsuarioManager um = GestionFactoria.getUsuarioGestion();
+    
+ 
     /**
      * Variable que hace una llamada al método que gestiona los grupos de la
      * factoría.
@@ -240,7 +256,7 @@ public class GestionTrabajadorViewController {
             PrecioHoraCL.setCellValueFactory(new PropertyValueFactory<>("precioHora"));
 
             //Llenar la tabla de datos (Lista de todos los trabajadores)
-            trabajadoresObservableList= FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
+            trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
             tablaTrabajadores.setItems(trabajadoresObservableList);
 
             //Añade acciones a los botones
@@ -389,7 +405,9 @@ public class GestionTrabajadorViewController {
     }
 
     /**
-     * Quita en los campos txtNombreGrupo, txtDescripcion lo que esta escrito
+     * Quita en los campos txtNombreCompleto, txtEmail, datePikerFechaContrato,
+     * txtNombreUsuario, txtContrasenia, txtRepiteContrasenia , txtBuscar que
+     * esta escrito
      *
      * @param event El evento de acción.
      */
@@ -414,7 +432,94 @@ public class GestionTrabajadorViewController {
      * @param event
      */
     private void handleBtnAnadir(ActionEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        if (patronesTextoBien()) {
+            try {
+                //Comprueba si existe el login
+                LOGGER.info("Controlador: Comprobando si existe el login");
+
+                // um.buscarUserPorLogin_XML(txtNombreUsuario.getText());
+                //um.buscarUsuarioPorEmail_XML(txtEmail.getText());
+                Date date = new Date(System.currentTimeMillis());
+
+                Trabajador nuvoTrabajador = new Trabajador();
+                nuvoTrabajador.setFullName(txtNombreCompleto.getText());
+                nuvoTrabajador.setEmail(txtEmail.getText());
+                nuvoTrabajador.setPrecioHora(new Double(txtPrecioHora.getText()));
+                nuvoTrabajador.setLogin(txtNombreUsuario.getText());
+                nuvoTrabajador.setPassword(txtContrasenia.getText());
+                nuvoTrabajador.setStatus(ENABLED);
+                nuvoTrabajador.setPrivilege(TRABAJADOR);
+                nuvoTrabajador.setLastPasswordChange(date);
+                nuvoTrabajador.setFechaContrato(datePikerFechaContrato.getValue().toString());
+
+                trabajadorGestion.createTrabajador(nuvoTrabajador);
+
+                tablaTrabajadores.getItems().add(nuvoTrabajador);
+                tablaTrabajadores.refresh();
+                /*
+                limpiarCamposTexto();
+                if (comprobarUsuarioExisteAnadir(nuvoTrabajador)) {
+                    lblErrorNombreUsuario.setText("El usurio ya existente en la base de datos");
+                    lblErrorNombreUsuario.setTextFill(Color.web("#008000"));
+                } else {
+                    trabajadorGestion.createTrabajador(nuvoTrabajador);
+                    tablaTrabajadores.getItems().add(nuvoTrabajador);
+                    lblErrorBuscar.setText("Libro añadido");
+                    lblErrorBuscar.setTextFill(Color.web("#008000"));
+                }*/
+                limpiarCamposTexto();
+
+            } catch (Exception e) {
+                LOGGER.info("ERRRRRRRRRRRRRRRRROOOOOOOOOOOOOOOOOOOOOS");
+            }
+        }
+    }
+
+    private boolean patronesTextoBien() {
+        boolean patronesTextoBien = true;
+
+        Matcher matcher = null;
+
+        matcher = VALID_NOMBRE_COMPLETO.matcher(txtNombreCompleto.getText());
+        if (!matcher.find()) {
+            lblErrorNombreCompleto.setText("El Nombre completo sólo debe contener letras");
+            lblErrorNombreCompleto.setTextFill(Color.web("#FF0000"));
+            patronesTextoBien = false;
+        } else {
+            lblErrorNombreCompleto.setText("");
+        }
+        matcher = VALID_USUARIO.matcher(txtNombreUsuario.getText());
+        if (!matcher.find()) {
+            lblErrorNombreUsuario.setText("El usuario sólo debe contener letras y numeros");
+            lblErrorNombreUsuario.setTextFill(Color.web("#FF0000"));
+            patronesTextoBien = false;
+        } else {
+            lblErrorNombreUsuario.setText("");
+        }
+        matcher = VALID_EMAIL.matcher(txtEmail.getText());
+        if (!matcher.find()) {
+            lblErrorEmail.setText("El usuario sólo debe contener letras y numeros");
+            lblErrorEmail.setTextFill(Color.web("#FF0000"));
+            patronesTextoBien = false;
+        } else {
+            lblErrorEmail.setText("");
+        }
+        matcher = VALID_NUMERO.matcher(txtPrecioHora.getText());
+        if (!matcher.find()) {
+            lblErrorPrecioHora.setText("La cantidad sólo debe contener numeros");
+            lblErrorPrecioHora.setTextFill(Color.web("#FF0000"));
+            patronesTextoBien = false;
+        } else {
+            lblErrorPrecioHora.setText("");
+        }
+        return patronesTextoBien;
+    }
+
+    private boolean comprobarUsuarioExisteAnadir(Trabajador nuvoTrabajador) {
+        boolean f = false;
+
+        return f;
     }
 
 }
