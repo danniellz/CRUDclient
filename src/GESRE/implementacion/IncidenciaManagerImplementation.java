@@ -11,11 +11,14 @@ import GESRE.interfaces.IncidenciaManager;
 import GESRE.rest.IncidenciaRestCliente;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.GenericType;
 
 /**
+ * Esta clase es la Implementacion de la Interfaz logica de IncidenciaManager, que utiliza un Cliente RESTful
  *
+ * 
  * @author Aritz Arrieta
  */
 public class IncidenciaManagerImplementation implements IncidenciaManager {
@@ -39,11 +42,11 @@ public class IncidenciaManagerImplementation implements IncidenciaManager {
 
     @Override
     public Collection<Incidencia> findIncidenciaAcabadaDeUnUsuario(Incidencia incidencia, String idUsuario) {
-          List<Incidencia> incidencias = null;
+        List<Incidencia> incidencias = null;
         try {
 
-            incidencias = this.webClient.findIncidenciaAcabadaDeUnUsuario(new GenericType<List<Incidencia>>() { 
-            },idUsuario);
+            incidencias = this.webClient.findIncidenciaAcabadaDeUnUsuario(new GenericType<List<Incidencia>>() {
+            }, idUsuario);
 
         } catch (ClientErrorException e) {
             LOGGER.severe(e.getMessage());
@@ -54,11 +57,11 @@ public class IncidenciaManagerImplementation implements IncidenciaManager {
 
     @Override
     public Collection<Incidencia> findIncidenciaDeUnTrabajador(Incidencia incidencia, String idUsuario) {
-           List<Incidencia> incidencias = null;
+        List<Incidencia> incidencias = null;
         try {
 
-            incidencias = this.webClient.findIncidenciaDeUnTrabajador(new GenericType<List<Incidencia>>() { 
-            },idUsuario);
+            incidencias = this.webClient.findIncidenciaDeUnTrabajador(new GenericType<List<Incidencia>>() {
+            }, idUsuario);
 
         } catch (ClientErrorException e) {
             LOGGER.severe(e.getMessage());
@@ -69,11 +72,11 @@ public class IncidenciaManagerImplementation implements IncidenciaManager {
 
     @Override
     public Collection<Incidencia> findIncidenciaDeUnCliente(Incidencia incidencia, String idUsuario) {
-            List<Incidencia> incidencias = null;
+        List<Incidencia> incidencias = null;
         try {
 
-            incidencias = this.webClient.findIncidenciaDeUnUsuario(new GenericType<List<Incidencia>>() { 
-            },idUsuario);
+            incidencias = this.webClient.findIncidenciaDeUnUsuario(new GenericType<List<Incidencia>>() {
+            }, idUsuario);
 
         } catch (ClientErrorException e) {
             LOGGER.severe(e.getMessage());
@@ -89,22 +92,34 @@ public class IncidenciaManagerImplementation implements IncidenciaManager {
 
     @Override
     public void removeIncidencia(String id) {
-       try {
-            LOGGER.info("TrabajadorManagerImplementation: Eliminando Trabajador");
+        try {
+            LOGGER.info("IncidenciaManagerImplementation: Eliminando Incidencia");
             this.webClient.remove(id);
-       }catch (ClientErrorException e) {
+        } catch (ClientErrorException e) {
             LOGGER.severe(e.getMessage());
         }
     }
 
     @Override
-    public void editIncidencia(Incidencia incidencia) {
-       
+    public void editIncidencia(Incidencia incidencia, String id) {
+        try {
+            LOGGER.log(Level.INFO, "IncidenciaManager: Actualizando Incidencia '{0}'...", incidencia.getId());
+            //enviar los datos de la pieza al cliente web para su creacion 
+            this.webClient.edit(incidencia, id);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "IncidenciaManager: Error al intentar crear Incidencia, {0}", ex.getMessage());
+        }
     }
 
     @Override
     public void findIncidencia(Incidencia incidencia, String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      try {
+            LOGGER.log(Level.INFO, "IncidenciaManager: Actualizando Incidencia '{0}'...", incidencia.getId());
+            //enviar los datos de la pieza al cliente web para su creacion 
+            //this.webClient.find(incidencia, id);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "IncidenciaManager: Error al intentar crear Incidencia, {0}", ex.getMessage());
+        }
     }
 
 }

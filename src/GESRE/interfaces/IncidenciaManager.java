@@ -61,7 +61,7 @@ public interface IncidenciaManager {
      *
      * @param incidencia
      */
-    public void editIncidencia(Incidencia incidencia);
+    public void editIncidencia(Incidencia incidencia, String id);
     
     /**
      *

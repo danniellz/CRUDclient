@@ -6,8 +6,10 @@
 package GESRE.factoria;
 
 
+import GESRE.implementacion.IncidenciaManagerImplementation;
 import GESRE.implementacion.PiezasManagerImplementation;
 import GESRE.implementacion.TrabajadorManagerImplementacion;
+import GESRE.interfaces.IncidenciaManager;
 import GESRE.interfaces.PiezasManager;
 import GESRE.interfaces.TrabajadorManager;
 
@@ -40,5 +42,10 @@ public class GestionFactoria {
         LOGGER.info("GestionFactoria: Creando la implementacion de Piezas");
         PiezasManager piezaManager = new PiezasManagerImplementation();
         return piezaManager;
+    }
+    public static IncidenciaManager getIncidenciaManager(){
+        LOGGER.info("GestionFactoria: Creando la implementacion de Incidencias");
+        IncidenciaManager incidenciaManager = new IncidenciaManagerImplementation();
+        return incidenciaManager;
     }
 }
