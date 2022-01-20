@@ -39,12 +39,12 @@
                 <TableColumn fx:id="stockCl" minWidth="0.0" prefWidth="146.39990234375" text="Stock" />
             </columns>
         </TableView>
-        <TextField fx:id="txtNombreFiltro" layoutX="273.0" layoutY="232.0" prefHeight="25.0" prefWidth="160.0" promptText="Nombre de la Pieza" />
-        <Label layoutX="28.0" layoutY="236.0" text="Buscar por:" />
-        <ComboBox fx:id="cbxFiltro" layoutX="101.0" layoutY="232.0" prefWidth="150.0" />
-        <Button fx:id="btnGestionIncidencia" layoutX="595.0" layoutY="232.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Gestionar Incidencias" />
-        <Button fx:id="btnBuscar" layoutX="462.0" layoutY="232.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Buscar" />
-        <Button fx:id="btnInforme" layoutX="703.0" layoutY="232.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="85.0" text="Infome" />
+        <TextField fx:id="txtNombreFiltro" layoutX="278.0" layoutY="232.0" prefHeight="25.0" prefWidth="160.0" promptText="Nombre de la Pieza" />
+        <Label layoutX="14.0" layoutY="236.0" text="Buscar por:" />
+        <ComboBox fx:id="cbxFiltro" layoutX="104.0" layoutY="232.0" prefWidth="150.0" />
+        <Button fx:id="btnGestionIncidencia" layoutX="612.0" layoutY="199.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="176.0" text="Gestionar Incidencias" />
+        <Button fx:id="btnBuscar" layoutX="470.0" layoutY="232.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Buscar" />
+        <Button fx:id="btnInforme" layoutX="658.0" layoutY="232.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="85.0" text="Infome" />
         <Label fx:id="messageLbl" alignment="CENTER" contentDisplay="CENTER" layoutX="211.0" layoutY="198.0" minHeight="-Infinity" prefHeight="26.0" prefWidth="378.0" />
     </children>
 </Pane>

@@ -1,6 +1,8 @@
 package GESRE.controller;
 
 import GESRE.entidades.Pieza;
+import GESRE.entidades.Trabajador;
+import GESRE.entidades.Usuario;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.PiezasManager;
 import java.io.IOException;
@@ -89,6 +91,8 @@ public class PiezaViewController {
 
     //********STAGE********
     private Stage stage;
+    private Integer idTrabajador;
+    private Pieza pieza = null;
 
     //********MENU********
     @FXML
@@ -106,19 +110,19 @@ public class PiezaViewController {
      * Establece el Stage de PiezaView
      *
      * @param piezaViewStage valor del Stage pieazViewStage
+     * @param id
      */
-    public void setStage(Stage piezaViewStage) {
+    public void setStage(Stage piezaViewStage, Integer id) {
         stage = piezaViewStage;
+        idTrabajador = id;
     }
 
     /**
      * Inicializar Ventana
      *
      * @param root Contiene el FXML
-     * @param idTrabajador
      */
-    public void initStage(Parent root, Integer idTrabajador) {
-        Pieza pieza = null;
+    public void initStage(Parent root) {
         try {
             LOG.info("Inicializando Stage...");
             //Crear nueva Scene
@@ -130,11 +134,13 @@ public class PiezaViewController {
             stage.setResizable(false);
 
             //Estado inicial de los controles
-            btnAnadir.setDisable(true);
-            btnEditar.setDisable(true);
-            btnBorrar.setDisable(true);
-            btnBuscar.setDisable(true);
+            desabilitarBtnCamposVacios();
             txtNombreFiltro.setDisable(true);
+            //Establecer valores del combobox
+            ObservableList<String> filtros = FXCollections.observableArrayList("Todo", "Nombre", "Stock");
+            cbxFiltro.setItems(filtros);
+            //Si el filtro seleccionado es "Nombre" se activa el campo para buscar por Nombre
+            controlComboBox();
             stage.setOnCloseRequest(this::handleSalir);
 
             //Listeners de los TextField al cambiar el texto, textProperty
@@ -154,13 +160,20 @@ public class PiezaViewController {
 
             //Listeners
             btnLimpiar.setOnAction(this::handleLimpiar);
-            //btnAnadir.setOnAction(this::handleBtnAnadir);
+            btnAnadir.setOnAction(this::handleBtnAnadir);
             //btnModificar.setOnAction(this::handleBtnModificar);
             //btnEliminar.setOnAction(this::handleBtnEliminar);
             //btnBuscar.setOnAction(this::handleBtnBuscar);
             //cerrarSesion.setOnAction(this::handleCerrarSesion);
             //btnGestionIncidencia.setOnAction(this::startIncidenciaViewTWindow);
             //salir.setOnAction(this::handleSalir);
+
+            
+
+            if (!txtNombre.getText().isEmpty() || !txtADescripcion.getText().isEmpty() || !txtStock.getText().isEmpty()) {
+                btnAnadir.setDisable(false);
+            }
+
             //Mostrar ventana (asincrona)
             stage.show();
         } catch (Exception e) {
@@ -193,12 +206,14 @@ public class PiezaViewController {
         }
 
     }
-    
+
     /**
-     * Llamar a este método abrirá la ventana de IncidenciaViewT (Gestion de incidencias del trabajador)
+     * Llamar a este método abrirá la ventana de IncidenciaViewT (Gestion de
+     * incidencias del trabajador)
      *
      * @param primaryStage objeto Stage (Ventana)
-     * @throws IOException salta una excepcion si la ventana de IncidenciaViewT falla en abrirse
+     * @throws IOException salta una excepcion si la ventana de IncidenciaViewT
+     * falla en abrirse
      */
     /*private void startIncidenciaViewTWindow(Stage primaryStage) throws IOException {
         try {
@@ -217,7 +232,6 @@ public class PiezaViewController {
         }
 
     }*/
-
     /**
      * Llamar a este método limpiara todos los campos si están informados
      */
@@ -226,11 +240,22 @@ public class PiezaViewController {
         txtADescripcion.setText("");
         txtStock.setText("");
         txtNombreFiltro.setText("");
-
         btnAnadir.setDisable(true);
         txtNombre.requestFocus();
     }
-    
+
+    /**
+     * Llamar a este método creará una nueva Pieza
+     */
+    private void handleBtnAnadir(ActionEvent anadirEvent) {
+        pieza = new Pieza();
+        pieza.setNombre(txtNombre.getText());
+        pieza.setDescripcion(txtADescripcion.getText());
+        pieza.setStock(new Integer(txtStock.getText()));
+
+        piezasManager.createPieza(pieza);
+    }
+
     /**
      * Llamar a este método cerrará la ventana
      *
@@ -257,7 +282,8 @@ public class PiezaViewController {
     }
 
     /**
-     * Llamar a este método cerrará la sesíón actual para volver a la ventana de SignIn
+     * Llamar a este método cerrará la sesíón actual para volver a la ventana de
+     * SignIn
      *
      * @param cerrarSesiontEvent Cerrar Sesion action event
      */
@@ -284,21 +310,8 @@ public class PiezaViewController {
     }
 
     /**
-     * Comprueba si algún campo de texto está vacio
-     *
-     * @return devuelve un booleano si esta vacio o no
-     */
-    private boolean comprobarCampoVacio() {
-        boolean vacio = false;
-        if (txtNombre.getText().isEmpty() || txtADescripcion.getText().isEmpty() || txtStock.getText().isEmpty()) {
-            vacio = true;
-        }
-        return vacio;
-    }
-    
-
-    /**
-     * Llamar a este método establece el control del campo Nombre (textProperty())
+     * Llamar a este método establece el control del campo Nombre
+     * (textProperty())
      *
      * @param observable campo objetivo cuyo valor cambia
      * @param oldValue valor previo al cambio
@@ -317,7 +330,7 @@ public class PiezaViewController {
                 //Activar label
                 messageLbl.setStyle("-fx-text-fill: #DC143C");
                 messageLbl.setVisible(true);
-                
+
             } else {
                 //Mientras los caracteres introducidos sean menor a 26, se desactiva el label y el campo vuelve a su color normal
                 txtNombre.setStyle("-fx-border-color: White;");
@@ -328,9 +341,10 @@ public class PiezaViewController {
             LOG.log(Level.SEVERE, "Error Setting User field control", ex);
         }
     }
-    
+
     /**
-     * Llamar a este método establece el control del campo Descripcion (textProperty())
+     * Llamar a este método establece el control del campo Descripcion
+     * (textProperty())
      *
      * @param observable campo objetivo cuyo valor cambia
      * @param oldValue valor previo al cambio
@@ -353,9 +367,10 @@ public class PiezaViewController {
             LOG.log(Level.SEVERE, "Error Setting User field control", ex);
         }
     }
-    
+
     /**
-     * Llamar a este método establece el control del campo Stock (textProperty())
+     * Llamar a este método establece el control del campo Stock
+     * (textProperty())
      *
      * @param observable campo objetivo cuyo valor cambia
      * @param oldValue valor previo al cambio
@@ -374,7 +389,7 @@ public class PiezaViewController {
                 //Activar label
                 messageLbl.setStyle("-fx-text-fill: #DC143C");
                 messageLbl.setVisible(true);
-                
+
             } else {
                 //Mientras los caracteres introducidos sean menor a 26, se desactiva el label y el campo vuelve a su color normal
                 txtADescripcion.setStyle("-fx-border-color: White;");
@@ -386,9 +401,10 @@ public class PiezaViewController {
             LOG.log(Level.SEVERE, "Error Setting User field control", ex);
         }
     }
-    
+
     /**
-     * Llamar a este método establece el control del campo NombreFiltro (textProperty())
+     * Llamar a este método establece el control del campo NombreFiltro
+     * (textProperty())
      *
      * @param observable campo objetivo cuyo valor cambia
      * @param oldValue valor previo al cambio
@@ -407,16 +423,55 @@ public class PiezaViewController {
                 //Activar label
                 messageLbl.setStyle("-fx-text-fill: #DC143C");
                 messageLbl.setVisible(true);
-                
+
             } else {
                 //Mientras los caracteres introducidos sean menor a 26, se desactiva el label y el campo vuelve a su color normal
                 txtNombreFiltro.setStyle("-fx-border-color: White;");
                 messageLbl.setVisible(false);
                 messageLbl.setStyle("");
             }
+
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error Setting User field control", ex);
         }
+    }
+
+    /**
+     * Llamar a este método deshabilitará los botones Añadir, Editar y Borrar
+     */
+    private void desabilitarBtnCamposVacios() {
+        LOG.info("Deshabilitando botones Añadir, Editar y Borrar");
+        //Se comprueba cuando el boton debe estar desabilitado
+        btnAnadir.disableProperty().bind(
+                txtNombre.textProperty().isEmpty()
+                        .or(txtADescripcion.textProperty().isEmpty())
+                        .or(txtStock.textProperty().isEmpty())
+        );
+        btnEditar.disableProperty().bind(
+                txtNombre.textProperty().isEmpty()
+                        .or(txtADescripcion.textProperty().isEmpty())
+                        .or(txtStock.textProperty().isEmpty())
+        );
+        btnBorrar.disableProperty().bind(
+                txtNombre.textProperty().isEmpty()
+                        .or(txtADescripcion.textProperty().isEmpty())
+                        .or(txtStock.textProperty().isEmpty())
+        );
+    }
+
+    /**
+     * Llamar a este método controlará la interacción con el comboBox
+     */
+    private void controlComboBox() {
+        cbxFiltro.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.equals("Nombre")) {
+                txtNombreFiltro.setDisable(false);
+
+            } else {
+                txtNombreFiltro.setDisable(true);
+                txtNombreFiltro.setText("");
+            }
+        });
     }
 
 }

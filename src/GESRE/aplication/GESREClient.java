@@ -56,9 +56,9 @@ public class GESREClient extends Application {
             //Get controller
             PiezaViewController controlador = loader.getController();
             //Set the stage
-            controlador.setStage(primaryStage);
+            controlador.setStage(primaryStage, id);
             //initialize the window
-            controlador.initStage(root, id);
+            controlador.initStage(root);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "Error Starting SignIn window", ex);
         }
