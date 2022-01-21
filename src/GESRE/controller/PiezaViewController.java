@@ -2,17 +2,12 @@ package GESRE.controller;
 
 import GESRE.entidades.Pieza;
 import GESRE.entidades.Trabajador;
-import GESRE.entidades.UserPrivilege;
-import GESRE.entidades.UserStatus;
-import GESRE.entidades.Usuario;
+import GESRE.excepcion.PiezaNoExisteException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.PiezasManager;
 import GESRE.interfaces.TrabajadorManager;
 import java.io.IOException;
-import java.sql.Date;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -99,7 +94,6 @@ public class PiezaViewController {
     private Stage stage;
     private Integer idTrabajador;
     private Pieza pieza = null;
-    private List<Pieza> piezas;
     private Trabajador trabajador = null;
 
     //********MENU********
@@ -167,13 +161,11 @@ public class PiezaViewController {
             //Llenar la tabla de datos con todas las piezas de un trabajador
             datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByTrabajadorId(pieza, idTrabajador));
             tablaPiezas.setItems(datosPieza);
-            
-            trabajador = trabajadorManager.findTrabajador(idTrabajador);
 
             //Listeners
             btnLimpiar.setOnAction(this::handleLimpiar);
             btnAnadir.setOnAction(this::handleBtnAnadir);
-            //btnEditar.setOnAction(this::handleBtnEditar);
+            btnEditar.setOnAction(this::handleBtnEditar);
             btnBorrar.setOnAction(this::handleBtnBorrar);
             btnBuscar.setOnAction(this::handleBtnBuscar);
             //cerrarSesion.setOnAction(this::handleCerrarSesion);
@@ -279,46 +271,116 @@ public class PiezaViewController {
 
     /**
      * Llamar a este método creará una nueva Pieza
+     *
+     * @param anadirEvent evento de accion
      */
     private void handleBtnAnadir(ActionEvent anadirEvent) {
-        pieza = new Pieza();
-        pieza.setNombre(txtNombre.getText());
-        pieza.setDescripcion(txtADescripcion.getText());
-        pieza.setStock(new Integer(txtStock.getText()));
-        
-        piezasManager.createPieza(pieza);
-        
-       /* trabajador = new Trabajador();
-        trabajador.getPiezas().add(pieza);
-        
-        trabajadorManager.editTrabajador(trabajador);*/
+        try {
+            //Solo se admiten numeros no negativos
+            if (txtStock.getText().matches("-?([0-9]*)?") && !txtStock.getText().contains("-")) {
+                pieza = new Pieza();
+                pieza.setNombre(txtNombre.getText());
+                pieza.setDescripcion(txtADescripcion.getText());
+                pieza.setStock(new Integer(txtStock.getText()));
 
-        //Actualizar tabla
-        tablaPiezas.refresh();
+                piezasManager.createPieza(pieza);
+
+                //Agregar nueva pieza a tabla
+                tablaPiezas.getItems().add(pieza);
+
+                //Actualizar tabla
+                tablaPiezas.refresh();
+            } else {
+                messageLbl.setText("Solo se admiten números (positivos)");
+                txtADescripcion.setStyle("-fx-border-color: White;");
+                txtNombre.setStyle("-fx-border-color: White;");
+                messageLbl.setStyle("-fx-text-fill: #DC143C");
+                txtStock.setStyle("-fx-border-color: #DC143C ; -fx-border-width: 1.5px ;");
+                messageLbl.setVisible(true);
+            }
+
+        } catch (Exception e) {
+
+        }
+
     }
 
     /**
      * Llamar a este método borrará una Pieza
+     *
+     * @param borrarEvent evento de accion
      */
-    private void handleBtnBorrar(ActionEvent borrarWEvent) {
-        LOG.info("Borrando Pieza...");
-        //Get selected user data from table view model
-        pieza = tablaPiezas.getSelectionModel().getSelectedItem();
-        //Ask user for confirmation on delete
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                "¿Borrar la fila seleccionada?\n"
-                + "La operación no se puede revertir", ButtonType.OK, ButtonType.CANCEL);
-        Optional<ButtonType> result = alert.showAndWait();
-        //Respuesta afirmativa
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            //Borrar Pieza del servidor
-            piezasManager.removePieza(pieza);
-            //Limpiar los campos
+    private void handleBtnBorrar(ActionEvent borrarEvent) {
+        try {
+
+            LOG.info("Borrando Pieza...");
+            //Obtener la pieza seleccionada de la tabla
+            pieza = tablaPiezas.getSelectionModel().getSelectedItem();
+
+            //Ventana de confirmacion
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                    "¿Borrar la fila seleccionada?\n"
+                    + "La operación no se puede revertir", ButtonType.OK, ButtonType.CANCEL);
+            Optional<ButtonType> result = alert.showAndWait();
+            //Respuesta afirmativa
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                //Borrar Pieza del servidor
+                piezasManager.removePieza(pieza);
+                //Limpiar los campos
+                txtNombre.setText("");
+                txtADescripcion.setText("");
+                txtStock.setText("");
+                //Deseleccionar la fila
+                tablaPiezas.getSelectionModel().clearSelection();
+                //Eliminar de la tabla
+                tablaPiezas.getItems().remove(pieza);
+                //Actualizar tabla
+                tablaPiezas.refresh();
+            } else {
+                //Activar label
+                messageLbl.setText("La pieza no puede borrarse porque no existe");
+                messageLbl.setStyle("-fx-text-fill: #DC143C");
+                messageLbl.setVisible(true);
+            }
+
+        } catch (Exception e) {
+            LOG.severe("Error al intentar borrar la Pieza");
+        }
+    }
+
+    /**
+     * Llamar a este método Actualizará una Pieza
+     *
+     * @param editarWEvent evento de accion
+     */
+    private void handleBtnEditar(ActionEvent editarEvent) {
+        try {
+            LOG.info("Actualizando Pieza...");
+            //Obtener la pieza seleccionada de la tabla
+            pieza = tablaPiezas.getSelectionModel().getSelectedItem();
+
+            if (!pieza.getNombre().equals(txtNombre.getText())) {
+                pieza.setNombre(txtNombre.getText());
+                pieza.setDescripcion(txtADescripcion.getText());
+                pieza.setStock(Integer.parseInt(txtStock.getText()));
+                piezasManager.editPieza(pieza);
+            }
+            //Clean entry text fields
             txtNombre.setText("");
             txtADescripcion.setText("");
             txtStock.setText("");
-            //Actualizar tabla
+
+            //Deseleccionar la fila
+            tablaPiezas.getSelectionModel().clearSelection();
+
+            //cambiar datos tabla
+            pieza.setNombre(txtNombre.getText());
+            pieza.setDescripcion(txtADescripcion.getText());
+            pieza.setStock(Integer.parseInt(txtStock.getText()));
+            //Refrescamos la tabla para que muestre los nuevos datos
             tablaPiezas.refresh();
+        } catch (Exception e) {
+
         }
     }
 
@@ -348,8 +410,8 @@ public class PiezaViewController {
     }
 
     /**
-     * Llamar a este método cerrará la sesíón actual para volver a la ventana de
-     * SignIn
+     * Llamar a este método cerrará la sesíón actual para volver a la ventana
+     * deSignIn
      *
      * @param cerrarSesiontEvent Cerrar Sesion action event
      */
@@ -396,13 +458,15 @@ public class PiezaViewController {
                 //Activar label
                 messageLbl.setStyle("-fx-text-fill: #DC143C");
                 messageLbl.setVisible(true);
-
             } else {
                 //Mientras los caracteres introducidos sean menor a 26, se desactiva el label y el campo vuelve a su color normal
                 txtNombre.setStyle("-fx-border-color: White;");
                 messageLbl.setVisible(false);
                 messageLbl.setStyle("");
             }
+
+            txtADescripcion.setStyle("-fx-border-color: White;");
+            txtStock.setStyle("-fx-border-color: White;");
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error Setting User field control", ex);
         }
@@ -428,6 +492,12 @@ public class PiezaViewController {
             if (cadena.contains(" ")) {
                 txtStock.setText(cadena.replaceAll(" ", ""));
             }
+            txtStock.setStyle("-fx-border-color: White;");
+            messageLbl.setVisible(false);
+            messageLbl.setStyle("");
+
+            txtNombre.setStyle("-fx-border-color: White;");
+            txtADescripcion.setStyle("-fx-border-color: White;");
 
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error Setting User field control", ex);
@@ -455,13 +525,15 @@ public class PiezaViewController {
                 //Activar label
                 messageLbl.setStyle("-fx-text-fill: #DC143C");
                 messageLbl.setVisible(true);
-
             } else {
                 //Mientras los caracteres introducidos sean menor a 26, se desactiva el label y el campo vuelve a su color normal
                 txtADescripcion.setStyle("-fx-border-color: White;");
                 messageLbl.setVisible(false);
                 messageLbl.setStyle("");
             }
+
+            txtNombre.setStyle("-fx-border-color: White;");
+            txtStock.setStyle("-fx-border-color: White;");
 
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error Setting User field control", ex);
