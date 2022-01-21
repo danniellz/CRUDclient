@@ -5,8 +5,8 @@
  */
 package GESRE.factoria;
 
-import GESRE.implementacion.TrabajadorGestionImplementation;
-import GESRE.interfaces.TrabajadorGestion;
+import GESRE.implementacion.ClienteManagerImplementacion;
+import GESRE.interfaces.ClienteManager;
 import java.util.logging.Logger;
 
 /**
@@ -20,12 +20,12 @@ public class GestionFactoria {
      * Atributo estático y constante que guarda los loggers de la clase.
      */
     private static final Logger LOGGER = Logger.getLogger("implementaciones.GestionFactoria");
-
-    public static TrabajadorGestion getTrabajadorGestion() {
-        LOGGER.info("GestionFactoria: Creando la implementacion de Trabajador");
-
-        TrabajadorGestion trabajadorGestion = new TrabajadorGestionImplementation();
-
-        return trabajadorGestion;
+    
+    public static ClienteManager createClienteManager() {
+        
+        ClienteManager clienteManager = new ClienteManagerImplementacion();
+        
+        return clienteManager;
     }
+    
 }

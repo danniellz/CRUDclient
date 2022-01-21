@@ -3,6 +3,7 @@ package GESRE.entidades;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
+import javafx.beans.property.SimpleStringProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -21,16 +22,16 @@ public class Usuario implements Serializable {
     /**
      * Login del usuario.
      */
-    private String login;
+    private SimpleStringProperty login;
 
     /**
      * Email del usuario.
      */
-    private String email;
+    private SimpleStringProperty email;
     /**
      * Nombre completo del usuario.
      */
-    private String fullName;
+    private SimpleStringProperty fullName;
     /**
      * Estado del usuario, que puede ser ENABLED o DISABLED.
      */
@@ -73,7 +74,7 @@ public class Usuario implements Serializable {
      *
      * @return el login que se va a mostrar.
      */
-    public String getLogin() {
+    public SimpleStringProperty getLogin() {
         return login;
     }
 
@@ -82,7 +83,7 @@ public class Usuario implements Serializable {
      *
      * @param login el login que se va a guardar.
      */
-    public void setLogin(String login) {
+    public void setLogin(SimpleStringProperty login) {
         this.login = login;
     }
 
@@ -91,7 +92,7 @@ public class Usuario implements Serializable {
      *
      * @return el email que se va a mostrar.
      */
-    public String getEmail() {
+    public SimpleStringProperty getEmail() {
         return email;
     }
 
@@ -100,7 +101,7 @@ public class Usuario implements Serializable {
      *
      * @param email el email que se va a guardar.
      */
-    public void setEmail(String email) {
+    public void setEmail(SimpleStringProperty email) {
         this.email = email;
     }
 
@@ -109,7 +110,7 @@ public class Usuario implements Serializable {
      *
      * @return el nombre completo que se va a mostrar.
      */
-    public String getFullName() {
+    public SimpleStringProperty getFullName() {
         return fullName;
     }
 
@@ -118,7 +119,7 @@ public class Usuario implements Serializable {
      *
      * @param fullName el nombre completo que se va a guardar.
      */
-    public void setFullName(String fullName) {
+    public void setFullName(SimpleStringProperty fullName) {
         this.fullName = fullName;
     }
 

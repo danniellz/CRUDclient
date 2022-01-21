@@ -1,5 +1,6 @@
 package GESRE.aplication;
 
+import GESRE.controller.GestionClientesController;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,14 +30,14 @@ public class GESREClient extends Application{
         try{
             LOG.info("Starting SignIn window...");
             //Load the FXML file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("view/SignIn.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/GestionClientesView.fxml"));
             Parent root = (Parent)loader.load();
             //Get controller
-            SignInController signinController = ((SignInController)loader.getController()); 
+            GestionClientesController controlador = ((GestionClientesController)loader.getController()); 
             //Set the stage
-            signinController.setStage(primaryStage);
+            controlador.setStage(primaryStage);
             //initialize the window
-            signinController.initStage(root);
+            controlador.initStage(root);
         }catch(IOException ex){
             LOG.log(Level.SEVERE, "Error Starting SignIn window", ex);
         }
