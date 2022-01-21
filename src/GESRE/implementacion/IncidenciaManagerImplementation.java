@@ -16,25 +16,31 @@ import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.GenericType;
 
 /**
- * Esta clase es la Implementacion de la Interfaz logica de IncidenciaManager, que utiliza un Cliente RESTful
+ * Esta clase es la Implementacion de la Interfaz logica de IncidenciaManager,
+ * que utiliza un Cliente RESTful
  *
- * 
+ *
  * @author Aritz Arrieta
  */
 public class IncidenciaManagerImplementation implements IncidenciaManager {
 
     private IncidenciaRestCliente webClient;
 
+    public IncidenciaManagerImplementation() {
+       webClient = new IncidenciaRestCliente();
+    }
+
     @Override
     public Collection<Incidencia> findAll() {
         List<Incidencia> incidencias = null;
         try {
 
-            incidencias = this.webClient.findAll(new GenericType<List<Incidencia>>() {
+            incidencias = webClient.findAll(new GenericType<List<Incidencia>>() {
             });
+            LOGGER.severe("NO FUNCIONA findAll()");
 
         } catch (ClientErrorException e) {
-            LOGGER.severe(e.getMessage()+"findAll()");
+            LOGGER.severe(e.getMessage() + "findAll()");
         }
         return incidencias;
 
@@ -75,7 +81,7 @@ public class IncidenciaManagerImplementation implements IncidenciaManager {
         List<Incidencia> incidencias = null;
         try {
 
-            incidencias = this.webClient.findIncidenciaDeUnUsuario(new GenericType<List<Incidencia>>() {
+            incidencias = webClient.findIncidenciaDeUnUsuario(new GenericType<List<Incidencia>>() {
             }, idUsuario);
 
         } catch (ClientErrorException e) {
@@ -113,7 +119,7 @@ public class IncidenciaManagerImplementation implements IncidenciaManager {
 
     @Override
     public void findIncidencia(Incidencia incidencia, String id) {
-      try {
+        try {
             LOGGER.log(Level.INFO, "IncidenciaManager: Actualizando Incidencia '{0}'...", incidencia.getId());
             //enviar los datos de la pieza al cliente web para su creacion 
             //this.webClient.find(incidencia, id);

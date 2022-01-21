@@ -5,7 +5,9 @@
  */
 package GESRE.controller;
 
+import GESRE.entidades.EstadoIncidencia;
 import GESRE.entidades.Incidencia;
+import GESRE.entidades.TipoIncidencia;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.IncidenciaManager;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -27,8 +30,10 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -44,6 +49,8 @@ public class IncidenciaCLViewController {
     IncidenciaManager incidenciaManager = GestionFactoria.getIncidenciaManager();
 
     private Stage stage;
+
+    private Incidencia incidencia = null;
 
     //**************label de Informacion *****************
     @FXML
@@ -73,9 +80,9 @@ public class IncidenciaCLViewController {
     //////////////////////////////////////////////////////////////
     //********COMBOBOX********
     @FXML
-    private ComboBox<String> cbxTipoIncidencia;
+    private ComboBox<TipoIncidencia> cbxTipoIncidencia;
     @FXML
-    private ComboBox<String> cbxEstadoIncidencia;
+    private ComboBox<EstadoIncidencia> cbxEstadoIncidencia;
 
     //////////////////////////////////////////////////////////////
     //*********ToogleButton******************
@@ -94,6 +101,17 @@ public class IncidenciaCLViewController {
     private TableColumn<Incidencia, String> estrellasCL;
     @FXML
     private TableColumn<Incidencia, Float> horasCL;
+    //******** PANE ********
+
+    //////////////////////////////////////////////////////////////
+    @FXML
+    private Pane incidenciaPanel;
+
+    //////////////////////////////////////////////////////////////
+    @FXML
+    private TextField Estr_TxtLabel;
+    @FXML
+    private TextField Hor_TxtLabel;
 
     private ObservableList<Incidencia> IncidenciaList;
 
@@ -118,34 +136,32 @@ public class IncidenciaCLViewController {
             stage.setOnCloseRequest(this::handleCloseRequest);
             //Establecer valores del combobox
 
-            ObservableList<String> estados = FXCollections.observableArrayList("CERRAJERO","ELECTRICO","FACHADA","FONTANERIA","GAS","HUMEDAD","REVISION");
-          /*  estados.add("CERRAJERO");
-            estados.add("ELECTRICO");
-            estados.add("FACHADA");
-            estados.add("FONTANERIA");
-            estados.add("GAS");
-            estados.add("HUMEDAD");
-            estados.add("REVISION");*/
-           
-           cbxTipoIncidencia.setItems(estados);/*
+            ObservableList<TipoIncidencia> tipoIn = FXCollections.observableArrayList(TipoIncidencia.values());
+            ObservableList<EstadoIncidencia> estados = FXCollections.observableArrayList(EstadoIncidencia.values());
+
+            cbxEstadoIncidencia.setItems(estados);
+            cbxTipoIncidencia.setItems(tipoIn);
             //*********estado inicial de la ventana*********
             //______________________________________No me funciona nada__________JAJAJA
-            //   btnAnadir.setDisable(true);
-            //    btnModificar.setDisable(true);
-            //    btnEliminar.setDisable(true);
-            //    btnLimpiar.setDisable(true);
-            //    btnToogleFiltro.setDisable(true);
-            //    btnLimpiar.setDisable(true);
-            //  btnInforme.setDisable(true);
+
+            /*btnModificar.setDisable(true);
+            btnEliminar.setDisable(true);
+            btnLimpiar.setDisable(true);
+            btnAnadir.setDisable(true);
+            btnLimpiar.setDisable(true);
+            btnInforme.setDisable(true);*/
+            handleActionButtons();
+            //limpiarFormulario();
 
             //Establecer los valores que aparecen dentro de cada celda
-            tipoIncidenciaCL.setCellValueFactory(new PropertyValueFactory<>("TipoIncidencia"));
+            tipoIncidenciaCL.setCellValueFactory(new PropertyValueFactory<>("tipoIncidencia"));
             estadoCL.setCellValueFactory(new PropertyValueFactory<>("estado"));
             estrellasCL.setCellValueFactory(new PropertyValueFactory<>("estrellas"));
             horasCL.setCellValueFactory(new PropertyValueFactory<>("horas"));
 
             IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findAll());
-            tablaIncidencias.setItems(IncidenciaList);*/
+            tablaIncidencias.setItems(IncidenciaList);
+
             //mostrar la Ventana
             stage.show();
         } catch (Exception e) {
@@ -191,7 +207,37 @@ public class IncidenciaCLViewController {
         }
     }
 
+    public void handleActionButtons() {
+        LOG.info("Deshabilitando botones Añadir, Editar y Borrar");
+        //Se comprueba cuando el boton debe estar desabilitado
+        btnAnadir.disableProperty().bind(
+                Estr_TxtLabel.textProperty().isEmpty()
+                        .or(Hor_TxtLabel.textProperty().isEmpty())
+        );
+        btnModificar.disableProperty().bind(
+                Estr_TxtLabel.textProperty().isEmpty()
+                        .or(Hor_TxtLabel.textProperty().isEmpty())
+        );
+
+        btnEliminar.disableProperty().bind(
+                Estr_TxtLabel.textProperty().isEmpty()
+                        .or(Hor_TxtLabel.textProperty().isEmpty())
+        );
+        boolean selectedIndex = false;
+        if (cbxTipoIncidencia.getSelectionModel().getSelectedIndex() != -1 && cbxEstadoIncidencia.getSelectionModel().getSelectedIndex() != -1) {
+            selectedIndex = true;
+        } else {
+            selectedIndex = false;
+        }
+        if (selectedIndex) {
+            cbxTipoIncidencia.setDisable(false);
+        }
+    }
+
     /*  public static void main(String[] args) {
        launch(args);
     }*/
+    private void limpiarFormulario() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
