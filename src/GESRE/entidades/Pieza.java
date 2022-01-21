@@ -214,7 +214,7 @@ public class Pieza implements Serializable {
      */
     @Override
     public String toString() {
-        return "Pieza{" + "id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", stock=" + stock + '}';
+        return "Pieza{" + "id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", stock=" + stock +'}';
     }
     
 

@@ -105,8 +105,8 @@ public class PiezasManagerImplementation implements PiezasManager {
     @Override
     public void removePieza(Pieza pieza) {
         try {
-            LOG.log(Level.INFO, "PiezasManager: Creando Pieza {0}...", pieza.getNombre());
-            //enviar los datos de la pieza al cliente web para su creacion 
+            LOG.log(Level.INFO, "PiezasManager: Borrando Pieza "+pieza.getNombre());
+            //enviar los datos de la pieza al cliente web para su borrado
             webClient.remove_xml(pieza.getId());
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "PiezasManager: Error al intentar crear Pieza, {0}", ex.getMessage());

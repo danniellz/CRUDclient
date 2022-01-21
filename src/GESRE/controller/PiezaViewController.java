@@ -2,11 +2,17 @@ package GESRE.controller;
 
 import GESRE.entidades.Pieza;
 import GESRE.entidades.Trabajador;
+import GESRE.entidades.UserPrivilege;
+import GESRE.entidades.UserStatus;
 import GESRE.entidades.Usuario;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.PiezasManager;
+import GESRE.interfaces.TrabajadorManager;
 import java.io.IOException;
+import java.sql.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -93,6 +99,8 @@ public class PiezaViewController {
     private Stage stage;
     private Integer idTrabajador;
     private Pieza pieza = null;
+    private List<Pieza> piezas;
+    private Trabajador trabajador = null;
 
     //********MENU********
     @FXML
@@ -105,6 +113,7 @@ public class PiezaViewController {
      * factoría.
      */
     PiezasManager piezasManager = GestionFactoria.getPiezaManager();
+    TrabajadorManager trabajadorManager = GestionFactoria.getTrabajadorGestion();
 
     /**
      * Establece el Stage de PiezaView
@@ -148,6 +157,7 @@ public class PiezaViewController {
             txtADescripcion.textProperty().addListener(this::limitDescripcionTextField);
             txtStock.textProperty().addListener(this::limitStockTextField);
             txtNombreFiltro.textProperty().addListener(this::limitNombreFiltroTextField);
+            tablaPiezas.getSelectionModel().selectedItemProperty().addListener(this::handleTablaPiezaSelection);
 
             //Establecer el valor que aparecera dentro de cada celda
             nombreCl.setCellValueFactory(new PropertyValueFactory<>("nombre"));
@@ -157,22 +167,18 @@ public class PiezaViewController {
             //Llenar la tabla de datos con todas las piezas de un trabajador
             datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByTrabajadorId(pieza, idTrabajador));
             tablaPiezas.setItems(datosPieza);
+            
+            trabajador = trabajadorManager.findTrabajador(idTrabajador);
 
             //Listeners
             btnLimpiar.setOnAction(this::handleLimpiar);
             btnAnadir.setOnAction(this::handleBtnAnadir);
-            //btnModificar.setOnAction(this::handleBtnModificar);
-            //btnEliminar.setOnAction(this::handleBtnEliminar);
-            //btnBuscar.setOnAction(this::handleBtnBuscar);
+            //btnEditar.setOnAction(this::handleBtnEditar);
+            btnBorrar.setOnAction(this::handleBtnBorrar);
+            btnBuscar.setOnAction(this::handleBtnBuscar);
             //cerrarSesion.setOnAction(this::handleCerrarSesion);
             //btnGestionIncidencia.setOnAction(this::startIncidenciaViewTWindow);
             //salir.setOnAction(this::handleSalir);
-
-            
-
-            if (!txtNombre.getText().isEmpty() || !txtADescripcion.getText().isEmpty() || !txtStock.getText().isEmpty()) {
-                btnAnadir.setDisable(false);
-            }
 
             //Mostrar ventana (asincrona)
             stage.show();
@@ -245,6 +251,33 @@ public class PiezaViewController {
     }
 
     /**
+     * Llamar a este método buscará las piezas por le nombre introducido
+     */
+    private void handleBtnBuscar(ActionEvent buscarrEvent) {
+
+        if (cbxFiltro.getSelectionModel().getSelectedIndex() == 0) {
+            LOG.info("Filtro: Todo");
+            datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByTrabajadorId(pieza, idTrabajador));
+            tablaPiezas.setItems(datosPieza);
+        }
+
+        if (cbxFiltro.getSelectionModel().getSelectedIndex() == 1 && !(txtNombreFiltro.getText().isEmpty())) {
+            LOG.log(Level.INFO, "Filtro: Nombre");
+            datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByName(pieza, txtNombreFiltro.getText()));
+            tablaPiezas.setItems(datosPieza);
+        }
+
+        if (cbxFiltro.getSelectionModel().getSelectedIndex() == 2) {
+            LOG.info("Filtro: Stock");
+            datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByStock(pieza, idTrabajador));
+            tablaPiezas.setItems(datosPieza);
+        }
+
+        //Actualizar tabla
+        tablaPiezas.refresh();
+    }
+
+    /**
      * Llamar a este método creará una nueva Pieza
      */
     private void handleBtnAnadir(ActionEvent anadirEvent) {
@@ -252,8 +285,41 @@ public class PiezaViewController {
         pieza.setNombre(txtNombre.getText());
         pieza.setDescripcion(txtADescripcion.getText());
         pieza.setStock(new Integer(txtStock.getText()));
-
+        
         piezasManager.createPieza(pieza);
+        
+       /* trabajador = new Trabajador();
+        trabajador.getPiezas().add(pieza);
+        
+        trabajadorManager.editTrabajador(trabajador);*/
+
+        //Actualizar tabla
+        tablaPiezas.refresh();
+    }
+
+    /**
+     * Llamar a este método borrará una Pieza
+     */
+    private void handleBtnBorrar(ActionEvent borrarWEvent) {
+        LOG.info("Borrando Pieza...");
+        //Get selected user data from table view model
+        pieza = tablaPiezas.getSelectionModel().getSelectedItem();
+        //Ask user for confirmation on delete
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                "¿Borrar la fila seleccionada?\n"
+                + "La operación no se puede revertir", ButtonType.OK, ButtonType.CANCEL);
+        Optional<ButtonType> result = alert.showAndWait();
+        //Respuesta afirmativa
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            //Borrar Pieza del servidor
+            piezasManager.removePieza(pieza);
+            //Limpiar los campos
+            txtNombre.setText("");
+            txtADescripcion.setText("");
+            txtStock.setText("");
+            //Actualizar tabla
+            tablaPiezas.refresh();
+        }
     }
 
     /**
@@ -472,6 +538,34 @@ public class PiezaViewController {
                 txtNombreFiltro.setText("");
             }
         });
+    }
+
+    /**
+     * Users table selection changed event handler. It enables or disables
+     * buttons depending on selection state of the table.
+     *
+     * @param observable the property being observed: SelectedItem Property
+     * @param oldValue old UserBean value for the property.
+     * @param newValue new UserBean value for the property.
+     */
+    private void handleTablaPiezaSelection(ObservableValue observable, Object oldValue, Object newValue) {
+        //Si una fila esta seleccionada mover los datos de la fila a los campos
+        if (newValue != null) {
+            pieza = (Pieza) newValue;
+            txtNombre.setText(pieza.getNombre());
+            txtADescripcion.setText(pieza.getDescripcion());
+            txtStock.setText(pieza.getStock().toString());
+
+            LOG.info("Información de Pieza: " + pieza.toString());
+        } else {
+            LOG.info("Fila no seleccionada");
+            //Si no hay fila seleccionada limpiar los campos
+            txtNombre.setText("");
+            txtADescripcion.setText("");
+            txtStock.setText("");
+        }
+        //Focus login field
+        txtNombre.requestFocus();
     }
 
 }
