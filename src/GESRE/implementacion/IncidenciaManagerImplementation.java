@@ -40,7 +40,7 @@ public class IncidenciaManagerImplementation implements IncidenciaManager {
             LOGGER.severe("NO FUNCIONA findAll()");
 
         } catch (ClientErrorException e) {
-            LOGGER.severe(e.getMessage() + "findAll()");
+            LOGGER.severe(e.getMessage() + " findAll()");
         }
         return incidencias;
 

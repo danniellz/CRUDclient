@@ -19,6 +19,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -134,6 +135,7 @@ public class IncidenciaCLViewController {
             stage.setTitle("Gestion Incidencias");
             //acciones de la Ventana
             stage.setOnCloseRequest(this::handleCloseRequest);
+            btnLimpiar.setOnAction(this::handleLimpiarFormulario);
             //Establecer valores del combobox
 
             ObservableList<TipoIncidencia> tipoIn = FXCollections.observableArrayList(TipoIncidencia.values());
@@ -141,6 +143,7 @@ public class IncidenciaCLViewController {
 
             cbxEstadoIncidencia.setItems(estados);
             cbxTipoIncidencia.setItems(tipoIn);
+            
             //*********estado inicial de la ventana*********
             //______________________________________No me funciona nada__________JAJAJA
 
@@ -224,7 +227,7 @@ public class IncidenciaCLViewController {
                         .or(Hor_TxtLabel.textProperty().isEmpty())
         );
         boolean selectedIndex = false;
-        if (cbxTipoIncidencia.getSelectionModel().getSelectedIndex() != -1 && cbxEstadoIncidencia.getSelectionModel().getSelectedIndex() != -1) {
+        if (cbxTipoIncidencia.getSelectionModel().getSelectedIndex() != -1 && cbxEstadoIncidencia.getSelectionModel().getSelectedIndex() != -1 ) {
             selectedIndex = true;
         } else {
             selectedIndex = false;
@@ -234,10 +237,16 @@ public class IncidenciaCLViewController {
         }
     }
 
+    private void handleLimpiarFormulario( ActionEvent event) {
+        Estr_TxtLabel.setText(" ");
+        Hor_TxtLabel.setText(" ");
+        cbxTipoIncidencia.getSelectionModel().select(-1);
+        cbxEstadoIncidencia.getSelectionModel().select(-1);
+        handleActionButtons();
+    }
+
     /*  public static void main(String[] args) {
        launch(args);
     }*/
-    private void limpiarFormulario() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    
 }
