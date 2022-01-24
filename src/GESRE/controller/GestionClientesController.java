@@ -3,12 +3,16 @@ package GESRE.controller;
 import GESRE.entidades.Cliente;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.ClienteManager;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -30,12 +34,14 @@ import javafx.stage.WindowEvent;
  * @author Mikel Matilla
  */
 public class GestionClientesController {
-    
+
     //LOGGER
     private static final Logger LOG = Logger.getLogger(GestionClientesController.class.getName());
-    
+
+    private static final int MAX_LENGHT_50 = 50;
+
     private Stage stage;
-    
+
     @FXML
     private Pane gestionClientesTxt;
     @FXML
@@ -50,7 +56,7 @@ public class GestionClientesController {
     private TextField repiteContrasenaTxt;
     @FXML
     private DatePicker fechaRegistroDate;
-    
+
     @FXML
     private Button anadirBtn;
     @FXML
@@ -59,20 +65,20 @@ public class GestionClientesController {
     private Button editarBtn;
     @FXML
     private Button limpiarBtn;
-    
+
     @FXML
     private ComboBox buscarCombo;
     @FXML
     private TextField buscarTxt;
     @FXML
     private Button buscarBtn;
-    
+
     @FXML
     private Button trabajadoresBtn;
-    
+
     @FXML
     private TableView clientesTabla;
-    
+
     @FXML
     private TableColumn usuarioColumn;
     @FXML
@@ -81,35 +87,36 @@ public class GestionClientesController {
     private TableColumn correoColumn;
     @FXML
     private TableColumn fechaRegistroColumn;
-    
+
     private ObservableList<Cliente> datosClientes;
-    
+
     private ClienteManager clienteManager = GestionFactoria.createClienteManager();
-    
+
     public void setStage(Stage gestionClientesStage) {
         stage = gestionClientesStage;
     }
-    
+
     public void initStage(Parent root) {
         try {
             //Creates a new Scene
             Scene scene = new Scene(root);
-            
+
             //Associate the scene to window(stage)
             stage.setScene(scene);
-            
+
             //Window properties
             stage.setTitle("Gestion Clientes");
             stage.setResizable(false);
             stage.setOnCloseRequest(this::handleCloseRequest);
-            
-            //Controls
+
+            //Controles
             anadirBtn.setDisable(true);
             borrarBtn.setDisable(true);
             editarBtn.setDisable(true);
             buscarTxt.setDisable(true);
-            
-            //Definir columnas de la tabla trabajador
+            fechaRegistroDate.setValue(LocalDate.now());
+
+            //Definir columnas de la tabla cliente
             usuarioColumn.setCellValueFactory(new PropertyValueFactory<>("login"));
             nombreColumn.setCellValueFactory(new PropertyValueFactory<>("fullName"));
             correoColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
@@ -118,7 +125,20 @@ public class GestionClientesController {
             //Llenar la tabla de datos (Lista de todos los trabajadores)
             datosClientes = FXCollections.observableArrayList(clienteManager.findAllClientes());
             clientesTabla.setItems(datosClientes);
-            
+
+            //Listeners
+            limpiarBtn.setOnAction(this::handleBtnLimpiar);
+            anadirBtn.setOnAction(this::handleBtnAnadir);
+            editarBtn.setOnAction(this::handleBtnEditar);
+            borrarBtn.setOnAction(this::handleBtnBorrar);
+            buscarBtn.setOnAction(this::handleBtnBuscar);
+
+            usuarioTxt.textProperty().addListener(this::handleValidarTexto);
+            nombreTxt.textProperty().addListener(this::handleValidarTexto);
+            correoTxt.textProperty().addListener(this::handleValidarTexto);
+            contrasenaTxt.textProperty().addListener(this::handleValidarTexto);
+            repiteContrasenaTxt.textProperty().addListener(this::handleValidarTexto);
+
             //Show window (asynchronous)
             stage.show();
         } catch (Exception e) {
@@ -126,7 +146,7 @@ public class GestionClientesController {
         }
 
     }
-    
+
     public void handleCloseRequest(WindowEvent closeEvent) {
         try {
             LOG.info("Confirm Closing");
@@ -146,5 +166,86 @@ public class GestionClientesController {
             LOG.log(Level.SEVERE, "Close request error", e);
         }
     }
-    
+
+    private void handleValidarTexto(ObservableValue observable, String oldValue, String newValue) {
+        StringProperty textProperty = (StringProperty) observable;
+        TextField changedTextField = (TextField) textProperty.getBean();
+        String changedTextFieldName = changedTextField.getId();
+
+        //Limite de caracteres
+        int maxLenght = 0;
+        switch (changedTextFieldName) {
+            case "usuarioTxt":
+            case "contrasenaTxt":
+            case "repiteContrasenaTxt":
+                maxLenght = 25;
+                break;
+            case "nombreTxt":
+            case "correoTxt":
+                maxLenght = 50;
+                break;
+        }
+
+        if (changedTextField.getText().length() > maxLenght) {
+            String text = changedTextField.getText().substring(0, maxLenght);
+            changedTextField.setText(text);
+        }
+
+        if (camposInformados()) {
+            habilitarBotones();
+        } else {
+            deshabilitarBotones();
+        }
+    }
+
+    private void handleBtnLimpiar(ActionEvent limpiarEvent) {
+        usuarioTxt.setText("");
+        nombreTxt.setText("");
+        correoTxt.setText("");
+        contrasenaTxt.setText("");
+        repiteContrasenaTxt.setText("");
+        fechaRegistroDate.setValue(LocalDate.now());
+        anadirBtn.setDisable(true);
+        borrarBtn.setDisable(true);
+        editarBtn.setDisable(true);
+        usuarioTxt.requestFocus();
+    }
+
+    private void handleBtnBuscar(ActionEvent buscarEvent) {
+
+    }
+
+    private void handleBtnAnadir(ActionEvent anadirEvent) {
+
+    }
+
+    private void handleBtnBorrar(ActionEvent borrarEvent) {
+
+    }
+
+    private void handleBtnEditar(ActionEvent editarEvent) {
+
+    }
+
+    private boolean camposInformados() {
+        if (usuarioTxt.getText().isEmpty() || nombreTxt.getText().isEmpty() || correoTxt.getText().isEmpty() || contrasenaTxt.getText().isEmpty() || repiteContrasenaTxt.getText().isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void habilitarBotones() {
+        anadirBtn.setDisable(false);
+        borrarBtn.setDisable(false);
+        editarBtn.setDisable(false);
+        buscarTxt.setDisable(false);
+    }
+
+    private void deshabilitarBotones() {
+        anadirBtn.setDisable(true);
+        borrarBtn.setDisable(true);
+        editarBtn.setDisable(true);
+        buscarTxt.setDisable(true);
+    }
 }

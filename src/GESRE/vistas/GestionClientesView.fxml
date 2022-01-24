@@ -20,17 +20,17 @@
                </font>
             </Label>
             <Label fx:id="messageLbl" alignment="CENTER" contentDisplay="CENTER" layoutX="61.0" layoutY="49.0" minHeight="-Infinity" prefHeight="17.0" text="Usuario" wrapText="true" />
-            <TextField fx:id="usuario" layoutX="61.0" layoutY="68.0" />
+            <TextField fx:id="usuarioTxt" layoutX="61.0" layoutY="68.0" />
             <Label layoutX="225.0" layoutY="49.0" text="Nombre Completo" />
-            <TextField fx:id="nombre" layoutX="225.0" layoutY="68.0" />
+            <TextField fx:id="nombreTxt" layoutX="225.0" layoutY="68.0" />
             <Label layoutX="388.0" layoutY="49.0" text="Correo" />
-            <TextField fx:id="correo" layoutX="388.0" layoutY="68.0" />
+            <TextField fx:id="correoTxt" layoutX="388.0" layoutY="68.0" />
             <Label layoutX="61.0" layoutY="95.0" text="Contraseña" />
-            <TextField fx:id="contrasena" layoutX="61.0" layoutY="116.0" />
+            <TextField fx:id="contrasenaTxt" layoutX="61.0" layoutY="116.0" />
             <Label layoutX="228.0" layoutY="95.0" text="Repite Contraseña" />
-            <TextField fx:id="repiteContrasena" layoutX="228.0" layoutY="116.0" />
+            <TextField fx:id="repiteContrasenaTxt" layoutX="228.0" layoutY="116.0" />
             <Label layoutX="388.0" layoutY="94.0" text="Fecha de Registro" />
-            <DatePicker fx:id="fechaRegistro" layoutX="388.0" layoutY="116.0" />
+            <DatePicker fx:id="fechaRegistroDate" layoutX="388.0" layoutY="116.0" />
             <Button fx:id="anadirBtn" layoutX="601.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Añadir" />
             <Button fx:id="borrarBtn" layoutX="601.0" layoutY="45.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Borrar" />
             <Button fx:id="editarBtn" layoutX="601.0" layoutY="78.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Editar" />
