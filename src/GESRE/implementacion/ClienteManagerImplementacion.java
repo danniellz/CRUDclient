@@ -27,7 +27,7 @@ public class ClienteManagerImplementacion implements GESRE.interfaces.ClienteMan
     public Collection<Cliente> findAllClientes() {
         List<Cliente> clientes = null;
         
-        webClient.findAll(new GenericType<List<Cliente>>() {});
+        clientes = webClient.findAll(new GenericType<List<Cliente>>() {});
         
         return clientes;
     }
@@ -36,13 +36,14 @@ public class ClienteManagerImplementacion implements GESRE.interfaces.ClienteMan
     public Collection<Cliente> findAllClienteWithIncidencia(Cliente cliente) {
         List<Cliente> clientes = null;
         
-        webClient.findAllClienteWithIncidencia(new GenericType<List<Cliente>>() {});
+        clientes = webClient.findAllClienteWithIncidencia(new GenericType<List<Cliente>>() {});
         
         return clientes;
     }
 
     @Override
-    public Cliente findClienteByFullName(Cliente cliente, String fullName) {
+    public Cliente findClienteByFullName(String fullName) {
+        Cliente cliente = null;
         
         webClient.findClienteByFullName(new GenericType<List<Cliente>>() {}, fullName);
         

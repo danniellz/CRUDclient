@@ -18,7 +18,7 @@ public interface ClienteManager {
     
     public Collection<Cliente> findAllClienteWithIncidencia(Cliente cliente);
     
-    public Cliente findClienteByFullName(Cliente cliente, String fullName);
+    public Cliente findClienteByFullName(String fullName);
     
     public void createCliente(Cliente cliente);
     

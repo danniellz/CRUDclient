@@ -22,16 +22,16 @@ public class Usuario implements Serializable {
     /**
      * Login del usuario.
      */
-    private SimpleStringProperty login;
+    private String login;
 
     /**
      * Email del usuario.
      */
-    private SimpleStringProperty email;
+    private String email;
     /**
      * Nombre completo del usuario.
      */
-    private SimpleStringProperty fullName;
+    private String fullName;
     /**
      * Estado del usuario, que puede ser ENABLED o DISABLED.
      */
@@ -74,7 +74,7 @@ public class Usuario implements Serializable {
      *
      * @return el login que se va a mostrar.
      */
-    public SimpleStringProperty getLogin() {
+    public String getLogin() {
         return login;
     }
 
@@ -83,7 +83,7 @@ public class Usuario implements Serializable {
      *
      * @param login el login que se va a guardar.
      */
-    public void setLogin(SimpleStringProperty login) {
+    public void setLogin(String login) {
         this.login = login;
     }
 
@@ -92,7 +92,7 @@ public class Usuario implements Serializable {
      *
      * @return el email que se va a mostrar.
      */
-    public SimpleStringProperty getEmail() {
+    public String getEmail() {
         return email;
     }
 
@@ -101,7 +101,7 @@ public class Usuario implements Serializable {
      *
      * @param email el email que se va a guardar.
      */
-    public void setEmail(SimpleStringProperty email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -110,7 +110,7 @@ public class Usuario implements Serializable {
      *
      * @return el nombre completo que se va a mostrar.
      */
-    public SimpleStringProperty getFullName() {
+    public String getFullName() {
         return fullName;
     }
 
@@ -119,7 +119,7 @@ public class Usuario implements Serializable {
      *
      * @param fullName el nombre completo que se va a guardar.
      */
-    public void setFullName(SimpleStringProperty fullName) {
+    public void setFullName(String fullName) {
         this.fullName = fullName;
     }
 
