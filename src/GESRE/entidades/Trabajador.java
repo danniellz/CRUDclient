@@ -25,7 +25,7 @@ public class Trabajador extends Usuario implements Serializable {
     /**
      * Fecha del contrato del Trabajador
      */
-    private String fechaContrato;
+    private Date fechaContrato;
 
     /**
      * Relacion 1:N con Piezas
@@ -66,7 +66,7 @@ public class Trabajador extends Usuario implements Serializable {
      *
      * @return
      */
-    public String getFechaContrato() {
+    public Date getFechaContrato() {
         return fechaContrato;
     }
 
@@ -75,7 +75,7 @@ public class Trabajador extends Usuario implements Serializable {
      *
      * @param fechaContrato
      */
-    public void setFechaContrato(String fechaContrato) {
+    public void setFechaContrato(Date fechaContrato) {
         this.fechaContrato = fechaContrato;
     }
 

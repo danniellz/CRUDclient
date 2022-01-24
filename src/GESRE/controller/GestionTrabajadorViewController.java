@@ -24,6 +24,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,8 +43,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -52,6 +56,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import static javax.print.attribute.Size2DSyntax.MM;
 
@@ -159,11 +164,13 @@ public class GestionTrabajadorViewController {
     @FXML
     private TextField txtNombreUsuario;
     @FXML
-    private TextField txtContrasenia;
-    @FXML
-    private TextField txtRepiteContrasenia;
-    @FXML
     private TextField txtBuscar;
+
+    //********PASSWORD FIEL********
+    @FXML
+    private PasswordField txtContrasenia;
+    @FXML
+    private PasswordField txtRepiteContrasenia;
 
     //********DATE PICKER********
     @FXML
@@ -197,12 +204,11 @@ public class GestionTrabajadorViewController {
     @FXML
     private TableColumn<Trabajador, String> nombreCompletoCL;
     @FXML
-    private TableColumn<Trabajador, String> fechaContratoCL;
+    private TableColumn<Trabajador, Date> fechaContratoCL;
     @FXML
     private TableColumn<Trabajador, Float> PrecioHoraCL;
 
- //   private ObservableList<Trabajador> trabajadoresObservableList;
-
+    //   private ObservableList<Trabajador> trabajadoresObservableList;
     /**
      * Variable que hace una llamada al método que gestiona los grupos de la
      * factoría.
@@ -210,7 +216,7 @@ public class GestionTrabajadorViewController {
     TrabajadorManager trabajadorGestion = GestionFactoria.getTrabajadorGestion();
 
     UsuarioManager usuarioManager = GestionFactoria.getUsuarioGestion();
-    
+
     Trabajador t = null;
     /**
      * Variable de tipo stage que se usa para visualizar la ventana.
@@ -269,11 +275,31 @@ public class GestionTrabajadorViewController {
             txtRepiteContrasenia.textProperty().addListener(this::handleValidarTexto);
             txtBuscar.textProperty().addListener(this::handleValidarTexto);
 
+            noSeleccionarFechaAnterior(datePikerFechaContrato);
+
             //Añadir listener a la seleccion de la tabla 
             tablaTrabajadores.getSelectionModel().selectedItemProperty().addListener(this::handleTablaSeleccionada);
             //Definir columnas de la tabla trabajador
             nombreUsuarioCL.setCellValueFactory(new PropertyValueFactory<>("login"));
             nombreCompletoCL.setCellValueFactory(new PropertyValueFactory<>("fullName"));
+
+            fechaContratoCL.setCellFactory(colum -> {
+                TableCell<Trabajador, Date> cell = new TableCell<Trabajador, Date>() {
+                    private SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+
+                    @Override
+                    protected void updateItem(Date item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setText(null);
+                        } else {
+                            setText(format.format(item));
+                        }
+                    }
+                };
+
+                return cell;
+            });
             fechaContratoCL.setCellValueFactory(new PropertyValueFactory<>("fechaContrato"));
             PrecioHoraCL.setCellValueFactory(new PropertyValueFactory<>("precioHora"));
 
@@ -295,6 +321,70 @@ public class GestionTrabajadorViewController {
             LOGGER.log(Level.SEVERE, "Stage init error", e);
         }
 
+    }
+
+    /**
+     * Se ejecuta cuando un campo de texto ha sido modificado. Identifica el
+     * campo de texto modificado, comprueba que no se pase de los caracteres
+     * máximos y llama a la funcion encargada de habilitar o deshabilitar los
+     * botones.
+     *
+     * @param observable El valor que se observa.
+     * @param oldValue El valor antiguo del observable.
+     * @param newValue El valor nuevo del observable.
+     */
+    private void handleValidarTexto(ObservableValue observable, String oldValue, String newValue) {
+        if (txtNombreCompleto.getText().length() > MAX_LENGHT) {
+            String nombre = txtNombreCompleto.getText().substring(0, MAX_LENGHT);
+            txtNombreCompleto.setText(nombre);
+        }
+
+        if (txtEmail.getText().length() > MAX_LENGHT) {
+            String email = txtEmail.getText().substring(0, MAX_LENGHT);
+            txtEmail.setText(email);
+        }
+
+        if (txtNombreUsuario.getText().length() > MAX_LENGHT_USER) {
+            String usuario = txtNombreUsuario.getText().substring(0, MAX_LENGHT_USER);
+            txtNombreUsuario.setText(usuario);
+        }
+
+        if (txtContrasenia.getText().length() > MAX_LENGHT_USER) {
+            String contrasenia = txtContrasenia.getText().substring(0, MAX_LENGHT_USER);
+            txtContrasenia.setText(contrasenia);
+        }
+
+        if (txtRepiteContrasenia.getText().length() > MAX_LENGHT_USER) {
+            String repiteContrasenia = txtRepiteContrasenia.getText().substring(0, MAX_LENGHT_USER);
+            txtRepiteContrasenia.setText(repiteContrasenia);
+        }
+
+        if (txtPrecioHora.getText().length() > MAX_LENGHT_CANTIDAD) {
+            String precioHora = txtPrecioHora.getText().substring(0, new Integer(MAX_LENGHT_CANTIDAD));
+            txtPrecioHora.setText(precioHora);
+        }
+
+        habilitarBotones();
+    }
+
+    /**
+     * Método que comprueba que si el datepicker está vacío.
+     *
+     * @return Variable que indica si el datepicker está vacío.
+     */
+    private boolean datePickerVacio() {
+        boolean vacio = false;
+
+        if (datePikerFechaContrato.getValue() == null) {
+            lblErrorFechaContrato.setText("Tienes que introducir una fecha");
+            lblErrorFechaContrato.setTextFill(Color.web("#FF0000"));
+
+            vacio = true;
+        } else {
+            lblErrorFechaContrato.setText("");
+        }
+
+        return vacio;
     }
 
     private void cbListener(ObservableValue ov, String oldValue, String newValue) {
@@ -323,64 +413,18 @@ public class GestionTrabajadorViewController {
 
         }
         if (cbxFiltro.getValue().equals("Un trabajador")) {
-             ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTrabajadorPorNombre(txtBuscar.getText()));
+            ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTrabajadorPorNombre(txtBuscar.getText()));
             tablaTrabajadores.setItems(trabajadoresObservableList);
             tablaTrabajadores.refresh();
 
         }
         if (cbxFiltro.getValue().equals("Sin incidencias")) {
-             ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.trabajadoresSinIncidencias());
+            ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.trabajadoresSinIncidencias());
             tablaTrabajadores.setItems(trabajadoresObservableList);
             tablaTrabajadores.refresh();
 
         }
 
-    }
-
-    /**
-     * Se ejecuta cuando un campo de texto ha sido modificado. Identifica el
-     * campo de texto modificado, comprueba que no se pase de los caracteres
-     * máximos y llama a la funcion encargada de habilitar o deshabilitar los
-     * botones.
-     *
-     * @param observable El valor que se observa.
-     * @param oldValue El valor antiguo del observable.
-     * @param newValue El valor nuevo del observable.
-     */
-    private void handleValidarTexto(ObservableValue observable, String oldValue, String newValue) {
-        StringProperty textProperty = (StringProperty) observable;
-        TextField changedTextField = (TextField) textProperty.getBean();
-        String changedTextFieldName = changedTextField.getId();
-
-        textFieldOverMaxLength(changedTextField, changedTextFieldName);
-
-        habilitarBotones();
-    }
-
-    /**
-     * Cuadro de diálogo que se abre al pulsar la "X" de la pantalla para
-     * confirmar si se quiere cerrar la aplicación.
-     *
-     * @param event El evento de acción.
-     */
-    private void cerrarVentana(WindowEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-
-        alert.setTitle("Salir");
-        alert.setHeaderText(null);
-        alert.setContentText("¿Seguro que quieres cerrar la ventana?");
-
-        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
-        Optional<ButtonType> result = alert.showAndWait();
-
-        if (result.get().equals(ButtonType.OK)) {
-            LOGGER.info("Trabajador Controlador: Cerrando aplicacion");
-            stage.close();
-            Platform.exit();
-        } else {
-            event.consume();
-            alert.close();
-        }
     }
 
     private void textFieldOverMaxLength(TextField changedTextField, String changedTextFieldName) {
@@ -483,6 +527,7 @@ public class GestionTrabajadorViewController {
      */
     private void limpiarCamposTexto() {
         txtNombreCompleto.setText("");
+
         txtEmail.setText("");
         txtPrecioHora.setText("");
         datePikerFechaContrato.getEditor().clear();
@@ -491,6 +536,14 @@ public class GestionTrabajadorViewController {
         txtRepiteContrasenia.setText("");
         txtBuscar.setText("");
 
+        lblErrorContrasenia.setText("");
+        lblErrorBuscar.setText("");
+        lblErrorEmail.setText("");
+        lblErrorFechaContrato.setText("");
+        lblErrorNombreCompleto.setText("");
+        lblErrorNombreUsuario.setText("");
+        lblErrorPrecioHora.setText("");
+        
         btnAnadir.setDisable(true);
         btnLimpiar.setDisable(true);
 
@@ -502,15 +555,17 @@ public class GestionTrabajadorViewController {
      * @param event
      */
     private void handleBtnAnadir(ActionEvent event) {
+        boolean errorPatrones = patronesTextoBien();
+        boolean errorDatePicker = datePickerVacio();
 
-        if (patronesTextoBien()) {
+        if (patronesTextoBien() || !errorDatePicker) {
             try {
 
                 //Comprueba si existe el login
-                LOGGER.info("Sign Up Controlador: Comprobando si existe el login");
+                LOGGER.info("Usuario Controlador: Comprobando si existe el login");
                 usuarioManager.buscarUsuarioPorLoginCrear(txtNombreUsuario.getText());
                 //Comprueba si existe el email
-                LOGGER.info("Sign Up Controlador: Comprobando si existe el email");
+                LOGGER.info("Usuario Controlador: Comprobando si existe el email");
                 usuarioManager.buscarUsuarioPorEmailCrear(txtEmail.getText());
 
                 Date date = new Date(System.currentTimeMillis());
@@ -524,7 +579,7 @@ public class GestionTrabajadorViewController {
                 nuvoTrabajador.setStatus(ENABLED);
                 nuvoTrabajador.setPrivilege(TRABAJADOR);
                 nuvoTrabajador.setLastPasswordChange(date);
-                nuvoTrabajador.setFechaContrato(datePikerFechaContrato.getValue().toString());
+                nuvoTrabajador.setFechaContrato(convertToDateViaSqlDate(datePikerFechaContrato.getValue()));
 
                 trabajadorGestion.createTrabajador(nuvoTrabajador);
 
@@ -545,33 +600,25 @@ public class GestionTrabajadorViewController {
         }
     }
 
+    public Date convertToDateViaSqlDate(LocalDate dateToConvert) {
+        return java.sql.Date.valueOf(dateToConvert);
+    }
+
     private void handleBtnModificar(ActionEvent event) {
-      //  if (patronesTextoBien()) {
-            
-            
+        boolean errorPatrones = patronesTextoBien();
+        boolean errorDatePicker = datePickerVacio();
+        if (patronesTextoBien() || !datePickerVacio()) {
+
             Trabajador tra = tablaTrabajadores.getSelectionModel().getSelectedItem();
             if (!tra.getLogin().equals(txtNombreUsuario)) {
-                
+
                 tra.setFullName(txtNombreCompleto.getText());
                 tra.setEmail(txtEmail.getText());
                 tra.setPrecioHora(new Double(txtPrecioHora.getText()));
                 tra.setLogin(txtNombreUsuario.getText());
-                tra.setFechaContrato(datePikerFechaContrato.getValue().toString());
+                //   tra.setFechaContrato(datePikerFechaContrato.getValue().toString());
                 tra.setPassword(txtContrasenia.getText());
-                 
- /*
-                Date date = new Date(System.currentTimeMillis());
 
-                trabajadorSeleccionado.setFullName(txtNombreCompleto.getText());
-                trabajadorSeleccionado.setEmail(txtEmail.getText());
-                trabajadorSeleccionado.setPrecioHora(new Double(txtPrecioHora.getText()));
-                trabajadorSeleccionado.setLogin(txtNombreUsuario.getText());
-                trabajadorSeleccionado.setPassword(txtContrasenia.getText());
-                trabajadorSeleccionado.setStatus(ENABLED);
-                trabajadorSeleccionado.setPrivilege(TRABAJADOR);
-                trabajadorSeleccionado.setLastPasswordChange(date);
-                trabajadorSeleccionado.setFechaContrato(datePikerFechaContrato.getValue().toString());
-                 */
                 trabajadorGestion.editTrabajador(tra);
                 tablaTrabajadores.refresh();
                 /*
@@ -592,7 +639,7 @@ public class GestionTrabajadorViewController {
                 lblErrorBuscar.setText("No se ha podido modificar el trabajador");
                 lblErrorBuscar.setTextFill(Color.web("#FF0000"));
             }
-    //    }
+        }
 
     }
 
@@ -647,7 +694,7 @@ public class GestionTrabajadorViewController {
      */
     private void handleTablaSeleccionada(ObservableValue observable, Object oldValue, Object newValue) {
         if (newValue != null) {
-            // datePikerFechaContrato.setDisable(true);
+            datePikerFechaContrato.setDisable(true);
             Trabajador trabajador = (Trabajador) newValue;
             txtNombreCompleto.setText(trabajador.getFullName());
             txtEmail.setText(trabajador.getEmail());
@@ -655,15 +702,7 @@ public class GestionTrabajadorViewController {
             txtNombreUsuario.setText(trabajador.getLogin());
             txtContrasenia.setText(trabajador.getPassword());
             txtRepiteContrasenia.setText(trabajador.getPassword());
-            // LocalDate ld = LocalDate.parse(trabajador.getFechaContrato(), DateTimeFormatter.ofPattern("dd/MM/yyyyy"));
-            //   DateTimeFormatter dtm = DateTimeFormatter.ofPattern("yyyyMMdd");;
-            // ZonedDateTime zn = ZonedDateTime.parse(trabajador.getFechaContrato());
-            // LOGGER.info("String -> java.time.LocalDate: " + ld);
-            //  datePikerFechaContrato.setValue(zn);
-            // Date d = new Date();
-            // datePikerFechaContrato.setValue(d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-            // datePikerFechaContrato.setValue(formatoDeFecha.format(localDate));
-
+            datePikerFechaContrato.setValue(convertToLocalDateViaInstant(trabajador.getFechaContrato()));
             btnAnadir.setDisable(true);
             //btnModificar.setDisable(true);
             //btnEliminar.setDisable(true);
@@ -675,6 +714,39 @@ public class GestionTrabajadorViewController {
             txtContrasenia.setText("");
             txtRepiteContrasenia.setText("");
             btnAnadir.setDisable(false);
+        }
+        txtNombreCompleto.requestFocus();
+    }
+
+    public LocalDate convertToLocalDateViaInstant(Date dateToConvert) {
+        return dateToConvert.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
+
+    /**
+     * Cuadro de diálogo que se abre al pulsar la "X" de la pantalla para
+     * confirmar si se quiere cerrar la aplicación.
+     *
+     * @param event El evento de acción.
+     */
+    private void cerrarVentana(WindowEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+
+        alert.setTitle("Salir");
+        alert.setHeaderText(null);
+        alert.setContentText("¿Seguro que quieres cerrar la ventana?");
+
+        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.get().equals(ButtonType.OK)) {
+            LOGGER.info("Trabajador Controlador: Cerrando aplicacion");
+            stage.close();
+            Platform.exit();
+        } else {
+            event.consume();
+            alert.close();
         }
     }
 
@@ -691,6 +763,7 @@ public class GestionTrabajadorViewController {
         } else {
             lblErrorNombreCompleto.setText("");
         }
+
         matcher = VALID_USUARIO.matcher(txtNombreUsuario.getText());
         if (!matcher.find()) {
             lblErrorNombreUsuario.setText("El usuario sólo debe contener letras y numeros");
@@ -701,7 +774,7 @@ public class GestionTrabajadorViewController {
         }
         matcher = VALID_EMAIL.matcher(txtEmail.getText());
         if (!matcher.find()) {
-            lblErrorEmail.setText("El usuario sólo debe contener letras y numeros");
+            lblErrorEmail.setText("Email es inválido ");
             lblErrorEmail.setTextFill(Color.web("#FF0000"));
             patronesTextoBien = false;
         } else {
@@ -716,6 +789,25 @@ public class GestionTrabajadorViewController {
             lblErrorPrecioHora.setText("");
         }
         return patronesTextoBien;
+    }
+
+    private void noSeleccionarFechaAnterior(DatePicker datePikerFechaContrato) {
+        Callback<DatePicker, DateCell> callB = new Callback<DatePicker, DateCell>() {
+            @Override
+            public DateCell call(final DatePicker param) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty); //To change body of generated methods, choose Tools | Templates.
+                        LocalDate today = LocalDate.now();
+                        setDisable(empty || item.compareTo(today) < 0);
+                    }
+
+                };
+            }
+
+        };
+        datePikerFechaContrato.setDayCellFactory(callB);
     }
 
 }

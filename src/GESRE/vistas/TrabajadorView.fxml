@@ -4,6 +4,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -38,10 +39,8 @@
                 <TextField fx:id="txtNombreUsuario" layoutX="388.0" layoutY="86.0" prefHeight="25.0" prefWidth="219.0" />
                 <Label fx:id="lblErrorNombreUsuario" layoutX="388.0" layoutY="111.0" prefHeight="17.0" prefWidth="219.0" />
                 <Label fx:id="lblContrasenia" layoutX="388.0" layoutY="131.0" prefHeight="17.0" prefWidth="219.0" text="Contraseña" />
-                <TextField fx:id="txtContrasenia" layoutX="388.0" layoutY="152.0" prefHeight="25.0" prefWidth="219.0" />
                 <Label fx:id="lblErrorContrasenia" layoutX="388.0" layoutY="177.0" prefHeight="17.0" prefWidth="219.0" />
                 <Label fx:id="lblRepiteContrasenia" layoutX="388.0" layoutY="195.0" prefHeight="17.0" prefWidth="219.0" text="Repite contraseña" />
-                <TextField fx:id="txtRepiteContrasenia" layoutX="388.0" layoutY="213.0" prefHeight="25.0" prefWidth="219.0" />
                 <Label fx:id="lblErrorRepiteContrasenia" layoutX="388.0" layoutY="234.0" prefHeight="17.0" prefWidth="219.0" />
                 <Button fx:id="btnAnadir" layoutX="650.0" layoutY="85.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="112.0" text="Añadir" />
                 <Button fx:id="btnModificar" layoutX="650.0" layoutY="119.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="112.0" text="Modificar" />
@@ -58,6 +57,8 @@
                 </Separator>
                 <Button layoutX="650.0" layoutY="227.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Informe" />
                 <Label layoutX="88.0" layoutY="219.0" text="€" />
+                <PasswordField fx:id="txtContrasenia" layoutX="388.0" layoutY="152.0" prefHeight="25.0" prefWidth="219.0" />
+                <PasswordField fx:id="txtRepiteContrasenia" layoutX="388.0" layoutY="213.0" prefHeight="25.0" prefWidth="219.0" />
             </children>
         </Pane>
         <fx:include fx:id="hBoxMenu" source="menu.fxml" />
@@ -70,9 +71,9 @@
                 <TableColumn fx:id="nombreUsuarioCL" prefWidth="183.99993896484375" text="Nombre Usuario" />
                 <TableColumn fx:id="nombreCompletoCL" prefWidth="276.6666669845581" text="Nombre completo" />
                 <TableColumn fx:id="fechaContratoCL" editable="false" prefWidth="130.00003051757812" text="Fecha Contrato" />
-                <TableColumn fx:id="PrecioHoraCL" minWidth="0.0" prefWidth="206.66671752929688" text="Precio Hora" />
+                <TableColumn fx:id="PrecioHoraCL" minWidth="0.0" prefWidth="181.33331298828125" text="Precio Hora" />
             </columns>
         </TableView>
-      <Label fx:id="lblErrorBuscar" layoutX="401.0" layoutY="314.0" prefHeight="17.0" prefWidth="219.0" />
+        <Label fx:id="lblErrorBuscar" layoutX="401.0" layoutY="314.0" prefHeight="17.0" prefWidth="219.0" />
     </children>
 </Pane>
