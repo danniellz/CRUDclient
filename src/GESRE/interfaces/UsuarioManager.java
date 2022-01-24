@@ -6,6 +6,10 @@
 package GESRE.interfaces;
 
 import GESRE.entidades.Usuario;
+import GESRE.excepcion.EmailExisteException;
+import GESRE.excepcion.EmailNoExisteException;
+import GESRE.excepcion.LoginExisteException;
+import GESRE.excepcion.LoginNoExisteException;
 import java.util.Collection;
 import javax.ws.rs.ClientErrorException;
 
@@ -29,6 +33,8 @@ public interface UsuarioManager {
      */
     public void editUsuario(Usuario usuario);
 
+    public Usuario findUsuario(Usuario usuario, Integer id);
+
     /**
      * Método que elimina un Trabajador existente.
      *
@@ -36,22 +42,19 @@ public interface UsuarioManager {
      */
     public void removeUsuario(Usuario usuario);
 
-    public Usuario find_XML(Usuario usuario, Integer id);
+    public Collection<Usuario> buscarUsuarioPorLoginCrear(String login) throws LoginExisteException;
+    public Collection<Usuario> buscarUserPorLoginSignIn(String login) throws LoginNoExisteException;
 
-    public void remove_XML(Usuario usuario);
+    public Collection <Usuario> buscarUsuarioPorEmailCrear(String correo) throws EmailExisteException;
 
-    public Collection<Usuario> buscarUserPorLogin_XML(String login);
+    public Collection<Usuario> buscarUsuarioPorLoginYContrasenia_Usuario(String login, String password);
 
-    public Usuario buscarUsuarioPorEmail_XML(String correo);
+    public Usuario resetPasswordByLogin_Usuario(String email);
 
-    public Collection<Usuario> buscarUsuarioPorLoginYContraseniav1_XML(String login, String password);
+    public Collection<Usuario> buscarTodosLosTrabajadores_Usuario();
 
-    public Usuario resetPasswordByLogin_XML(String email);
+    public Collection<Usuario> buscarUsuarioParaEnviarMailRecuperarContrasenia_Usuario(Usuario usuario);
 
-    public Collection<Usuario> buscarTodosLosTrabajadores_XML();
-
-    public Usuario findAll_XML();
-
-    public Collection <Usuario> buscarUsuarioParaEnviarMailRecuperarContrasenia_XML(Usuario usuario);
+    public Usuario findAll_Usuarios();
 
 }

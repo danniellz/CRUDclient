@@ -8,9 +8,20 @@ package GESRE.controller;
 import GESRE.entidades.Trabajador;
 import static GESRE.entidades.UserPrivilege.TRABAJADOR;
 import static GESRE.entidades.UserStatus.ENABLED;
+import GESRE.excepcion.EmailExisteException;
+import GESRE.excepcion.LoginExisteException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.TrabajadorManager;
 import GESRE.interfaces.UsuarioManager;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
@@ -41,6 +52,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.StringConverter;
+import static javax.print.attribute.Size2DSyntax.MM;
 
 /**
  * FXML Controller class
@@ -188,16 +201,17 @@ public class GestionTrabajadorViewController {
     @FXML
     private TableColumn<Trabajador, Float> PrecioHoraCL;
 
-    private ObservableList<Trabajador> trabajadoresObservableList;
+ //   private ObservableList<Trabajador> trabajadoresObservableList;
 
-    UsuarioManager um = GestionFactoria.getUsuarioGestion();
-    
- 
     /**
      * Variable que hace una llamada al método que gestiona los grupos de la
      * factoría.
      */
     TrabajadorManager trabajadorGestion = GestionFactoria.getTrabajadorGestion();
+
+    UsuarioManager usuarioManager = GestionFactoria.getUsuarioGestion();
+    
+    Trabajador t = null;
     /**
      * Variable de tipo stage que se usa para visualizar la ventana.
      */
@@ -238,8 +252,14 @@ public class GestionTrabajadorViewController {
             btnBuscar.setDisable(true);
             btnLimpiar.setDisable(true);
             txtNombreCompleto.requestFocus();
+            txtBuscar.setDisable(true);
 
-            //Gargar filtros. MIRAR PARA DESPUES
+            //Gargar filtros.
+            ObservableList<String> cbxOptions = FXCollections.observableArrayList();
+            cbxOptions.addAll("Todos", "Un trabajador", "Sin incidencias");
+            cbxFiltro.setItems(cbxOptions);
+            cbxFiltro.getSelectionModel().selectedItemProperty().addListener(this::cbListener);
+
             // Añade listeners a propiedades de cambio de texto
             txtNombreCompleto.textProperty().addListener(this::handleValidarTexto);
             txtEmail.textProperty().addListener(this::handleValidarTexto);
@@ -249,6 +269,8 @@ public class GestionTrabajadorViewController {
             txtRepiteContrasenia.textProperty().addListener(this::handleValidarTexto);
             txtBuscar.textProperty().addListener(this::handleValidarTexto);
 
+            //Añadir listener a la seleccion de la tabla 
+            tablaTrabajadores.getSelectionModel().selectedItemProperty().addListener(this::handleTablaSeleccionada);
             //Definir columnas de la tabla trabajador
             nombreUsuarioCL.setCellValueFactory(new PropertyValueFactory<>("login"));
             nombreCompletoCL.setCellValueFactory(new PropertyValueFactory<>("fullName"));
@@ -256,21 +278,61 @@ public class GestionTrabajadorViewController {
             PrecioHoraCL.setCellValueFactory(new PropertyValueFactory<>("precioHora"));
 
             //Llenar la tabla de datos (Lista de todos los trabajadores)
-            trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
+            ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
             tablaTrabajadores.setItems(trabajadoresObservableList);
 
             //Añade acciones a los botones
             btnLimpiar.setOnAction(this::handleBtnLimpiar);
             btnAnadir.setOnAction(this::handleBtnAnadir);
-            // btnModificar.setOnAction(this::handleBtnModificar);
-            // btnEliminar.setOnAction(this::handleBtnEliminar);
-            //btnBuscar.setOnAction(this::handleBtnBuscar);
+            btnModificar.setOnAction(this::handleBtnModificar);
+            btnEliminar.setOnAction(this::handleBtnEliminar);
+            btnBuscar.setOnAction(this::handleBtnBuscar);
             //mnCerrarSesion.setOnAction(this::handleCerrarSesion);
 
             //Muestra la ventana
             stage.show();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Stage init error", e);
+        }
+
+    }
+
+    private void cbListener(ObservableValue ov, String oldValue, String newValue) {
+        btnBuscar.setDisable(false);
+        if (cbxFiltro.getValue().equals("Todos")) {
+            txtBuscar.setDisable(true);
+            btnBuscar.setDisable(false);
+
+        } else if (cbxFiltro.getValue().equals("Un trabajador")) {
+            txtBuscar.setText("");
+            txtBuscar.setDisable(false);
+            btnBuscar.setDisable(false);
+        } else if (cbxFiltro.getValue().equals("Sin incidencias")) {
+            txtBuscar.setDisable(true);
+            btnBuscar.setDisable(false);
+
+        }
+    }
+
+    private void handleBtnBuscar(ActionEvent event) {
+
+        if (cbxFiltro.getValue().equals("Todos")) {
+            ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
+            tablaTrabajadores.setItems(trabajadoresObservableList);
+            tablaTrabajadores.refresh();
+
+        }
+        if (cbxFiltro.getValue().equals("Un trabajador")) {
+             ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTrabajadorPorNombre(txtBuscar.getText()));
+            tablaTrabajadores.setItems(trabajadoresObservableList);
+            tablaTrabajadores.refresh();
+
+        }
+        if (cbxFiltro.getValue().equals("Sin incidencias")) {
+             ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.trabajadoresSinIncidencias());
+            tablaTrabajadores.setItems(trabajadoresObservableList);
+            tablaTrabajadores.refresh();
+
         }
 
     }
@@ -342,6 +404,11 @@ public class GestionTrabajadorViewController {
                 break;
 
         }
+
+        if (changedTextField.getText().length() > maxLenght) {
+            String text = changedTextField.getText().substring(0, maxLenght);
+            changedTextField.setText(text);
+        }
     }
 
     private void habilitarBotones() {
@@ -351,6 +418,7 @@ public class GestionTrabajadorViewController {
             btnAnadir.setDisable(false);
             btnModificar.setDisable(false);
             btnEliminar.setDisable(false);
+
         } else {
             btnAnadir.setDisable(true);
             btnModificar.setDisable(true);
@@ -389,6 +457,8 @@ public class GestionTrabajadorViewController {
         if (!txtNombreCompleto.getText().isEmpty() || txtEmail.getText().isEmpty()
                 || txtPrecioHora.getText().isEmpty() || txtNombreUsuario.getText().isEmpty()
                 || txtContrasenia.getText().isEmpty() || txtRepiteContrasenia.getText().isEmpty()) {
+            btnModificar.setDisable(false);
+            btnEliminar.setDisable(false);
             return true;
         } else {
             return false;
@@ -435,11 +505,14 @@ public class GestionTrabajadorViewController {
 
         if (patronesTextoBien()) {
             try {
-                //Comprueba si existe el login
-                LOGGER.info("Controlador: Comprobando si existe el login");
 
-                // um.buscarUserPorLogin_XML(txtNombreUsuario.getText());
-                //um.buscarUsuarioPorEmail_XML(txtEmail.getText());
+                //Comprueba si existe el login
+                LOGGER.info("Sign Up Controlador: Comprobando si existe el login");
+                usuarioManager.buscarUsuarioPorLoginCrear(txtNombreUsuario.getText());
+                //Comprueba si existe el email
+                LOGGER.info("Sign Up Controlador: Comprobando si existe el email");
+                usuarioManager.buscarUsuarioPorEmailCrear(txtEmail.getText());
+
                 Date date = new Date(System.currentTimeMillis());
 
                 Trabajador nuvoTrabajador = new Trabajador();
@@ -457,22 +530,151 @@ public class GestionTrabajadorViewController {
 
                 tablaTrabajadores.getItems().add(nuvoTrabajador);
                 tablaTrabajadores.refresh();
-                /*
-                limpiarCamposTexto();
-                if (comprobarUsuarioExisteAnadir(nuvoTrabajador)) {
-                    lblErrorNombreUsuario.setText("El usurio ya existente en la base de datos");
-                    lblErrorNombreUsuario.setTextFill(Color.web("#008000"));
-                } else {
-                    trabajadorGestion.createTrabajador(nuvoTrabajador);
-                    tablaTrabajadores.getItems().add(nuvoTrabajador);
-                    lblErrorBuscar.setText("Libro añadido");
-                    lblErrorBuscar.setTextFill(Color.web("#008000"));
-                }*/
+
                 limpiarCamposTexto();
 
-            } catch (Exception e) {
-                LOGGER.info("ERRRRRRRRRRRRRRRRROOOOOOOOOOOOOOOOOOOOOS");
+            } catch (LoginExisteException le) {
+                LOGGER.severe(le.getMessage());
+                lblErrorNombreUsuario.setText("El login ya existe");
+                lblErrorNombreUsuario.setTextFill(Color.web("#FF0000"));
+            } catch (EmailExisteException ee) {
+                LOGGER.severe(ee.getMessage());
+                lblErrorEmail.setText("El email ya existe");
+                lblErrorEmail.setTextFill(Color.web("#FF0000"));
             }
+        }
+    }
+
+    private void handleBtnModificar(ActionEvent event) {
+      //  if (patronesTextoBien()) {
+            
+            
+            Trabajador tra = tablaTrabajadores.getSelectionModel().getSelectedItem();
+            if (!tra.getLogin().equals(txtNombreUsuario)) {
+                
+                tra.setFullName(txtNombreCompleto.getText());
+                tra.setEmail(txtEmail.getText());
+                tra.setPrecioHora(new Double(txtPrecioHora.getText()));
+                tra.setLogin(txtNombreUsuario.getText());
+                tra.setFechaContrato(datePikerFechaContrato.getValue().toString());
+                tra.setPassword(txtContrasenia.getText());
+                 
+ /*
+                Date date = new Date(System.currentTimeMillis());
+
+                trabajadorSeleccionado.setFullName(txtNombreCompleto.getText());
+                trabajadorSeleccionado.setEmail(txtEmail.getText());
+                trabajadorSeleccionado.setPrecioHora(new Double(txtPrecioHora.getText()));
+                trabajadorSeleccionado.setLogin(txtNombreUsuario.getText());
+                trabajadorSeleccionado.setPassword(txtContrasenia.getText());
+                trabajadorSeleccionado.setStatus(ENABLED);
+                trabajadorSeleccionado.setPrivilege(TRABAJADOR);
+                trabajadorSeleccionado.setLastPasswordChange(date);
+                trabajadorSeleccionado.setFechaContrato(datePikerFechaContrato.getValue().toString());
+                 */
+                trabajadorGestion.editTrabajador(tra);
+                tablaTrabajadores.refresh();
+                /*
+                if (!trabajadorSeleccionado.getFullName().equals(txtNombreCompleto.getText())) {
+                    if (comprobrarNombre(trabajadorSeleccionado.getFullName())) {
+                        lblErrorBuscar.setText("El nombre ya existe");
+                        lblErrorBuscar.setTextFill(Color.web("#FF0000"));
+                    }
+                } else {
+              
+                    trabajadorGestion.editTrabajador(trabajadorSeleccionado);
+
+                  //  tablaTrabajadores.getSelectionModel().clearSelection();
+                    tablaTrabajadores.refresh();
+                    limpiarCamposTexto();
+                }*/
+            } else {
+                lblErrorBuscar.setText("No se ha podido modificar el trabajador");
+                lblErrorBuscar.setTextFill(Color.web("#FF0000"));
+            }
+    //    }
+
+    }
+
+    private void handleBtnEliminar(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Eliminar");
+        alert.setHeaderText(null);
+        alert.setResizable(false);
+        alert.setContentText("¿Seguro que quieres eliminar el trabajador?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        ButtonType button = result.orElse(ButtonType.CANCEL);
+
+        if (button == ButtonType.OK) {
+            Trabajador seleccion = ((Trabajador) tablaTrabajadores.getSelectionModel().getSelectedItem());
+
+            if (seleccion != null) {
+                trabajadorGestion.removeTrabajador(seleccion);
+
+                tablaTrabajadores.getItems().remove(seleccion);
+                tablaTrabajadores.refresh();
+
+                limpiarCamposTexto();
+            } else {
+                lblErrorBuscar.setText("No se ha podido eliminar ningún alumno");
+                lblErrorBuscar.setTextFill(Color.web("#FF0000"));
+            }
+        }
+    }
+
+    private boolean comprobrarNombre(String nombre) {
+        Collection<Trabajador> trabajador = null;
+        trabajador = trabajadorGestion.buscarTrabajadorPorNombre(nombre);
+
+        if (trabajador.size() > 0) {
+            for (Trabajador t : trabajador) {
+                if (t.getFullName().equals(nombre)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Cuando se selecciona una fila de la tabla se rellenan los campos de texto
+     * con la informacion del libro y se desactiva el boton "btnAñadir".
+     *
+     * @param observable El objeto siendo observado.
+     * @param oldValue El valor viejo de la propiedad.
+     * @param newValue El valor nuevo de la propiedad.
+     */
+    private void handleTablaSeleccionada(ObservableValue observable, Object oldValue, Object newValue) {
+        if (newValue != null) {
+            // datePikerFechaContrato.setDisable(true);
+            Trabajador trabajador = (Trabajador) newValue;
+            txtNombreCompleto.setText(trabajador.getFullName());
+            txtEmail.setText(trabajador.getEmail());
+            txtPrecioHora.setText(Double.toString(trabajador.getPrecioHora()));
+            txtNombreUsuario.setText(trabajador.getLogin());
+            txtContrasenia.setText(trabajador.getPassword());
+            txtRepiteContrasenia.setText(trabajador.getPassword());
+            // LocalDate ld = LocalDate.parse(trabajador.getFechaContrato(), DateTimeFormatter.ofPattern("dd/MM/yyyyy"));
+            //   DateTimeFormatter dtm = DateTimeFormatter.ofPattern("yyyyMMdd");;
+            // ZonedDateTime zn = ZonedDateTime.parse(trabajador.getFechaContrato());
+            // LOGGER.info("String -> java.time.LocalDate: " + ld);
+            //  datePikerFechaContrato.setValue(zn);
+            // Date d = new Date();
+            // datePikerFechaContrato.setValue(d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            // datePikerFechaContrato.setValue(formatoDeFecha.format(localDate));
+
+            btnAnadir.setDisable(true);
+            //btnModificar.setDisable(true);
+            //btnEliminar.setDisable(true);
+        } else {
+            txtNombreCompleto.setText("");
+            txtEmail.setText("");
+            txtPrecioHora.setText("");
+            txtNombreUsuario.setText("");
+            txtContrasenia.setText("");
+            txtRepiteContrasenia.setText("");
+            btnAnadir.setDisable(false);
         }
     }
 
@@ -514,12 +716,6 @@ public class GestionTrabajadorViewController {
             lblErrorPrecioHora.setText("");
         }
         return patronesTextoBien;
-    }
-
-    private boolean comprobarUsuarioExisteAnadir(Trabajador nuvoTrabajador) {
-        boolean f = false;
-
-        return f;
     }
 
 }

@@ -70,7 +70,7 @@ public class TrabajadorManagerImplementacion implements TrabajadorManager {
         try {
             LOGGER.info("TrabajadorManagerImplementation: Editando Trabajador");
             //Enviar datos editados a webClient para modificar los nuevos datos al trabajdor
-            this.webClient.edit_XML(trabajador);
+            webClient.edit_XML(trabajador);
         } catch (ClientErrorException e) {
             LOGGER.severe(e.getMessage());
         }
