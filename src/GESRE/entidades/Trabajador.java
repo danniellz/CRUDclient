@@ -20,7 +20,7 @@ public class Trabajador extends Usuario implements Serializable {
     /**
      * Precio a las horas incurridas en el Trabajador
      */
-    private Double precioHora;
+    private Integer precioHora;
 
     /**
      * Fecha del contrato del Trabajador
@@ -48,7 +48,7 @@ public class Trabajador extends Usuario implements Serializable {
      *
      * @return
      */
-    public Double getPrecioHora() {
+    public Integer getPrecioHora() {
         return precioHora;
     }
 
@@ -57,7 +57,7 @@ public class Trabajador extends Usuario implements Serializable {
      *
      * @param precioHora
      */
-    public void setPrecioHora(Double precioHora) {
+    public void setPrecioHora(Integer precioHora) {
         this.precioHora = precioHora;
     }
 

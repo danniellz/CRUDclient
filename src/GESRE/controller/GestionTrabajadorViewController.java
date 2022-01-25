@@ -13,25 +13,19 @@ import GESRE.excepcion.LoginExisteException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.TrabajadorManager;
 import GESRE.interfaces.UsuarioManager;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.application.Platform;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -57,8 +51,13 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
-import javafx.util.StringConverter;
-import static javax.print.attribute.Size2DSyntax.MM;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  * FXML Controller class
@@ -85,7 +84,7 @@ public class GestionTrabajadorViewController {
      * Atributo estático y constante que guarda los caracteres máximos admitidos
      * en los campos de precio/hora.
      */
-    private static final int MAX_LENGHT_CANTIDAD = 2;
+    private static final float MAX_LENGHT_CANTIDAD = Float.max(2, 2);
     /**
      * Atributo estático y constante que guarda el patron correcto del nombre
      * completo.
@@ -161,6 +160,7 @@ public class GestionTrabajadorViewController {
     private TextField txtEmail;
     @FXML
     private TextField txtPrecioHora;
+
     @FXML
     private TextField txtNombreUsuario;
     @FXML
@@ -192,6 +192,8 @@ public class GestionTrabajadorViewController {
     @FXML
     private Button btnBuscar;
     @FXML
+    private Button btnInforme;
+    @FXML
     private Button btnGEstionarClientes;
 
     //********TABLE********
@@ -206,7 +208,7 @@ public class GestionTrabajadorViewController {
     @FXML
     private TableColumn<Trabajador, Date> fechaContratoCL;
     @FXML
-    private TableColumn<Trabajador, Float> PrecioHoraCL;
+    private TableColumn<Trabajador, String> PrecioHoraCL;
 
     //   private ObservableList<Trabajador> trabajadoresObservableList;
     /**
@@ -277,7 +279,7 @@ public class GestionTrabajadorViewController {
 
             noSeleccionarFechaAnterior(datePikerFechaContrato);
 
-            //Añadir listener a la seleccion de la tabla 
+            //Añadir la seleccion de la tabla a los campos de texto
             tablaTrabajadores.getSelectionModel().selectedItemProperty().addListener(this::handleTablaSeleccionada);
             //Definir columnas de la tabla trabajador
             nombreUsuarioCL.setCellValueFactory(new PropertyValueFactory<>("login"));
@@ -302,6 +304,7 @@ public class GestionTrabajadorViewController {
             });
             fechaContratoCL.setCellValueFactory(new PropertyValueFactory<>("fechaContrato"));
             PrecioHoraCL.setCellValueFactory(new PropertyValueFactory<>("precioHora"));
+            PrecioHoraCL.setStyle("-fx-alignment: CENTER-RIGHT;");
 
             //Llenar la tabla de datos (Lista de todos los trabajadores)
             ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
@@ -313,6 +316,7 @@ public class GestionTrabajadorViewController {
             btnModificar.setOnAction(this::handleBtnModificar);
             btnEliminar.setOnAction(this::handleBtnEliminar);
             btnBuscar.setOnAction(this::handleBtnBuscar);
+            btnInforme.setOnAction(this::handleImprimirInfotmeAction);
             //mnCerrarSesion.setOnAction(this::handleCerrarSesion);
 
             //Muestra la ventana
@@ -360,7 +364,7 @@ public class GestionTrabajadorViewController {
         }
 
         if (txtPrecioHora.getText().length() > MAX_LENGHT_CANTIDAD) {
-            String precioHora = txtPrecioHora.getText().substring(0, new Integer(MAX_LENGHT_CANTIDAD));
+            String precioHora = txtPrecioHora.getText().substring(0, new Integer((int) MAX_LENGHT_CANTIDAD));
             txtPrecioHora.setText(precioHora);
         }
 
@@ -376,7 +380,7 @@ public class GestionTrabajadorViewController {
         boolean vacio = false;
 
         if (datePikerFechaContrato.getValue() == null) {
-            lblErrorFechaContrato.setText("Tienes que introducir una fecha");
+            lblErrorFechaContrato.setText("InSroducir una fecha");
             lblErrorFechaContrato.setTextFill(Color.web("#FF0000"));
 
             vacio = true;
@@ -427,34 +431,6 @@ public class GestionTrabajadorViewController {
 
     }
 
-    private void textFieldOverMaxLength(TextField changedTextField, String changedTextFieldName) {
-        int maxLenght = 200;
-
-        switch (changedTextFieldName) {
-            case "txtNombreCompleto":
-                maxLenght = MAX_LENGHT;
-                break;
-            case "txtNombreUsuario":
-                maxLenght = MAX_LENGHT_USER;
-                break;
-            case "txtPrecioHora":
-                maxLenght = MAX_LENGHT_CANTIDAD;
-                break;
-            case "txtContrasenia":
-                maxLenght = MAX_LENGHT_USER;
-                break;
-            case "txtRepetirContrasenia":
-                maxLenght = MAX_LENGHT_USER;
-                break;
-
-        }
-
-        if (changedTextField.getText().length() > maxLenght) {
-            String text = changedTextField.getText().substring(0, maxLenght);
-            changedTextField.setText(text);
-        }
-    }
-
     private void habilitarBotones() {
         btnBuscar.setDisable(txtBuscar.getText().isEmpty());
 
@@ -485,6 +461,7 @@ public class GestionTrabajadorViewController {
         if (txtNombreCompleto.getText().isEmpty() || txtEmail.getText().isEmpty()
                 || txtPrecioHora.getText().isEmpty() || txtNombreUsuario.getText().isEmpty()
                 || txtContrasenia.getText().isEmpty() || txtRepiteContrasenia.getText().isEmpty()) {
+            btnAnadir.setDisable(false);
             return true;
         } else {
             return false;
@@ -501,8 +478,9 @@ public class GestionTrabajadorViewController {
         if (!txtNombreCompleto.getText().isEmpty() || txtEmail.getText().isEmpty()
                 || txtPrecioHora.getText().isEmpty() || txtNombreUsuario.getText().isEmpty()
                 || txtContrasenia.getText().isEmpty() || txtRepiteContrasenia.getText().isEmpty()) {
-            btnModificar.setDisable(false);
-            btnEliminar.setDisable(false);
+            // btnAnadir.setDisable(false);
+            //   btnModificar.setDisable(false);
+            //btnEliminar.setDisable(false);
             return true;
         } else {
             return false;
@@ -515,22 +493,11 @@ public class GestionTrabajadorViewController {
      * @param event El evento de acción.
      */
     private void handleBtnLimpiar(ActionEvent event) {
-        limpiarCamposTexto();
-    }
-
-    /**
-     * Quita en los campos txtNombreCompleto, txtEmail, datePikerFechaContrato,
-     * txtNombreUsuario, txtContrasenia, txtRepiteContrasenia , txtBuscar que
-     * esta escrito
-     *
-     * @param event El evento de acción.
-     */
-    private void limpiarCamposTexto() {
+        //limpiarCamposTexto();
         txtNombreCompleto.setText("");
-
         txtEmail.setText("");
         txtPrecioHora.setText("");
-        datePikerFechaContrato.getEditor().clear();
+        datePikerFechaContrato.setValue(LocalDate.now());
         txtNombreUsuario.setText("");
         txtContrasenia.setText("");
         txtRepiteContrasenia.setText("");
@@ -543,11 +510,23 @@ public class GestionTrabajadorViewController {
         lblErrorNombreCompleto.setText("");
         lblErrorNombreUsuario.setText("");
         lblErrorPrecioHora.setText("");
-        
-        btnAnadir.setDisable(true);
+
+        btnAnadir.setDisable(false);
         btnLimpiar.setDisable(true);
 
         txtNombreCompleto.requestFocus();
+        tablaTrabajadores.getSelectionModel().clearSelection();
+    }
+
+    /**
+     * Quita en los campos txtNombreCompleto, txtEmail, datePikerFechaContrato,
+     * txtNombreUsuario, txtContrasenia, txtRepiteContrasenia , txtBuscar que
+     * esta escrito
+     *
+     * @param event El evento de acción.
+     */
+    private void limpiarCamposTexto() {
+
     }
 
     /**
@@ -573,7 +552,7 @@ public class GestionTrabajadorViewController {
                 Trabajador nuvoTrabajador = new Trabajador();
                 nuvoTrabajador.setFullName(txtNombreCompleto.getText());
                 nuvoTrabajador.setEmail(txtEmail.getText());
-                nuvoTrabajador.setPrecioHora(new Double(txtPrecioHora.getText()));
+                nuvoTrabajador.setPrecioHora(new Integer(txtPrecioHora.getText()));
                 nuvoTrabajador.setLogin(txtNombreUsuario.getText());
                 nuvoTrabajador.setPassword(txtContrasenia.getText());
                 nuvoTrabajador.setStatus(ENABLED);
@@ -614,13 +593,16 @@ public class GestionTrabajadorViewController {
 
                 tra.setFullName(txtNombreCompleto.getText());
                 tra.setEmail(txtEmail.getText());
-                tra.setPrecioHora(new Double(txtPrecioHora.getText()));
+                tra.setPrecioHora(new Integer(txtPrecioHora.getText()));
                 tra.setLogin(txtNombreUsuario.getText());
                 //   tra.setFechaContrato(datePikerFechaContrato.getValue().toString());
                 tra.setPassword(txtContrasenia.getText());
 
                 trabajadorGestion.editTrabajador(tra);
+                tablaTrabajadores.getSelectionModel().clearSelection();
                 tablaTrabajadores.refresh();
+
+
                 /*
                 if (!trabajadorSeleccionado.getFullName().equals(txtNombreCompleto.getText())) {
                     if (comprobrarNombre(trabajadorSeleccionado.getFullName())) {
@@ -694,7 +676,7 @@ public class GestionTrabajadorViewController {
      */
     private void handleTablaSeleccionada(ObservableValue observable, Object oldValue, Object newValue) {
         if (newValue != null) {
-            datePikerFechaContrato.setDisable(true);
+            //  datePikerFechaContrato.setDisable(true);
             Trabajador trabajador = (Trabajador) newValue;
             txtNombreCompleto.setText(trabajador.getFullName());
             txtEmail.setText(trabajador.getEmail());
@@ -702,6 +684,7 @@ public class GestionTrabajadorViewController {
             txtNombreUsuario.setText(trabajador.getLogin());
             txtContrasenia.setText(trabajador.getPassword());
             txtRepiteContrasenia.setText(trabajador.getPassword());
+
             datePikerFechaContrato.setValue(convertToLocalDateViaInstant(trabajador.getFechaContrato()));
             btnAnadir.setDisable(true);
             //btnModificar.setDisable(true);
@@ -713,6 +696,7 @@ public class GestionTrabajadorViewController {
             txtNombreUsuario.setText("");
             txtContrasenia.setText("");
             txtRepiteContrasenia.setText("");
+            tablaTrabajadores.getSelectionModel().clearSelection();
             btnAnadir.setDisable(false);
         }
         txtNombreCompleto.requestFocus();
@@ -810,4 +794,45 @@ public class GestionTrabajadorViewController {
         datePikerFechaContrato.setDayCellFactory(callB);
     }
 
+    @FXML
+    private void handleImprimirInfotmeAction(ActionEvent event) {
+        try {
+            LOGGER.info("Comenzandoa imprimir los datos de la tabla Trabajador...");
+            JasperReport report
+                    = JasperCompileManager.compileReport(getClass()
+                            .getResourceAsStream("/GESRE/archivos/informeReportGesre.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems
+                    = new JRBeanCollectionDataSource((Collection<Trabajador>) this.tablaTrabajadores.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+            showErrorAlert("Error al imprimir:\n"
+                    + ex.getMessage());
+            LOGGER.log(Level.SEVERE,
+                    "UI GestionUsuariosController: Error printing report: {0}",
+                    ex.getMessage());
+        }
+    }
+
+    protected void showErrorAlert(String errorMsg) {
+        //Shows error dialog.
+        Alert alert = new Alert(Alert.AlertType.ERROR,
+                errorMsg,
+                ButtonType.OK);
+        // alert.getDialogPane().getStylesheets().add(
+        //      getClass().getResource("/javafxapplicationud3example/ui/view/customCascadeStyleSheet.css").toExternalForm());
+        //alert.showAndWait();
+
+    }
 }
