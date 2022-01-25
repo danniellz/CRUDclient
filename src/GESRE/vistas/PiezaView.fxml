@@ -45,6 +45,6 @@
         <Button fx:id="btnGestionIncidencia" layoutX="612.0" layoutY="199.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="176.0" text="Gestionar Incidencias" />
         <Button fx:id="btnBuscar" layoutX="470.0" layoutY="232.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Buscar" />
         <Button fx:id="btnInforme" layoutX="658.0" layoutY="232.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="85.0" text="Infome" />
-        <Label fx:id="messageLbl" alignment="CENTER" contentDisplay="CENTER" layoutX="211.0" layoutY="198.0" minHeight="-Infinity" prefHeight="26.0" prefWidth="378.0" />
+        <Label fx:id="messageLbl" alignment="CENTER" contentDisplay="CENTER" layoutX="195.0" layoutY="199.0" minHeight="-Infinity" prefHeight="26.0" prefWidth="410.0" />
     </children>
 </Pane>

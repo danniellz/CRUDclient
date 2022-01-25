@@ -7,9 +7,16 @@ import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.PiezasManager;
 import GESRE.interfaces.TrabajadorManager;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -32,6 +39,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  * Controlador de la ventana PiezaView
@@ -73,6 +87,8 @@ public class PiezaViewController {
     private Button btnLimpiar;
     @FXML
     private Button btnBuscar;
+    @FXML
+    private Button btnInforme;
     @FXML
     private Button btnGestionIncidencia;
 
@@ -168,6 +184,7 @@ public class PiezaViewController {
             btnEditar.setOnAction(this::handleBtnEditar);
             btnBorrar.setOnAction(this::handleBtnBorrar);
             btnBuscar.setOnAction(this::handleBtnBuscar);
+            btnInforme.setOnAction(this::handleBtnInforme);
             //cerrarSesion.setOnAction(this::handleCerrarSesion);
             //btnGestionIncidencia.setOnAction(this::startIncidenciaViewTWindow);
             //salir.setOnAction(this::handleSalir);
@@ -276,27 +293,43 @@ public class PiezaViewController {
      */
     private void handleBtnAnadir(ActionEvent anadirEvent) {
         try {
-            //Solo se admiten numeros no negativos
-            if (txtStock.getText().matches("-?([0-9]*)?") && !txtStock.getText().contains("-")) {
-                pieza = new Pieza();
-                pieza.setNombre(txtNombre.getText());
-                pieza.setDescripcion(txtADescripcion.getText());
-                pieza.setStock(new Integer(txtStock.getText()));
+            //No se admiten
+            if (SpCharControl()) {
+                //Solo se admiten numeros no negativos en Stock
+                if (txtStock.getText().matches("-?([0-9]*)?") && !txtStock.getText().contains("-")) {
+                    List<Pieza> piezas;
+                    pieza = new Pieza();
+                    pieza.setNombre(txtNombre.getText());
+                    pieza.setDescripcion(txtADescripcion.getText());
+                    pieza.setStock(new Integer(txtStock.getText()));
 
-                piezasManager.createPieza(pieza);
+                    piezasManager.createPieza(pieza);
 
-                //Agregar nueva pieza a tabla
-                tablaPiezas.getItems().add(pieza);
+                    //Buscar la pieza recien creada
+                    piezas = (List<Pieza>) piezasManager.findAllPiezaByName(pieza, txtNombre.getText());
+                    pieza = piezas.get(0);
+                    LOG.info("PiezaViewController/Pieza Creada: " + pieza);
 
-                //Actualizar tabla
-                tablaPiezas.refresh();
-            } else {
-                messageLbl.setText("Solo se admiten números (positivos)");
-                txtADescripcion.setStyle("-fx-border-color: White;");
-                txtNombre.setStyle("-fx-border-color: White;");
-                messageLbl.setStyle("-fx-text-fill: #DC143C");
-                txtStock.setStyle("-fx-border-color: #DC143C ; -fx-border-width: 1.5px ;");
-                messageLbl.setVisible(true);
+                    //Actualizar trabajador con la pieza
+                    trabajador = trabajadorManager.findTrabajador(idTrabajador);
+                    trabajador.getPiezas().add(pieza);
+                    trabajadorManager.editTrabajador(trabajador);
+
+                    LOG.info("PiezaViewController/Agregando Pieza a: " + trabajador.getFullName());
+
+                    //Agregar nueva pieza a tabla
+                    tablaPiezas.getItems().add(pieza);
+
+                    //Actualizar tabla
+                    tablaPiezas.refresh();
+                } else {
+                    messageLbl.setText("Solo se admiten números (positivos)");
+                    txtADescripcion.setStyle("-fx-border-color: White;");
+                    txtNombre.setStyle("-fx-border-color: White;");
+                    messageLbl.setStyle("-fx-text-fill: #DC143C");
+                    txtStock.setStyle("-fx-border-color: #DC143C ; -fx-border-width: 1.5px ;");
+                    messageLbl.setVisible(true);
+                }
             }
 
         } catch (Exception e) {
@@ -312,7 +345,6 @@ public class PiezaViewController {
      */
     private void handleBtnBorrar(ActionEvent borrarEvent) {
         try {
-
             LOG.info("Borrando Pieza...");
             //Obtener la pieza seleccionada de la tabla
             pieza = tablaPiezas.getSelectionModel().getSelectedItem();
@@ -357,14 +389,15 @@ public class PiezaViewController {
         try {
             LOG.info("Actualizando Pieza...");
             //Obtener la pieza seleccionada de la tabla
-            pieza = tablaPiezas.getSelectionModel().getSelectedItem();
+            pieza = (Pieza) tablaPiezas.getSelectionModel().getSelectedItem();
 
-            if (!pieza.getNombre().equals(txtNombre.getText())) {
-                pieza.setNombre(txtNombre.getText());
-                pieza.setDescripcion(txtADescripcion.getText());
-                pieza.setStock(Integer.parseInt(txtStock.getText()));
-                piezasManager.editPieza(pieza);
-            }
+            //Actualizar
+            pieza.setNombre(txtNombre.getText());
+            pieza.setDescripcion(txtADescripcion.getText());
+            pieza.setStock(Integer.parseInt(txtStock.getText()));
+            piezasManager.editPieza(pieza);
+            LOG.info("Pieza Actualizada");
+
             //Clean entry text fields
             txtNombre.setText("");
             txtADescripcion.setText("");
@@ -377,6 +410,7 @@ public class PiezaViewController {
             pieza.setNombre(txtNombre.getText());
             pieza.setDescripcion(txtADescripcion.getText());
             pieza.setStock(Integer.parseInt(txtStock.getText()));
+
             //Refrescamos la tabla para que muestre los nuevos datos
             tablaPiezas.refresh();
         } catch (Exception e) {
@@ -638,6 +672,60 @@ public class PiezaViewController {
         }
         //Focus login field
         txtNombre.requestFocus();
+    }
+
+    /**
+     * LLamar a este método restringirá el uso de caracteres especiales
+     *
+     * @return
+     */
+    public boolean SpCharControl() {
+        boolean correcto = false;
+        String comp = "[^A-Za-zÀ-ȕ\\s]";
+        Pattern espChar = Pattern.compile(comp);
+        Matcher matcher = espChar.matcher(txtNombre.getText());
+
+        if (matcher.find()) {
+            LOG.warning("Los caracteres especiales no estan permitidos");
+            messageLbl.setText("Los números y/o caracteres especiales no están permitidos");
+            txtNombre.setStyle("-fx-border-color: #DC143C; -fx-border-width: 1.5px ;");
+            messageLbl.setVisible(true);
+            messageLbl.setStyle("-fx-text-fill: #DC143C");
+        } else {
+            txtNombre.setStyle("");
+            messageLbl.setVisible(false);
+            correcto = true;
+        }
+        return correcto;
+
+    }
+
+    /**
+     * Llamar a este método imprimirá la información de todas las piezas del
+     * trabajador, JFrame que contiene el reporte
+     *
+     * @param event evento del objeto.
+     */
+    @FXML
+    private void handleBtnInforme(ActionEvent event) {
+        try {
+            LOG.info("Imprimiendo información...");
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/GESRE/reportes/piezasReporte.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems= new JRBeanCollectionDataSource((Collection<Pieza>) this.tablaPiezas.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            LOG.log(Level.SEVERE,"UI GestionUsuariosController: Error printing report: {0}", ex.getMessage());
+        }
     }
 
 }
