@@ -2,7 +2,6 @@ package GESRE.controller;
 
 import GESRE.entidades.Pieza;
 import GESRE.entidades.Trabajador;
-import GESRE.excepcion.PiezaNoExisteException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.PiezasManager;
 import GESRE.interfaces.TrabajadorManager;
@@ -12,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -111,6 +109,7 @@ public class PiezaViewController {
     private Integer idTrabajador;
     private Pieza pieza = null;
     private Trabajador trabajador = null;
+    private Alert alert = null;
 
     //********MENU********
     @FXML
@@ -173,6 +172,8 @@ public class PiezaViewController {
             nombreCl.setCellValueFactory(new PropertyValueFactory<>("nombre"));
             descripcionCl.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
             stockCl.setCellValueFactory(new PropertyValueFactory<>("stock"));
+            //Establecer el valor de stock a la derecha
+            stockCl.setStyle("-fx-alignment: CENTER-RIGHT;");
 
             //Llenar la tabla de datos con todas las piezas de un trabajador
             datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByTrabajadorId(pieza, idTrabajador));
@@ -251,11 +252,13 @@ public class PiezaViewController {
      * Llamar a este método limpiara todos los campos si están informados
      */
     private void handleLimpiar(ActionEvent limpiarEvent) {
+        LOG.info("Limpiando todos los campos");
+        //Deseleccionar la fila
+        tablaPiezas.getSelectionModel().clearSelection();
         txtNombre.setText("");
         txtADescripcion.setText("");
         txtStock.setText("");
         txtNombreFiltro.setText("");
-        btnAnadir.setDisable(true);
         txtNombre.requestFocus();
     }
 
@@ -263,7 +266,8 @@ public class PiezaViewController {
      * Llamar a este método buscará las piezas por le nombre introducido
      */
     private void handleBtnBuscar(ActionEvent buscarrEvent) {
-
+        //Deseleccionar la fila
+        tablaPiezas.getSelectionModel().clearSelection();
         if (cbxFiltro.getSelectionModel().getSelectedIndex() == 0) {
             LOG.info("Filtro: Todo");
             datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByTrabajadorId(pieza, idTrabajador));
@@ -293,35 +297,42 @@ public class PiezaViewController {
      */
     private void handleBtnAnadir(ActionEvent anadirEvent) {
         try {
-            //No se admiten
+            //No se admiten caracteres especiales en Nombre
             if (SpCharControl()) {
                 //Solo se admiten numeros no negativos en Stock
                 if (txtStock.getText().matches("-?([0-9]*)?") && !txtStock.getText().contains("-")) {
                     List<Pieza> piezas;
+                    //Datos del trabajador que crea la pieza
+                    trabajador = trabajadorManager.findTrabajador(idTrabajador);
+                    //Datos de la Pieza a Crear
                     pieza = new Pieza();
                     pieza.setNombre(txtNombre.getText());
                     pieza.setDescripcion(txtADescripcion.getText());
                     pieza.setStock(new Integer(txtStock.getText()));
+                    pieza.setTrabajador(trabajador);
 
+                    //Crear Pieza
                     piezasManager.createPieza(pieza);
 
-                    //Buscar la pieza recien creada
-                    piezas = (List<Pieza>) piezasManager.findAllPiezaByName(pieza, txtNombre.getText());
-                    pieza = piezas.get(0);
-                    LOG.info("PiezaViewController/Pieza Creada: " + pieza);
+                    //Buscar la pieza recien creada para obtener su id y agregarla en la tabla, (sino, el id es null y no se puede borrar al instante de crearla)
+                    //piezas = (List<Pieza>) piezasManager.findAllPiezaByName(pieza, txtNombre.getText());
+                    //pieza = piezas.get(0);
+                    LOG.info("PiezaViewController/Pieza Creada: " + pieza.toString());
 
-                    //Actualizar trabajador con la pieza
-                    trabajador = trabajadorManager.findTrabajador(idTrabajador);
-                    trabajador.getPiezas().add(pieza);
-                    trabajadorManager.editTrabajador(trabajador);
-
-                    LOG.info("PiezaViewController/Agregando Pieza a: " + trabajador.getFullName());
+                    //Limpiar todos los campos
+                    handleLimpiar(anadirEvent);
 
                     //Agregar nueva pieza a tabla
                     tablaPiezas.getItems().add(pieza);
 
                     //Actualizar tabla
                     tablaPiezas.refresh();
+
+                    //Ventana de confirmacion
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setHeaderText("La Pieza " + pieza.getNombre() + " se ha creado con exito!");
+                    alert.setTitle("Nueva Pieza");
+                    alert.show();
                 } else {
                     messageLbl.setText("Solo se admiten números (positivos)");
                     txtADescripcion.setStyle("-fx-border-color: White;");
@@ -356,23 +367,25 @@ public class PiezaViewController {
             Optional<ButtonType> result = alert.showAndWait();
             //Respuesta afirmativa
             if (result.isPresent() && result.get() == ButtonType.OK) {
+                LOG.info("Borrado Confirmado de la Pieza " + pieza.getNombre());
                 //Borrar Pieza del servidor
                 piezasManager.removePieza(pieza);
-                //Limpiar los campos
-                txtNombre.setText("");
-                txtADescripcion.setText("");
-                txtStock.setText("");
+                //Limpiar todos los campos
+                handleLimpiar(borrarEvent);
                 //Deseleccionar la fila
                 tablaPiezas.getSelectionModel().clearSelection();
                 //Eliminar de la tabla
                 tablaPiezas.getItems().remove(pieza);
                 //Actualizar tabla
                 tablaPiezas.refresh();
+
+                //Ventana de confirmacion
+                alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("La Pieza " + pieza.getNombre() + " se ha Borrado con exito!");
+                alert.setTitle("Borrado de Pieza");
+                alert.show();
             } else {
-                //Activar label
-                messageLbl.setText("La pieza no puede borrarse porque no existe");
-                messageLbl.setStyle("-fx-text-fill: #DC143C");
-                messageLbl.setVisible(true);
+                LOG.info("Borrado Cancelado");
             }
 
         } catch (Exception e) {
@@ -389,30 +402,31 @@ public class PiezaViewController {
         try {
             LOG.info("Actualizando Pieza...");
             //Obtener la pieza seleccionada de la tabla
-            pieza = (Pieza) tablaPiezas.getSelectionModel().getSelectedItem();
+            pieza = tablaPiezas.getSelectionModel().getSelectedItem();
 
-            //Actualizar
-            pieza.setNombre(txtNombre.getText());
-            pieza.setDescripcion(txtADescripcion.getText());
-            pieza.setStock(Integer.parseInt(txtStock.getText()));
-            piezasManager.editPieza(pieza);
-            LOG.info("Pieza Actualizada");
+            if (pieza != null) {
+                //Datos nuevos
+                pieza.setNombre(txtNombre.getText());
+                pieza.setDescripcion(txtADescripcion.getText());
+                pieza.setStock(new Integer(txtStock.getText()));
+                piezasManager.editPieza(pieza);
+                LOG.info("Pieza Actualizada");
 
-            //Clean entry text fields
-            txtNombre.setText("");
-            txtADescripcion.setText("");
-            txtStock.setText("");
+                //Limpiar todos los campos
+                handleLimpiar(editarEvent);
 
-            //Deseleccionar la fila
-            tablaPiezas.getSelectionModel().clearSelection();
+                //Deseleccionar fila
+                tablaPiezas.getSelectionModel().clearSelection();
 
-            //cambiar datos tabla
-            pieza.setNombre(txtNombre.getText());
-            pieza.setDescripcion(txtADescripcion.getText());
-            pieza.setStock(Integer.parseInt(txtStock.getText()));
+                //Actualizar tabla
+                tablaPiezas.refresh();
 
-            //Refrescamos la tabla para que muestre los nuevos datos
-            tablaPiezas.refresh();
+            } else {
+                messageLbl.setText("No se ha podido modificar la Pieza");
+                messageLbl.setStyle("-fx-border-color: #DC143C ; -fx-border-width: 1.5px ;");
+                messageLbl.setVisible(true);
+            }
+
         } catch (Exception e) {
 
         }
@@ -452,22 +466,21 @@ public class PiezaViewController {
     public void handleCerrarSesion(ActionEvent cerrarSesiontEvent) {
         try {
             //Pressing the LogOut option will show an Alert to confirm it
-            LOG.info("Log Out button clicked");
-            LOG.info("Confirm Log Out");
+            LOG.info("Confirmar Cerrar Sesion");
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setHeaderText("¿Are you sure you want to log out?");
-            alert.setTitle("Log Out");
+            alert.setHeaderText("¿Seguro que quieres cerrar sesión?");
+            alert.setTitle("Cerrar Sesión");
             Optional<ButtonType> option = alert.showAndWait();
             if (option.get() == ButtonType.OK) {
-                LOG.info("Logging out...");
+                LOG.info("Cerrando Sesión...");
                 startSignInWindow(stage);
             } else {
-                LOG.info("Log Out Canceled");
-                //Cancel the event process
+                LOG.info("Cerrar Sesión Cancelado");
+                //Cancela el evento
                 cerrarSesiontEvent.consume();
             }
         } catch (IOException ex) {
-            LOG.log(Level.SEVERE, "Log Out error", ex);
+            LOG.log(Level.SEVERE, "Error al intentar Cerrar Sesión", ex);
         }
     }
 
@@ -522,14 +535,14 @@ public class PiezaViewController {
                 //Borrar ultimo caracter introducido
                 txtStock.deleteNextChar();
             }
-            //Control empty spaces
+            //Control de espacio vacio (No permitir)
             if (cadena.contains(" ")) {
                 txtStock.setText(cadena.replaceAll(" ", ""));
             }
+            //si hay errores volver, esconder el label y el color del campo vuelve a la normalidad
             txtStock.setStyle("-fx-border-color: White;");
             messageLbl.setVisible(false);
             messageLbl.setStyle("");
-
             txtNombre.setStyle("-fx-border-color: White;");
             txtADescripcion.setStyle("-fx-border-color: White;");
 
@@ -565,7 +578,7 @@ public class PiezaViewController {
                 messageLbl.setVisible(false);
                 messageLbl.setStyle("");
             }
-
+            //si hay errores volver, esconder el label y el color del campo vuelve a la normalidad
             txtNombre.setStyle("-fx-border-color: White;");
             txtStock.setStyle("-fx-border-color: White;");
 
@@ -602,6 +615,11 @@ public class PiezaViewController {
                 messageLbl.setVisible(false);
                 messageLbl.setStyle("");
             }
+
+            //si hay errores volver, esconder el label y el color del campo vuelve a la normalidad
+            txtStock.setStyle("-fx-border-color: White;");
+            txtNombre.setStyle("-fx-border-color: White;");
+            txtADescripcion.setStyle("-fx-border-color: White;");
 
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error Setting User field control", ex);
@@ -706,26 +724,29 @@ public class PiezaViewController {
      *
      * @param event evento del objeto.
      */
-    @FXML
     private void handleBtnInforme(ActionEvent event) {
         try {
-            LOG.info("Imprimiendo información...");
-            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/GESRE/reportes/piezasReporte.jrxml"));
-            //Data for the report: a collection of UserBean passed as a JRDataSource 
-            //implementation 
-            JRBeanCollectionDataSource dataItems= new JRBeanCollectionDataSource((Collection<Pieza>) this.tablaPiezas.getItems());
-            //Map of parameter to be passed to the report
-            Map<String, Object> parameters = new HashMap<>();
-            //Fill report with data
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
-            //Create and show the report window. The second parameter false value makes 
-            //report window not to close app.
+            LOG.info("imprimiendo los datos de la tabla Pieza...");
+            JasperReport reporte = JasperCompileManager.compileReport(getClass().getResourceAsStream("/GESRE/archivos/informePiezas.jrxml"));
+            //Datos para el reporte, coleccion de piezas
+            //implementacion
+            JRBeanCollectionDataSource datos = new JRBeanCollectionDataSource((Collection<Pieza>) this.tablaPiezas.getItems());
+            //Map de parametros
+            Map<String, Object> parametros = new HashMap<>();
+            //Rellenar el reporte con los datos
+            JasperPrint jasperPrint = JasperFillManager.fillReport(reporte, parametros, datos);
+            //crear y mostrar la ventana de reporte, el valor booleano hace que no se cierre la ventana en false
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
-            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+            //jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         } catch (JRException ex) {
-            LOG.log(Level.SEVERE,"UI GestionUsuariosController: Error printing report: {0}", ex.getMessage());
+            //ventana de error si falla al imprimir reporte
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setHeaderText("Ha ocurrido un error al intentar imprimir el reporte de la tabla Piezas");
+            alert.setTitle("Error de Impresión");
+            alert.setAlertType(Alert.AlertType.ERROR);
+            alert.show();
+            LOG.log(Level.SEVERE, "PiezaViewController: Error printing report: {0}", ex.getMessage());
         }
     }
-
 }

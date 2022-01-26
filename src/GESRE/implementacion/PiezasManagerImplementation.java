@@ -142,7 +142,7 @@ public class PiezasManagerImplementation implements PiezasManager {
     @Override
     public void editPieza(Pieza pieza) {
         try {
-            LOG.log(Level.INFO, "PiezasManager: Actualizando Pieza '{0}'...", pieza.getNombre());
+            LOG.log(Level.INFO, "PiezasManager: Actualizando Pieza "+pieza.getNombre());
             //enviar los datos de la pieza al cliente web para su creacion 
             webClient.edit_xml(pieza);
         } catch (Exception ex) {

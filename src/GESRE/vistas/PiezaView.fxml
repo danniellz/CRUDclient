@@ -36,7 +36,7 @@
             <columns>
                 <TableColumn fx:id="nombreCl" prefWidth="180.0" text="Nombre" />
                 <TableColumn fx:id="descripcionCl" prefWidth="477.60003662109375" text="Descripción" />
-                <TableColumn fx:id="stockCl" minWidth="0.0" prefWidth="146.39990234375" text="Stock" />
+                <TableColumn fx:id="stockCl" minWidth="0.0" prefWidth="140.800048828125" text="Stock" />
             </columns>
         </TableView>
         <TextField fx:id="txtNombreFiltro" layoutX="278.0" layoutY="232.0" prefHeight="25.0" prefWidth="160.0" promptText="Nombre de la Pieza" />
