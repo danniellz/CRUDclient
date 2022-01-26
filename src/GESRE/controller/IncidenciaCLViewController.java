@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -35,6 +36,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -64,6 +66,8 @@ public class IncidenciaCLViewController {
     private Label lblHoras;
     @FXML
     private Label lblGestionIncidencia;
+    @FXML
+    private Label lblError;
 
     //////////////////////////////////////////////////////////////
     //**********************BUTTON*************************
@@ -135,7 +139,8 @@ public class IncidenciaCLViewController {
             stage.setTitle("Gestion Incidencias");
             //acciones de la Ventana
             stage.setOnCloseRequest(this::handleCloseRequest);
-            btnLimpiar.setOnAction(this::handleLimpiarFormulario);
+
+            tablaIncidencias.getSelectionModel().selectedItemProperty().addListener(this::handleTablaIncidenciasSelection);
             //Establecer valores del combobox
 
             ObservableList<TipoIncidencia> tipoIn = FXCollections.observableArrayList(TipoIncidencia.values());
@@ -143,18 +148,17 @@ public class IncidenciaCLViewController {
 
             cbxEstadoIncidencia.setItems(estados);
             cbxTipoIncidencia.setItems(tipoIn);
-            
-            //*********estado inicial de la ventana*********
-            //______________________________________No me funciona nada__________JAJAJA
 
-            /*btnModificar.setDisable(true);
+            //*********estado inicial de la ventana*********
+           
+            btnModificar.setDisable(true);
             btnEliminar.setDisable(true);
             btnLimpiar.setDisable(true);
             btnAnadir.setDisable(true);
             btnLimpiar.setDisable(true);
-            btnInforme.setDisable(true);*/
+            btnInforme.setDisable(true);
+            lblError.setVisible(false);
             handleActionButtons();
-            //limpiarFormulario();
 
             //Establecer los valores que aparecen dentro de cada celda
             tipoIncidenciaCL.setCellValueFactory(new PropertyValueFactory<>("tipoIncidencia"));
@@ -165,6 +169,13 @@ public class IncidenciaCLViewController {
             IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findAll());
             tablaIncidencias.setItems(IncidenciaList);
 
+            btnLimpiar.setOnAction(this::handleLimpiarFormulario);
+            btnAnadir.setOnAction(this::handleAnadir);
+
+            //-------------btnModificar.setOnAction(this::handleModificar);
+            btnEliminar.setOnAction(this::handleEliminar);
+            //el boton de Busqueda funciona con un toogle button
+            btnToogleFiltro.setOnAction(this::handleFiltro);
             //mostrar la Ventana
             stage.show();
         } catch (Exception e) {
@@ -227,7 +238,7 @@ public class IncidenciaCLViewController {
                         .or(Hor_TxtLabel.textProperty().isEmpty())
         );
         boolean selectedIndex = false;
-        if (cbxTipoIncidencia.getSelectionModel().getSelectedIndex() != -1 && cbxEstadoIncidencia.getSelectionModel().getSelectedIndex() != -1 ) {
+        if (cbxTipoIncidencia.getSelectionModel().getSelectedIndex() != -1 && cbxEstadoIncidencia.getSelectionModel().getSelectedIndex() != -1) {
             selectedIndex = true;
         } else {
             selectedIndex = false;
@@ -237,7 +248,7 @@ public class IncidenciaCLViewController {
         }
     }
 
-    private void handleLimpiarFormulario( ActionEvent event) {
+    private void handleLimpiarFormulario(ActionEvent event) {
         Estr_TxtLabel.setText(" ");
         Hor_TxtLabel.setText(" ");
         cbxTipoIncidencia.getSelectionModel().select(-1);
@@ -245,8 +256,108 @@ public class IncidenciaCLViewController {
         handleActionButtons();
     }
 
+    private void handleTablaIncidenciasSelection(ObservableValue observable, Object oldValue, Object newValue) {
+        //Si una fila esta seleccionada mover los datos de la fila a los campos
+        if (newValue != null) {
+            incidencia = (Incidencia) newValue;
+            cbxTipoIncidencia.getSelectionModel().select(incidencia.getTipoIncidencia());
+            cbxEstadoIncidencia.getSelectionModel().select(incidencia.getEstado());
+            Estr_TxtLabel.setText(incidencia.getEstrellas().toString());
+            Hor_TxtLabel.setText(incidencia.getHoras().toString());
+
+            LOG.info("Información de Incidencia: " + incidencia.toString());
+        } else {
+            LOG.info("Fila no seleccionada");
+            //Si no hay fila seleccionada limpiar los campos
+            Estr_TxtLabel.setText("");
+            Hor_TxtLabel.setText("");
+            cbxTipoIncidencia.getSelectionModel().select(-1);
+            cbxEstadoIncidencia.getSelectionModel().select(-1);
+        }
+        //Focus login field
+        Hor_TxtLabel.requestFocus();
+    }
+
+    private void handleAnadir(ActionEvent anadirEvent) {
+        // try {
+        //Solo se admiten numeros no negativos
+        LOG.info("Añadiendo la Incidencia");
+        incidencia = new Incidencia();
+        incidencia.setId(2);
+        incidencia.setTipoIncidencia(cbxTipoIncidencia.getSelectionModel().getSelectedItem());
+        incidencia.setEstado(cbxEstadoIncidencia.getSelectionModel().getSelectedItem());
+        incidencia.setEstrellas(new Integer(Estr_TxtLabel.getText()));
+        incidencia.setHoras(new Integer(Hor_TxtLabel.getText()));
+
+        incidenciaManager.createIncidencia(incidencia);
+        LOG.info(incidencia.toString());
+        //Agregar nueva pieza a tabla
+        tablaIncidencias.getItems().add(incidencia);
+
+        //Actualizar tabla
+        tablaIncidencias.refresh();
+        /* } else {
+                //introducir texto en el mensaje de error
+                Estr_TxtLabel.setStyle("-fx-border-color: White;");
+                Hor_TxtLabel.setStyle("-fx-border-color: White;");
+                cbxEstadoIncidencia.setStyle("-fx-border-color: White;");
+                cbxTipoIncidencia.setStyle("-fx-border-color: White;");
+                //mostrar mensaje de Error
+            }*/
+
+ /*} catch (Exception e) {
+        LOG.severe("NO FUNICONA EL CREATE "+e.getLocalizedMessage());
+        }*/
+    }
+
+    private void handleEliminar(ActionEvent Event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Eliminar");
+        alert.setHeaderText(null);
+        alert.setResizable(false);
+        alert.setContentText("¿Seguro que quieres eliminar la incidencia?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        ButtonType button = result.orElse(ButtonType.CANCEL);
+
+        if (button == ButtonType.OK) {
+            Incidencia seleccion = ((Incidencia) tablaIncidencias.getSelectionModel().getSelectedItem());
+
+            if (seleccion != null) {
+                incidenciaManager.removeIncidencia(String.valueOf(seleccion.getId()));
+
+                tablaIncidencias.getItems().remove(seleccion);
+                tablaIncidencias.getSelectionModel().clearSelection();
+                tablaIncidencias.refresh();
+
+                camposTextoVacios();
+            } else {
+                lblError.setText("No se ha podido eliminar la Incidencia");
+                lblError.setTextFill(Color.web("#FF0000"));
+            }
+        }
+    }
+
+    private void handleFiltro(ActionEvent Event) {
+        if (btnToogleFiltro.isSelected()) {
+            IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findIncidenciaAcabadaDeUnUsuario(incidencia, "2"));
+            tablaIncidencias.setItems(IncidenciaList);
+        } else {
+            IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findAll());
+            tablaIncidencias.setItems(IncidenciaList);
+        }
+    }
+
     /*  public static void main(String[] args) {
        launch(args);
     }*/
-    
+
+    private boolean camposTextoVacios() {
+        if (Estr_TxtLabel.getText().isEmpty() || Hor_TxtLabel.getText().isEmpty()) {
+            btnAnadir.setDisable(false);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
