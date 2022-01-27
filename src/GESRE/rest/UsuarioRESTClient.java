@@ -81,7 +81,7 @@ public class UsuarioRESTClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T buscarTodosLosTrabajadores_XML(GenericType<T> responseType) throws ClientErrorException {
+    public <T> T buscarTodosLosUsuarios_XML(GenericType<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path("Todos los usuarios");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);

@@ -10,6 +10,7 @@ import GESRE.excepcion.EmailExisteException;
 import GESRE.excepcion.EmailNoExisteException;
 import GESRE.excepcion.LoginExisteException;
 import GESRE.excepcion.LoginNoExisteException;
+import GESRE.excepcion.UsuarioNoExisteException;
 import java.util.Collection;
 import javax.ws.rs.ClientErrorException;
 
@@ -47,11 +48,11 @@ public interface UsuarioManager {
 
     public Collection <Usuario> buscarUsuarioPorEmailCrear(String correo) throws EmailExisteException;
 
-    public Collection<Usuario> buscarUsuarioPorLoginYContrasenia_Usuario(String login, String password);
+    public Collection<Usuario> buscarUsuarioPorLoginYContrasenia_Usuario(String login, String password) throws UsuarioNoExisteException;
 
     public Usuario resetPasswordByLogin_Usuario(String email);
 
-    public Collection<Usuario> buscarTodosLosTrabajadores_Usuario();
+    public Collection<Usuario> buscarTodosLosUsuarios_Usuario();
 
     public Collection<Usuario> buscarUsuarioParaEnviarMailRecuperarContrasenia_Usuario(Usuario usuario);
 

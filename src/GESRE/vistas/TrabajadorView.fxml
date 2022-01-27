@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane id="trabajadorPanel" fx:id="paneGeneralTrabajador" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.GestionTrabajadorViewController"> 
+<Pane fx:id="paneGeneralTrabajador" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.GestionTrabajadorViewController"> 
     <children>    
         <MenuBar fx:id="menuBar" layoutY="1.0" prefHeight="26.0" prefWidth="800.0">
             <menus>

@@ -10,6 +10,7 @@ import GESRE.excepcion.EmailExisteException;
 import GESRE.excepcion.EmailNoExisteException;
 import GESRE.excepcion.LoginExisteException;
 import GESRE.excepcion.LoginNoExisteException;
+import GESRE.excepcion.UsuarioNoExisteException;
 import GESRE.interfaces.UsuarioManager;
 import GESRE.rest.UsuarioRESTClient;
 import java.util.Collection;
@@ -79,8 +80,10 @@ public class UsuarioManagerImplentacion implements UsuarioManager {
      *
      * @param login
      * @return
+     * @throws GESRE.excepcion.LoginExisteException
      * @throws LoginNoExisteException
      */
+    @Override
     public Collection<Usuario> buscarUsuarioPorLoginCrear(String login) throws LoginExisteException {
         List<Usuario> usuarios = null;
         try {
@@ -103,6 +106,7 @@ public class UsuarioManagerImplentacion implements UsuarioManager {
      * @return
      * @throws LoginNoExisteException
      */
+    @Override
     public Collection<Usuario> buscarUserPorLoginSignIn(String login) throws LoginNoExisteException {
         List<Usuario> usuarios = null;
         try {
@@ -123,7 +127,7 @@ public class UsuarioManagerImplentacion implements UsuarioManager {
     public Collection<Usuario> buscarUsuarioPorEmailCrear(String email) throws EmailExisteException {
         List<Usuario> usuarios = null;
         try {
-            LOGGER.info("TrabajadorManagerImplementation: Buscando trabajador por el nombre");
+            LOGGER.info("UsuarioManagerImplementation: Buscando trabajador por el nombre");
             //Solicitar a webClient los datos de del trabajador buscadon por su nombre.
             usuarios = webClient.buscarUsuarioPorEmail_XML(new GenericType<List<Usuario>>() {
             }, email);
@@ -138,8 +142,19 @@ public class UsuarioManagerImplentacion implements UsuarioManager {
     }
 
     @Override
-    public Collection<Usuario> buscarUsuarioPorLoginYContrasenia_Usuario(String login, String password) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Collection<Usuario> buscarUsuarioPorLoginYContrasenia_Usuario(String login, String password)  throws  UsuarioNoExisteException{
+        List<Usuario> usuarios = null;
+        try {
+            LOGGER.info("UsuarioManagerImplementation: Buscando trabajador por login y contraseñas");
+            usuarios = webClient.buscarUsuarioPorLoginYContrasenia_XML(new GenericType<List<Usuario>>() {
+            }, login, password);
+            if (!usuarios.isEmpty()) {
+                throw  new UsuarioNoExisteException();
+            }
+        } catch (ClientErrorException e) {
+            LOGGER.severe(e.getMessage());
+        }
+        return usuarios;
     }
 
     @Override
@@ -148,7 +163,7 @@ public class UsuarioManagerImplentacion implements UsuarioManager {
     }
 
     @Override
-    public Collection<Usuario> buscarTodosLosTrabajadores_Usuario() {
+    public Collection<Usuario> buscarTodosLosUsuarios_Usuario() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
