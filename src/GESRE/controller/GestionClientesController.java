@@ -5,6 +5,7 @@ import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.ClienteManager;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -114,6 +115,7 @@ public class GestionClientesController {
             borrarBtn.setDisable(true);
             editarBtn.setDisable(true);
             buscarTxt.setDisable(true);
+            fechaRegistroDate.setEditable(false);
             fechaRegistroDate.setValue(LocalDate.now());
 
             //Definir columnas de la tabla cliente
@@ -138,6 +140,8 @@ public class GestionClientesController {
             correoTxt.textProperty().addListener(this::handleValidarTexto);
             contrasenaTxt.textProperty().addListener(this::handleValidarTexto);
             repiteContrasenaTxt.textProperty().addListener(this::handleValidarTexto);
+            
+            clientesTabla.getSelectionModel().selectedItemProperty().addListener(this::handleTableSelectionChanged);
 
             //Show window (asynchronous)
             stage.show();
@@ -146,27 +150,38 @@ public class GestionClientesController {
         }
 
     }
-
-    public void handleCloseRequest(WindowEvent closeEvent) {
-        try {
-            LOG.info("Confirm Closing");
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setHeaderText("¿Esta seguro de que desea salir?");
-            alert.setTitle("Salir");
-            Optional<ButtonType> option = alert.showAndWait();
-            if (option.get() == ButtonType.OK) {
-                LOG.info("Closing...");
-                Platform.exit();
-            } else {
-                LOG.info("Closing Canceled");
-                //Cancel the event process
-                closeEvent.consume();
-            }
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Close request error", e);
+    
+    private void handleTableSelectionChanged(ObservableValue observable, Object oldValue, Object newValue) {
+       
+        if(newValue!=null){
+            Cliente cliente = (Cliente) newValue;
+            LOG.info(cliente.getLogin());
+            usuarioTxt.setText(cliente.getLogin());
+            nombreTxt.setText(cliente.getFullName());
+            correoTxt.setText(cliente.getEmail());
+            
+            /*cbDepartamentos.getSelectionModel().select(user.getDepartamento());
+            if(user.getPerfil().equals(Profile.ADMIN))tgPerfil.selectToggle(rbAdmin);
+            else tgPerfil.selectToggle(rbUsuario);
+            btCrear.setDisable(false);
+            btModificar.setDisable(false);
+            btEliminar.setDisable(false);*/
+        }else{
+        //If there is not a row selected, clean window fields 
+        //and disable create, modify and delete buttons
+            usuarioTxt.setText("");
+            nombreTxt.setText("");
+            correoTxt.setText("");
+            //cbDepartamentos.getSelectionModel().clearSelection();
+            /*tgPerfil.selectToggle(rbUsuario);
+            btCrear.setDisable(true);
+            btModificar.setDisable(true);
+            btEliminar.setDisable(true);*/
         }
+        //Focus login field
+        //usuarioTxt.requestFocus();
     }
-
+    
     private void handleValidarTexto(ObservableValue observable, String oldValue, String newValue) {
         StringProperty textProperty = (StringProperty) observable;
         TextField changedTextField = (TextField) textProperty.getBean();
@@ -192,9 +207,9 @@ public class GestionClientesController {
         }
 
         if (camposInformados()) {
-            habilitarBotones();
+            deshabilitarBotones(false);
         } else {
-            deshabilitarBotones();
+            deshabilitarBotones(true);
         }
     }
 
@@ -227,6 +242,26 @@ public class GestionClientesController {
 
     }
 
+    public void handleCloseRequest(WindowEvent closeEvent) {
+        try {
+            LOG.info("Confirm Closing");
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setHeaderText("¿Esta seguro de que desea salir?");
+            alert.setTitle("Salir");
+            Optional<ButtonType> option = alert.showAndWait();
+            if (option.get() == ButtonType.OK) {
+                LOG.info("Closing...");
+                Platform.exit();
+            } else {
+                LOG.info("Closing Canceled");
+                //Cancel the event process
+                closeEvent.consume();
+            }
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Close request error", e);
+        }
+    }
+    
     private boolean camposInformados() {
         if (usuarioTxt.getText().isEmpty() || nombreTxt.getText().isEmpty() || correoTxt.getText().isEmpty() || contrasenaTxt.getText().isEmpty() || repiteContrasenaTxt.getText().isEmpty()) {
             return false;
@@ -235,17 +270,10 @@ public class GestionClientesController {
         }
     }
 
-    private void habilitarBotones() {
-        anadirBtn.setDisable(false);
-        borrarBtn.setDisable(false);
-        editarBtn.setDisable(false);
-        buscarTxt.setDisable(false);
-    }
-
-    private void deshabilitarBotones() {
-        anadirBtn.setDisable(true);
-        borrarBtn.setDisable(true);
-        editarBtn.setDisable(true);
-        buscarTxt.setDisable(true);
+    private void deshabilitarBotones(Boolean deshabilitar) {
+        anadirBtn.setDisable(deshabilitar);
+        borrarBtn.setDisable(deshabilitar);
+        editarBtn.setDisable(deshabilitar);
+        buscarTxt.setDisable(deshabilitar);
     }
 }
