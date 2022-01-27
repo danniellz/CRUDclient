@@ -102,7 +102,7 @@ public class PiezaViewController {
     private TableColumn<Pieza, String> descripcionCl;
     @FXML
     private TableColumn<Pieza, Integer> stockCl;
-    
+
     private ObservableList<Pieza> datosPieza;
 
     //********STAGE********
@@ -203,7 +203,7 @@ public class PiezaViewController {
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Error al inicializar Stage", e);
         }
-        
+
     }
 
     /**
@@ -228,7 +228,7 @@ public class PiezaViewController {
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "Error al intentar abrir la ventana de SignUp", ex);
         }
-        
+
     }
 
     /**
@@ -295,7 +295,7 @@ public class PiezaViewController {
                 LOG.log(Level.INFO, "Filtro: Nombre");
                 datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByName(pieza, txtNombreFiltro.getText()));
             }
-            
+
         }
         //ComboBox STOCK
         if (cbxFiltro.getSelectionModel().getSelectedIndex() == 2) {
@@ -371,7 +371,7 @@ public class PiezaViewController {
                 txtStock.setStyle("-fx-border-color: #DC143C ; -fx-border-width: 1.5px ;");
                 messageLbl.setVisible(true);
             }
-            
+
         }
     }
 
@@ -385,7 +385,7 @@ public class PiezaViewController {
             LOG.info("Borrando Pieza...");
             //Obtener la pieza seleccionada de la tabla
             pieza = tablaPiezas.getSelectionModel().getSelectedItem();
-            
+
             if (pieza == null) {
                 //Ventana de error
                 alert = new Alert(Alert.AlertType.ERROR);
@@ -393,37 +393,46 @@ public class PiezaViewController {
                 alert.setTitle("Borrado de Pieza");
                 alert.show();
             } else {
-                //Ventana de confirmacion
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                        "¿Borrar la fila seleccionada?\n"
-                        + "La operación no se puede revertir", ButtonType.OK, ButtonType.CANCEL);
-                Optional<ButtonType> result = alert.showAndWait();
-                //Respuesta afirmativa
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    LOG.info("Borrado Confirmado de la Pieza " + pieza.getNombre());
-                    pieza.setTrabajador(null);
-                    piezasManager.editPieza(pieza, idTrabajador);
-                    //Borrar Pieza del servidor
-                    piezasManager.removePieza(pieza.getId());
-                    //Limpiar todos los campos
-                    handleLimpiar(borrarEvent);
-                    //Deseleccionar la fila
-                    tablaPiezas.getSelectionModel().clearSelection();
-                    //Eliminar de la tabla
-                    tablaPiezas.getItems().remove(pieza);
-                    //Actualizar tabla
-                    tablaPiezas.refresh();
-
-                    //Ventana de confirmacion
-                    alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setHeaderText("La Pieza '" + pieza.getNombre() + "' se ha Borrado con exito!");
-                    alert.setTitle("Borrado de Pieza");
+                if (txtNombre.isDisabled()) {
+                    //Ventana de error sii la pieza es de otro trabajador
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText("No puedes Borrar la pieza de otro trabajador");
+                    alert.setTitle("Error de borrado");
                     alert.show();
-                    
                 } else {
-                    LOG.info("Borrado Cancelado");
+                    //Ventana de confirmacion
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                            "¿Borrar la fila seleccionada?\n"
+                            + "La operación no se puede revertir", ButtonType.OK, ButtonType.CANCEL);
+                    Optional<ButtonType> result = alert.showAndWait();
+                    //Respuesta afirmativa
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        LOG.info("Borrado Confirmado de la Pieza " + pieza.getNombre());
+                        pieza.setTrabajador(null);
+                        piezasManager.editPieza(pieza, idTrabajador);
+                        //Borrar Pieza del servidor
+                        piezasManager.removePieza(pieza.getId());
+                        //Limpiar todos los campos
+                        handleLimpiar(borrarEvent);
+                        //Deseleccionar la fila
+                        tablaPiezas.getSelectionModel().clearSelection();
+                        //Eliminar de la tabla
+                        tablaPiezas.getItems().remove(pieza);
+                        //Actualizar tabla
+                        tablaPiezas.refresh();
+
+                        //Ventana de confirmacion
+                        alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setHeaderText("La Pieza '" + pieza.getNombre() + "' se ha Borrado con exito!");
+                        alert.setTitle("Borrado de Pieza");
+                        alert.show();
+
+                    } else {
+                        LOG.info("Borrado Cancelado");
+                    }
                 }
             }
+
         } catch (Exception e) {
             LOG.severe(e.getMessage());
         }
@@ -446,32 +455,40 @@ public class PiezaViewController {
                 alert.setTitle("Borrado de Pieza");
                 alert.show();
             } else {
-                //Datos nuevos
-                pieza.setNombre(txtNombre.getText());
-                pieza.setDescripcion(txtADescripcion.getText());
-                pieza.setStock(new Integer(txtStock.getText()));
-                piezasManager.editPieza(pieza, pieza.getId());
-                LOG.info("Pieza Actualizada");
+                if (txtNombre.isDisabled()) {
+                    //Ventana de error sii la pieza es de otro trabajador
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText("No puedes Actualizar la pieza de otro trabajador");
+                    alert.setTitle("Error al Actualizar");
+                    alert.show();
+                } else {
+                    //Datos nuevos
+                    pieza.setNombre(txtNombre.getText());
+                    pieza.setDescripcion(txtADescripcion.getText());
+                    pieza.setStock(new Integer(txtStock.getText()));
+                    piezasManager.editPieza(pieza, pieza.getId());
+                    LOG.info("Pieza Actualizada");
 
-                //Limpiar todos los campos
-                handleLimpiar(editarEvent);
+                    //Limpiar todos los campos
+                    handleLimpiar(editarEvent);
 
-                //Deseleccionar fila
-                tablaPiezas.getSelectionModel().clearSelection();
+                    //Deseleccionar fila
+                    tablaPiezas.getSelectionModel().clearSelection();
 
-                //Actualizar tabla
-                tablaPiezas.refresh();
+                    //Actualizar tabla
+                    tablaPiezas.refresh();
 
-                //Ventana de confirmacion
-                alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setHeaderText("La Pieza '" + pieza.getNombre() + "' se ha actualizado con exito!");
-                alert.setTitle("Actualizar Pieza");
-                alert.show();
+                    //Ventana de confirmacion
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setHeaderText("La Pieza '" + pieza.getNombre() + "' se ha actualizado con exito!");
+                    alert.setTitle("Actualizar Pieza");
+                    alert.show();
+                }
             }
-            
+
         } catch (Exception e) {
             LOG.severe(e.getMessage());
-            
+
         }
     }
 
@@ -554,7 +571,7 @@ public class PiezaViewController {
                 messageLbl.setVisible(false);
                 messageLbl.setStyle("");
             }
-            
+
             txtADescripcion.setStyle("-fx-border-color: White;");
             txtStock.setStyle("-fx-border-color: White;");
             txtNombreFiltro.setStyle("-fx-border-color: White;");
@@ -590,7 +607,7 @@ public class PiezaViewController {
             txtNombre.setStyle("-fx-border-color: White;");
             txtADescripcion.setStyle("-fx-border-color: White;");
             txtNombreFiltro.setStyle("-fx-border-color: White;");
-            
+
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error Setting User field control", ex);
         }
@@ -627,7 +644,7 @@ public class PiezaViewController {
             txtNombre.setStyle("-fx-border-color: White;");
             txtStock.setStyle("-fx-border-color: White;");
             txtNombreFiltro.setStyle("-fx-border-color: White;");
-            
+
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error Setting User field control", ex);
         }
@@ -654,7 +671,7 @@ public class PiezaViewController {
                 //Activar label
                 messageLbl.setStyle("-fx-text-fill: #DC143C");
                 messageLbl.setVisible(true);
-                
+
             } else {
                 //Mientras los caracteres introducidos sean menor a 26, se desactiva el label y el campo vuelve a su color normal
                 txtNombreFiltro.setStyle("-fx-border-color: White;");
@@ -667,7 +684,7 @@ public class PiezaViewController {
             txtNombre.setStyle("-fx-border-color: White;");
             txtADescripcion.setStyle("-fx-border-color: White;");
             txtNombreFiltro.setStyle("-fx-border-color: White;");
-            
+
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error Setting User field control", ex);
         }
@@ -680,21 +697,28 @@ public class PiezaViewController {
     private void desabilitarBtnCamposVacios() {
         LOG.info("Deshabilitando botones Añadir, Editar y Borrar");
         //Se comprueba cuando el boton debe estar desabilitado
-        btnAnadir.disableProperty().bind(
-                txtNombre.textProperty().isEmpty()
-                        .or(txtADescripcion.textProperty().isEmpty())
-                        .or(txtStock.textProperty().isEmpty())
-        );
-        btnEditar.disableProperty().bind(
-                txtNombre.textProperty().isEmpty()
-                        .or(txtADescripcion.textProperty().isEmpty())
-                        .or(txtStock.textProperty().isEmpty())
-        );
-        btnBorrar.disableProperty().bind(
-                txtNombre.textProperty().isEmpty()
-                        .or(txtADescripcion.textProperty().isEmpty())
-                        .or(txtStock.textProperty().isEmpty())
-        );
+        if (txtNombre.isDisabled() && txtADescripcion.isDisabled() && txtStock.isDisabled()) {
+            btnAnadir.setDisable(true);
+            btnBorrar.setDisable(true);
+            btnEditar.setDisable(true);
+        } else {
+            btnAnadir.disableProperty().bind(
+                    txtNombre.textProperty().isEmpty()
+                            .or(txtADescripcion.textProperty().isEmpty())
+                            .or(txtStock.textProperty().isEmpty())
+            );
+            btnEditar.disableProperty().bind(
+                    txtNombre.textProperty().isEmpty()
+                            .or(txtADescripcion.textProperty().isEmpty())
+                            .or(txtStock.textProperty().isEmpty())
+            );
+            btnBorrar.disableProperty().bind(
+                    txtNombre.textProperty().isEmpty()
+                            .or(txtADescripcion.textProperty().isEmpty())
+                            .or(txtStock.textProperty().isEmpty())
+            );
+        }
+
     }
 
     /**
@@ -727,7 +751,13 @@ public class PiezaViewController {
             txtNombre.setText(pieza.getNombre());
             txtADescripcion.setText(pieza.getDescripcion());
             txtStock.setText(pieza.getStock().toString());
-            
+            //Bloquear los campos si la pieza es de otro trabajador
+            if (pieza.getTrabajador().getIdUsuario() != idTrabajador) {
+                txtNombre.setDisable(true);
+                txtADescripcion.setDisable(true);
+                txtStock.setDisable(true);
+            }
+
             LOG.info("Información de Pieza: " + pieza.toString());
         } else {
             LOG.info("Fila no seleccionada");
@@ -735,6 +765,9 @@ public class PiezaViewController {
             txtNombre.setText("");
             txtADescripcion.setText("");
             txtStock.setText("");
+            txtNombre.setDisable(false);
+            txtADescripcion.setDisable(false);
+            txtStock.setDisable(false);
         }
         //Focus login field
         txtNombre.requestFocus();
@@ -750,7 +783,7 @@ public class PiezaViewController {
         String comp = "[^A-Za-zÀ-ȕ\\s]";
         Pattern espChar = Pattern.compile(comp);
         Matcher matcher = espChar.matcher(txtNombre.getText());
-        
+
         if (matcher.find()) {
             LOG.warning("Los caracteres especiales no estan permitidos");
             messageLbl.setText("Los números y/o caracteres especiales no están permitidos");
@@ -763,7 +796,7 @@ public class PiezaViewController {
             correcto = true;
         }
         return correcto;
-        
+
     }
 
     /**
