@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:id="incidenciaPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.IncidenciaCLViewController">
+<Pane fx:id="incidenciaPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.IncidenciaCLViewController">
    <children>
       <Pane layoutX="12.0" layoutY="36.0" prefHeight="154.0" prefWidth="776.0" style="-fx-background-color: lightgrey; -fx-border-color: black;">
          <children>
@@ -46,6 +46,6 @@
       <Hyperlink fx:id="hpl_Perfil" alignment="CENTER" layoutX="520.0" layoutY="208.0" prefHeight="23.0" prefWidth="75.0" text="Usuario" />
       <Button fx:id="btnInforme" layoutX="614.0" layoutY="206.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Informe" />
       <ToggleButton fx:id="btnToogleFiltro" layoutX="48.0" layoutY="206.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="134.0" text="Incidencias Acabadas" />
-      <Label id="lblError" disable="true" layoutX="236.0" layoutY="210.0" prefHeight="17.0" prefWidth="237.0" text="Label" />
+      <Label fx:id="lblError" disable="true" layoutX="236.0" layoutY="210.0" prefHeight="17.0" prefWidth="237.0" text="Label" />
    </children>
 </Pane>

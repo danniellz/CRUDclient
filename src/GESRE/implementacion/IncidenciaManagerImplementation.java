@@ -93,7 +93,7 @@ public class IncidenciaManagerImplementation implements IncidenciaManager {
 
     @Override
     public void createIncidencia(Incidencia incidencia) {
-        this.webClient.create(incidencia);
+       webClient.create(incidencia);
     }
 
     @Override
