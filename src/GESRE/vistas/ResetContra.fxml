@@ -9,16 +9,16 @@
 <Pane id="logOutPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.ResetContraController">
    <children>
       <Pane layoutX="-3.0" prefHeight="87.0" prefWidth="606.0" style="-fx-background-color: lightgrey; -fx-border-color: black;" />
-      <TextField layoutX="145.0" layoutY="185.0" prefHeight="31.0" prefWidth="331.0" promptText="ejemplo@ejemplo.com" />
+      <TextField fx:id="txtCorreo" layoutX="145.0" layoutY="185.0" prefHeight="31.0" prefWidth="331.0" promptText="ejemplo@ejemplo.com" />
       <Label layoutX="165.0" layoutY="27.0" prefHeight="35.0" prefWidth="291.0" text="RESETEAR CONTRASEÑA">
          <font>
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <Button layoutX="266.0" layoutY="266.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="89.0" text="Resetear" />
-      <Button layoutX="49.0" layoutY="337.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="89.0" text="Volver" />
+      <Button fx:id="btnResetear" layoutX="266.0" layoutY="266.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="89.0" text="Resetear" />
+      <Button fx:id="btnVolver" layoutX="49.0" layoutY="337.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="89.0" text="Volver" />
       <Label layoutX="196.0" layoutY="133.0" text="Introduce el Correo del Usuario a recuperar" />
-      <Label layoutX="181.0" layoutY="231.0" text="Se le enviará un Correo con su nueva Contraseña" />
+      <Label fx:id="messageLbl" layoutX="145.0" layoutY="223.0" prefHeight="25.0" prefWidth="331.0" />
       <Label layoutX="145.0" layoutY="159.0" prefHeight="17.0" prefWidth="331.0" />
    </children>
 </Pane>

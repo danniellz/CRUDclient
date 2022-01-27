@@ -1,10 +1,11 @@
 package GESRE.controller;
 
-
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -21,6 +22,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
 /**
  * Controlador de la ventana de recuperación de contraseña
  *
@@ -31,20 +33,24 @@ public class ResetContraController {
 
     //LOGGER
     private static final Logger LOG = Logger.getLogger(ResetContraController.class.getName());
+    public static final Pattern VALIDEMAIL = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
     //Attributes, @FXML allows interaction with controls from the FXML file
     private Stage stage;
+
+    //********TEXT FIELDS********
     @FXML
-    private TextField userTxt;
+    private Label messageLbl;
+
+    //********TEXT FIELDS********
     @FXML
-    private PasswordField passwordTxt;
+    private TextField txtCorreo;
+
+    //********BOTONES*******
     @FXML
-    private Button loginBtn;
+    private Button btnResetear;
     @FXML
-    private Hyperlink signUpHl;
-    @FXML
-    private Label errorLbl;
-    private String username, password;
+    private Button btnVolver;
 
     /**
      * Establecer el Stage
@@ -72,8 +78,8 @@ public class ResetContraController {
             stage.setResizable(false);
             stage.setOnCloseRequest(this::handleCloseRequest);
             //Controles
-            errorLbl.setVisible(false);
-            errorLbl.setStyle("-fx-text-fill: red");
+            messageLbl.setVisible(false);
+            btnResetear.setOnAction(this::handleBtnResetear);
             //Mostrar ventana
             stage.show();
             LOG.info("Ventana Actual: ResetContra");
@@ -134,28 +140,27 @@ public class ResetContraController {
     }
 
     /**
-     * Llamar a este método establecerá las propiedades del campo Correo (textProperty())
-     *
-     * @param observable targeted field whose value changed
-     * @param oldValue previous value before change
-     * @param newValue last value typed
+     * 
+     * @param resetearEvent 
      */
-    private void handleCorreoControl(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        try {
-            //if a 26 character its typed, take first character to 25 and set it to the field(spaces not allowed)
-            if (userTxt.getText().length() > 25) {
-                userTxt.setText(userTxt.getText().substring(0, 25));
-            }
-            //Control empty spaces
-            if (userTxt.getText().contains(" ")) {
-                userTxt.setText(userTxt.getText().replaceAll(" ", ""));
-            }
-            //Show error label
-            errorLbl.setVisible(false);
-            userTxt.setStyle("");
-            passwordTxt.setStyle("");
-        } catch (Exception ex) {
-            LOG.log(Level.SEVERE, "Error Setting User field control", ex);
+    private void handleBtnResetear(ActionEvent resetearEvent) {
+        Matcher matcher = VALIDEMAIL.matcher(txtCorreo.getText());
+        if (txtCorreo.getText().isEmpty()) {
+            LOG.warning("El campo Correo está vacio");
+            messageLbl.setText("Porfavor, introduce un correo");
+            messageLbl.setVisible(true);
+        } else if (matcher.find()) {
+            messageLbl.setVisible(false);
+            txtCorreo.setStyle("");
+            messageLbl.setStyle("-fx-border-color: WHITE;");
+
+        } else {
+            LOG.warning("Formato de correo no válido");
+            messageLbl.setText("Por Favor, Introduce un Correo valido");
+            txtCorreo.setStyle("-fx-border-color: #DC143C; -fx-border-width: 1.5px ;");
+            messageLbl.setVisible(true);
+            messageLbl.setStyle("-fx-text-fill: #DC143C");
+
         }
     }
 }
