@@ -129,7 +129,7 @@ public class PiezaViewController {
      * Establece el Stage de PiezaView
      *
      * @param piezaViewStage valor del Stage pieazViewStage
-     * @param id
+     * @param id identificador del trabajador
      */
     public void setStage(Stage piezaViewStage, Integer id) {
         stage = piezaViewStage;
@@ -143,7 +143,7 @@ public class PiezaViewController {
      */
     public void initStage(Parent root) {
         try {
-            LOG.info("Inicializando Stage...");
+            LOG.info("PiezaViewController: Inicializando Stage...");
             //Crear nueva Scene
             Scene scene = new Scene(root);
             //Asociar la Scene a una ventana
@@ -201,7 +201,7 @@ public class PiezaViewController {
             //Mostrar ventana (asincrona)
             stage.show();
         } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Error al inicializar Stage", e);
+            LOG.log(Level.SEVERE, "PiezaViewController: Error al inicializar Stage", e);
         }
 
     }
@@ -215,7 +215,7 @@ public class PiezaViewController {
      */
     private void startSignInWindow(Stage primaryStage) throws IOException {
         try {
-            LOG.info("Abriendo ventana SignIn...");
+            LOG.info("PiezaViewController: Abriendo ventana SignIn...");
             //Carga el archivo FXML
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/SignIn.fxml"));
             Parent root = (Parent) loader.load();
@@ -226,7 +226,7 @@ public class PiezaViewController {
             //Inicializa la ventana
             signinController.initStage(root);
         } catch (IOException ex) {
-            LOG.log(Level.SEVERE, "Error al intentar abrir la ventana de SignUp", ex);
+            LOG.log(Level.SEVERE, "PiezaViewController: Error al intentar abrir la ventana de SignUp", ex);
         }
 
     }
@@ -241,26 +241,27 @@ public class PiezaViewController {
      */
     /*private void startIncidenciaViewTWindow(Stage primaryStage) throws IOException {
         try {
-            LOG.info("Abriendo ventana IncidenciaViewTWindow...");
+            LOG.info("PiezaViewController: Abriendo ventana IncidenciaViewTWindow...");
             //Carga el archivo FXML
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/IncidenciaViewT.fxml"));
             Parent root = (Parent) loader.load();
             //Obtiene el controlador
-            IncidenciaCLViewController controlador = ((SignInController) loader.getController());
+            IncidenciaCLViewController controlador = ((IncidenciaCLViewController) loader.getController());
             //Establece el Stage
             controlador.setStage(primaryStage);
             //Inicializa la ventana
             controlador.initStage(root);
         } catch (IOException ex) {
-            LOG.log(Level.SEVERE, "Error al intentar abrir la ventana de SignUp", ex);
+            LOG.log(Level.SEVERE, "PiezaViewController: Error al intentar abrir la ventana de IncidenciaViewT", ex);
         }
 
     }*/
+    
     /**
      * Llamar a este método limpiara todos los campos si están informados
      */
     private void handleLimpiar(ActionEvent limpiarEvent) {
-        LOG.info("Limpiando todos los campos");
+        LOG.info("PiezaViewController: Limpiando todos los campos");
         //Deseleccionar la fila
         tablaPiezas.getSelectionModel().clearSelection();
         txtNombre.setText("");
@@ -274,6 +275,7 @@ public class PiezaViewController {
      * Llamar a este método buscará las piezas por le nombre introducido
      */
     private void handleBtnBuscar(ActionEvent buscarEvent) {
+        LOG.info("PiezaViewController: Boton Buscar presionado");
         //Deseleccionar la fila
         tablaPiezas.getSelectionModel().clearSelection();
         messageLbl.setVisible(false);
@@ -281,25 +283,26 @@ public class PiezaViewController {
 
         //Combobox TODO
         if (cbxFiltro.getSelectionModel().getSelectedIndex() == 0) {
-            LOG.info("Filtro: Todo");
+            LOG.info("PiezaViewController: Filtro: Todo, buscando...");
             datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByTrabajadorId(pieza, idTrabajador));
         }
         //Combobox NOMBRE
         if (cbxFiltro.getSelectionModel().getSelectedIndex() == 1) {
             if (txtNombreFiltro.getText().isEmpty()) {
+                LOG.warning("PiezaViewController: No has escrito un nombre para buscar");
                 messageLbl.setText("No has escrito un nombre para buscar");
                 messageLbl.setStyle("-fx-text-fill: #DC143C");
                 messageLbl.setVisible(true);
                 txtNombreFiltro.setStyle("-fx-border-color: #DC143C ; -fx-border-width: 1.5px ;");
             } else {
-                LOG.log(Level.INFO, "Filtro: Nombre");
+                LOG.info("Filtro: Nombre, buscando...");
                 datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByName(pieza, txtNombreFiltro.getText()));
             }
 
         }
         //ComboBox STOCK
         if (cbxFiltro.getSelectionModel().getSelectedIndex() == 2) {
-            LOG.info("Filtro: Stock");
+            LOG.info("Filtro: Stock, buscando...");
             datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByStock(pieza, idTrabajador));
         }
 
@@ -315,6 +318,7 @@ public class PiezaViewController {
      * @param anadirEvent evento de accion
      */
     private void handleBtnAnadir(ActionEvent anadirEvent) throws PiezaExisteException {
+        LOG.info("PiezaViewController: Boton Añadir presionado");
         //No se admiten caracteres especiales en Nombre
         if (SpCharControl()) {
             //Solo se admiten numeros no negativos en Stock
@@ -322,6 +326,7 @@ public class PiezaViewController {
                 try {
                     List<Pieza> piezas;
                     //Comprobar si la pieza existe
+                    LOG.info("PiezaViewController: Comprobando si la pieza ya existe...");
                     piezasManager.piezaExiste(pieza, txtNombre.getText());
                     //Datos del trabajador que crea la pieza
                     trabajador = trabajadorManager.findTrabajador(idTrabajador);
@@ -338,7 +343,7 @@ public class PiezaViewController {
                     //Buscar la pieza recien creada para obtener su id y agregarla en la tabla, (sino, el id es null y no se puede borrar al instante de crearla)
                     piezas = (List<Pieza>) piezasManager.findAllPiezaByName(pieza, txtNombre.getText());
                     pieza = piezas.get(0);
-                    LOG.info("PiezaViewController/Pieza Creada: " + pieza.toString());
+                    LOG.info("PiezaViewController: Pieza Creada: " + pieza.toString());
 
                     //Limpiar todos los campos
                     handleLimpiar(anadirEvent);
@@ -363,6 +368,7 @@ public class PiezaViewController {
                     txtNombre.requestFocus();
                 }
             } else {
+                LOG.severe("Solo se admiten números (positivos)");
                 messageLbl.setText("Solo se admiten números (positivos)");
                 txtADescripcion.setStyle("-fx-border-color: White;");
                 txtNombre.setStyle("-fx-border-color: White;");
@@ -370,6 +376,7 @@ public class PiezaViewController {
                 txtNombreFiltro.setStyle("-fx-border-color: White;");
                 txtStock.setStyle("-fx-border-color: #DC143C ; -fx-border-width: 1.5px ;");
                 messageLbl.setVisible(true);
+                txtStock.requestFocus();
             }
 
         }
@@ -381,12 +388,14 @@ public class PiezaViewController {
      * @param borrarEvent evento de accion
      */
     private void handleBtnBorrar(ActionEvent borrarEvent) {
+        LOG.info("PiezaViewController: Boton Borrar presionado");
         try {
             LOG.info("Borrando Pieza...");
             //Obtener la pieza seleccionada de la tabla
             pieza = tablaPiezas.getSelectionModel().getSelectedItem();
 
             if (pieza == null) {
+                LOG.severe("PiezaViewController: La Pieza que quiere borrar no existe");
                 //Ventana de error
                 alert = new Alert(Alert.AlertType.ERROR);
                 alert.setHeaderText("La Pieza que quiere borrar no existe");
@@ -394,12 +403,14 @@ public class PiezaViewController {
                 alert.show();
             } else {
                 if (txtNombre.isDisabled()) {
+                    LOG.warning("PiezaViewController: No puedes Borrar la pieza de otro trabajador");
                     //Ventana de error sii la pieza es de otro trabajador
                     alert = new Alert(Alert.AlertType.ERROR);
                     alert.setHeaderText("No puedes Borrar la pieza de otro trabajador");
                     alert.setTitle("Error de borrado");
                     alert.show();
                 } else {
+                    LOG.info("PiezaViewController: Confirmando borrado...");
                     //Ventana de confirmacion
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
                             "¿Borrar la fila seleccionada?\n"
@@ -407,7 +418,7 @@ public class PiezaViewController {
                     Optional<ButtonType> result = alert.showAndWait();
                     //Respuesta afirmativa
                     if (result.isPresent() && result.get() == ButtonType.OK) {
-                        LOG.info("Borrado Confirmado de la Pieza " + pieza.getNombre());
+                        LOG.info("PiezaViewController: Borrado Confirmado de la Pieza " + pieza.getNombre());
                         pieza.setTrabajador(null);
                         piezasManager.editPieza(pieza, idTrabajador);
                         //Borrar Pieza del servidor
@@ -428,7 +439,7 @@ public class PiezaViewController {
                         alert.show();
 
                     } else {
-                        LOG.info("Borrado Cancelado");
+                        LOG.info("PiezaViewController: Borrado Cancelado");
                     }
                 }
             }
@@ -444,11 +455,13 @@ public class PiezaViewController {
      * @param editarWEvent evento de accion
      */
     private void handleBtnEditar(ActionEvent editarEvent) {
+        LOG.info("PiezaViewController: Boton Editar presionado");
         try {
-            LOG.info("Actualizando Pieza...");
+            LOG.info("PiezaViewController: Actualizando Pieza...");
             //Obtener la pieza seleccionada de la tabla
             pieza = tablaPiezas.getSelectionModel().getSelectedItem();
             if (pieza == null) {
+                LOG.severe("PiezaViewController: La Pieza que quiere Actualizar no existe");
                 //Ventana de error
                 alert = new Alert(Alert.AlertType.ERROR);
                 alert.setHeaderText("La Pieza que quiere Actualizar no existe");
@@ -456,13 +469,15 @@ public class PiezaViewController {
                 alert.show();
             } else {
                 if (txtNombre.isDisabled()) {
-                    //Ventana de error sii la pieza es de otro trabajador
+                    LOG.warning("PiezaViewController: No puedes Actualizar la pieza de otro trabajador");
+                    //Ventana de error si la pieza es de otro trabajador
                     alert = new Alert(Alert.AlertType.ERROR);
                     alert.setHeaderText("No puedes Actualizar la pieza de otro trabajador");
                     alert.setTitle("Error al Actualizar");
                     alert.show();
                 } else {
                     if (txtNombre.getText().equals(pieza.getNombre()) && txtADescripcion.getText().equals(pieza.getDescripcion()) && txtStock.getText().equals(pieza.getStock().toString())) {
+                        LOG.warning("PiezaViewController: No se han detectado cambios");
                         //Ventana de error si la pieza no se ha modificado
                         alert = new Alert(Alert.AlertType.ERROR);
                         alert.setHeaderText("No se han detectado cambios");
@@ -471,10 +486,10 @@ public class PiezaViewController {
                     } else {
                         //la pieza puede actualizarse sin cambiar el nombre
                         if (txtNombre.getText().equals(pieza.getNombre())) {
-                            LOG.info("Actualizando pieza sin cambiar el nombre");
+                            LOG.info("PiezaViewController: Actualizando pieza sin cambiar el nombre");
                         } else {
                             //si la pieza cambia de nombre se comprubea si ya existe
-                            LOG.info("Comprobando si el nombre introducido ya existe");
+                            LOG.info("PiezaViewController: Comprobando si el nombre introducido ya existe");
                             piezasManager.piezaExiste(pieza, txtNombre.getText());
                         }
 
@@ -483,7 +498,7 @@ public class PiezaViewController {
                         pieza.setDescripcion(txtADescripcion.getText());
                         pieza.setStock(new Integer(txtStock.getText()));
                         piezasManager.editPieza(pieza, pieza.getId());
-                        LOG.info("Pieza Actualizada");
+                        LOG.info("PiezaViewController: Pieza Actualizada");
 
                         //Limpiar todos los campos
                         handleLimpiar(editarEvent);
@@ -506,6 +521,7 @@ public class PiezaViewController {
 
         } catch (PiezaExisteException e) {
             LOG.severe(e.getMessage());
+            //Error si la pieza ya existe
             messageLbl.setText("La Pieza ya existe");
             messageLbl.setStyle("-fx-text-fill: #DC143C");
             messageLbl.setVisible(true);
@@ -522,22 +538,24 @@ public class PiezaViewController {
      * @param salirWindowEvent evento de ventana
      */
     public void handleSalir(WindowEvent salirWindowEvent) {
+        LOG.info("PiezaViewController: Salir presionado");
         try {
-            LOG.info("Confirmando cierre de ventana...");
+            LOG.info("PiezaViewController: Confirmando cierre de ventana...");
+            //Ventana de confirmacion
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setHeaderText("¿Estás seguro de querer Salir?");
             alert.setTitle("Salir");
             Optional<ButtonType> option = alert.showAndWait();
             if (option.get() == ButtonType.OK) {
-                LOG.info("Cerrando...");
+                LOG.info("PiezaViewController: Cerrando...");
                 Platform.exit();
             } else {
-                LOG.info("Cierre del programa cancelado");
-                //Cancel the event process
+                LOG.info("PiezaViewController: Cierre del programa cancelado");
+                //Cancela el evento
                 salirWindowEvent.consume();
             }
         } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Error al intentar cerrar la ventana", e);
+            LOG.log(Level.SEVERE, "PiezaViewController: Error al intentar cerrar la ventana", e);
         }
     }
 
@@ -548,23 +566,24 @@ public class PiezaViewController {
      * @param cerrarSesiontEvent Cerrar Sesion action event
      */
     public void handleCerrarSesion(ActionEvent cerrarSesiontEvent) {
+        LOG.info("PiezaViewController: Cerrar Sesion presionado");
         try {
-            //Pressing the LogOut option will show an Alert to confirm it
-            LOG.info("Confirmar Cerrar Sesion");
+            //Ventana de confirmacion
+            LOG.info("PiezaViewController: Confirmar Cerrar Sesion");
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setHeaderText("¿Seguro que quieres cerrar sesión?");
             alert.setTitle("Cerrar Sesión");
             Optional<ButtonType> option = alert.showAndWait();
             if (option.get() == ButtonType.OK) {
-                LOG.info("Cerrando Sesión...");
+                LOG.info("PiezaViewController: Cerrando Sesión...");
                 startSignInWindow(stage);
             } else {
-                LOG.info("Cerrar Sesión Cancelado");
+                LOG.info("PiezaViewController: Cerrar Sesión Cancelado");
                 //Cancela el evento
                 cerrarSesiontEvent.consume();
             }
         } catch (IOException ex) {
-            LOG.log(Level.SEVERE, "Error al intentar Cerrar Sesión", ex);
+            LOG.log(Level.SEVERE, "PiezaViewController: Error al intentar Cerrar Sesión", ex);
         }
     }
 
@@ -720,28 +739,25 @@ public class PiezaViewController {
      */
     private void desabilitarBtnCamposVacios() {
         LOG.info("Deshabilitando botones Añadir, Editar y Borrar");
-        //Se comprueba cuando el boton debe estar desabilitado
-        if (txtNombre.isDisabled() && txtADescripcion.isDisabled() && txtStock.isDisabled()) {
-            btnAnadir.setDisable(true);
-            btnBorrar.setDisable(true);
-            btnEditar.setDisable(true);
-        } else {
-            btnAnadir.disableProperty().bind(
-                    txtNombre.textProperty().isEmpty()
-                            .or(txtADescripcion.textProperty().isEmpty())
-                            .or(txtStock.textProperty().isEmpty())
-            );
-            btnEditar.disableProperty().bind(
-                    txtNombre.textProperty().isEmpty()
-                            .or(txtADescripcion.textProperty().isEmpty())
-                            .or(txtStock.textProperty().isEmpty())
-            );
-            btnBorrar.disableProperty().bind(
-                    txtNombre.textProperty().isEmpty()
-                            .or(txtADescripcion.textProperty().isEmpty())
-                            .or(txtStock.textProperty().isEmpty())
-            );
-        }
+        //Se comprueba cuando el boton debe estar desabilitado (cuando esta vacio)
+        //Boton añadir
+        btnAnadir.disableProperty().bind(
+                txtNombre.textProperty().isEmpty()
+                        .or(txtADescripcion.textProperty().isEmpty())
+                        .or(txtStock.textProperty().isEmpty())
+        );
+        //Boton Editar
+        btnEditar.disableProperty().bind(
+                txtNombre.textProperty().isEmpty()
+                        .or(txtADescripcion.textProperty().isEmpty())
+                        .or(txtStock.textProperty().isEmpty())
+        );
+        //Boton Borrar
+        btnBorrar.disableProperty().bind(
+                txtNombre.textProperty().isEmpty()
+                        .or(txtADescripcion.textProperty().isEmpty())
+                        .or(txtStock.textProperty().isEmpty())
+        );
 
     }
 
@@ -751,9 +767,11 @@ public class PiezaViewController {
     private void controlComboBox() {
         cbxFiltro.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.equals("Nombre")) {
+                //Si se selecciona la opcion de buscar por Nombre del combobox, activar el campo NombreFiltro
                 txtNombreFiltro.setDisable(false);
                 txtNombreFiltro.requestFocus();
             } else {
+                //Mientras la opcion del combobox no sea Nombre, el campo NombreFiltro estara deshabilitado
                 txtNombreFiltro.setDisable(true);
                 txtNombreFiltro.setText("");
             }
@@ -761,12 +779,12 @@ public class PiezaViewController {
     }
 
     /**
-     * Users table selection changed event handler. It enables or disables
-     * buttons depending on selection state of the table.
+     * Control de selección de la tabla, al seleccionar una fila de la tabla los
+     * datos se mostrarán en los campos correspondientes
      *
-     * @param observable the property being observed: SelectedItem Property
-     * @param oldValue old UserBean value for the property.
-     * @param newValue new UserBean value for the property.
+     * @param observable la fila seleccionada
+     * @param oldValue valor anterior
+     * @param newValue valor actual
      */
     private void handleTablaPiezaSelection(ObservableValue observable, Object oldValue, Object newValue) {
         //Si una fila esta seleccionada mover los datos de la fila a los campos
@@ -777,11 +795,11 @@ public class PiezaViewController {
             txtStock.setText(pieza.getStock().toString());
             //Bloquear los campos si la pieza es de otro trabajador
             if (pieza.getTrabajador().getIdUsuario() != idTrabajador) {
+                LOG.info("Pieza de otro trabajador detectado, No tienes permiso para interactuar con esta pieza");
                 txtNombre.setDisable(true);
                 txtADescripcion.setDisable(true);
                 txtStock.setDisable(true);
             }
-
             LOG.info("Información de Pieza: " + pieza.toString());
         } else {
             LOG.info("Fila no seleccionada");
@@ -793,28 +811,34 @@ public class PiezaViewController {
             txtADescripcion.setDisable(false);
             txtStock.setDisable(false);
         }
-        //Focus login field
+        //Focus en campo Nombre
         txtNombre.requestFocus();
     }
 
     /**
      * LLamar a este método restringirá el uso de caracteres especiales
      *
-     * @return
+     * @return devuelve un valor booleano si un numero o caracter especial es
+     * detectado o no
      */
     public boolean SpCharControl() {
+        LOG.info("Comrpobando si el campo Nombre contiene numeros o caracteres especiales...");
         boolean correcto = false;
         String comp = "[^A-Za-zÀ-ȕ\\s]";
         Pattern espChar = Pattern.compile(comp);
         Matcher matcher = espChar.matcher(txtNombre.getText());
 
+        //Si un numero o caracter especial es detectado
         if (matcher.find()) {
             LOG.warning("Los caracteres especiales no estan permitidos");
             messageLbl.setText("Los números y/o caracteres especiales no están permitidos");
             txtNombre.setStyle("-fx-border-color: #DC143C; -fx-border-width: 1.5px ;");
             messageLbl.setVisible(true);
             messageLbl.setStyle("-fx-text-fill: #DC143C");
+            txtNombre.requestFocus();
         } else {
+            //si lo introducido es valido
+            LOG.info("El campo nombre es válido");
             txtNombre.setStyle("");
             messageLbl.setVisible(false);
             correcto = true;
@@ -827,7 +851,7 @@ public class PiezaViewController {
      * Llamar a este método imprimirá la información de todas las piezas del
      * trabajador, JFrame que contiene el reporte
      *
-     * @param event evento del objeto.
+     * @param event evento del objeto
      */
     private void handleBtnInforme(ActionEvent event) {
         try {
@@ -843,15 +867,13 @@ public class PiezaViewController {
             //crear y mostrar la ventana de reporte, el valor booleano hace que no se cierre la ventana en false
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
-            //jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         } catch (JRException ex) {
             //ventana de error si falla al imprimir reporte
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Ha ocurrido un error al intentar imprimir el reporte de la tabla Piezas");
             alert.setTitle("Error de Impresión");
-            alert.setAlertType(Alert.AlertType.ERROR);
             alert.show();
-            LOG.log(Level.SEVERE, "PiezaViewController: Error printing report: {0}", ex.getMessage());
+            LOG.log(Level.SEVERE, "PiezaViewController: Error al imprimir el reporte de piezas {0}", ex.getMessage());
         }
     }
 }
