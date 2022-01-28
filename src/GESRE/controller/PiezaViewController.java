@@ -462,33 +462,57 @@ public class PiezaViewController {
                     alert.setTitle("Error al Actualizar");
                     alert.show();
                 } else {
-                    //Datos nuevos
-                    pieza.setNombre(txtNombre.getText());
-                    pieza.setDescripcion(txtADescripcion.getText());
-                    pieza.setStock(new Integer(txtStock.getText()));
-                    piezasManager.editPieza(pieza, pieza.getId());
-                    LOG.info("Pieza Actualizada");
+                    if (txtNombre.getText().equals(pieza.getNombre()) && txtADescripcion.getText().equals(pieza.getDescripcion()) && txtStock.getText().equals(pieza.getStock().toString())) {
+                        //Ventana de error si la pieza no se ha modificado
+                        alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setHeaderText("No se han detectado cambios");
+                        alert.setTitle("Error al Actualizar");
+                        alert.show();
+                    } else {
+                        //la pieza puede actualizarse sin cambiar el nombre
+                        if (txtNombre.getText().equals(pieza.getNombre())) {
+                            LOG.info("Actualizando pieza sin cambiar el nombre");
+                        } else {
+                            //si la pieza cambia de nombre se comprubea si ya existe
+                            LOG.info("Comprobando si el nombre introducido ya existe");
+                            piezasManager.piezaExiste(pieza, txtNombre.getText());
+                        }
 
-                    //Limpiar todos los campos
-                    handleLimpiar(editarEvent);
+                        //Datos nuevos
+                        pieza.setNombre(txtNombre.getText());
+                        pieza.setDescripcion(txtADescripcion.getText());
+                        pieza.setStock(new Integer(txtStock.getText()));
+                        piezasManager.editPieza(pieza, pieza.getId());
+                        LOG.info("Pieza Actualizada");
 
-                    //Deseleccionar fila
-                    tablaPiezas.getSelectionModel().clearSelection();
+                        //Limpiar todos los campos
+                        handleLimpiar(editarEvent);
 
-                    //Actualizar tabla
-                    tablaPiezas.refresh();
+                        //Deseleccionar fila
+                        tablaPiezas.getSelectionModel().clearSelection();
 
-                    //Ventana de confirmacion
-                    alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setHeaderText("La Pieza '" + pieza.getNombre() + "' se ha actualizado con exito!");
-                    alert.setTitle("Actualizar Pieza");
-                    alert.show();
+                        //Actualizar tabla
+                        tablaPiezas.refresh();
+
+                        //Ventana de confirmacion
+                        alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setHeaderText("La Pieza '" + pieza.getNombre() + "' se ha actualizado con exito!");
+                        alert.setTitle("Actualizar Pieza");
+                        alert.show();
+                    }
                 }
+
             }
 
+        } catch (PiezaExisteException e) {
+            LOG.severe(e.getMessage());
+            messageLbl.setText("La Pieza ya existe");
+            messageLbl.setStyle("-fx-text-fill: #DC143C");
+            messageLbl.setVisible(true);
+            txtNombre.setStyle("-fx-border-color: #DC143C ; -fx-border-width: 1.5px ;");
+            txtNombre.requestFocus();
         } catch (Exception e) {
             LOG.severe(e.getMessage());
-
         }
     }
 
