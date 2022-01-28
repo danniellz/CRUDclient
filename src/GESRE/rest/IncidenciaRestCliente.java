@@ -5,6 +5,7 @@
  */
 package GESRE.rest;
 
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -28,7 +29,7 @@ public class IncidenciaRestCliente {
     private WebTarget webTarget;
     private Client client;
     
-    private static final String BASE_URI = "http://localhost:8080/GESREserver/webresources";
+    private static final String BASE_URI =ResourceBundle.getBundle("GESRE.archivos.config").getString("RESTFUL_URI");
 
     public IncidenciaRestCliente() {
         client = javax.ws.rs.client.ClientBuilder.newClient();

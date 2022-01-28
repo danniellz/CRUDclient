@@ -12,6 +12,7 @@ import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.IncidenciaManager;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -59,11 +60,10 @@ public class IncidenciaCLViewController {
 
     //**************Controlles de Campos******************
     private static final int MAX_LENGHT_EST = 1;
-
     private static final int MAX_LENGHT_HOR = 2;
 
-    public static final Pattern VALID_EST = Pattern.compile("[0-5]*", Pattern.CASE_INSENSITIVE);
-    public static final Pattern VALID_HOR = Pattern.compile("[0-99]*", Pattern.CASE_INSENSITIVE);
+    public static final Pattern VALID_EST = Pattern.compile("[0-5]", Pattern.CASE_INSENSITIVE);
+    public static final Pattern VALID_HOR = Pattern.compile("[0-99]", Pattern.CASE_INSENSITIVE);
 
     //**************label de Informacion *****************
     @FXML
@@ -171,6 +171,12 @@ public class IncidenciaCLViewController {
             //**************-Controles de los campos de Texto-*****************
             Estr_TxtLabel.textProperty().addListener(this::handleControlTama);
             Hor_TxtLabel.textProperty().addListener(this::handleControlTama);
+            cbxTipoIncidencia.getSelectionModel().selectedItemProperty().addListener((observable) -> {
+                habilitarBotones();
+            });
+            cbxEstadoIncidencia.getSelectionModel().selectedItemProperty().addListener((observable) -> {
+                habilitarBotones();
+            });
 
             //Establecer los valores que aparecen dentro de cada celda
             tipoIncidenciaCL.setCellValueFactory(new PropertyValueFactory<>("tipoIncidencia"));
@@ -234,32 +240,6 @@ public class IncidenciaCLViewController {
         }
     }
 
-    /*  public void handleActionButtons() {
-        LOG.info("Deshabilitando botones Añadir, Editar y Borrar");
-        //Se comprueba cuando el boton debe estar desabilitado
-        btnAnadir.disableProperty().bind(
-                Estr_TxtLabel.textProperty().isEmpty()
-                        .or(Hor_TxtLabel.textProperty().isEmpty())
-        );
-        btnModificar.disableProperty().bind(
-                Estr_TxtLabel.textProperty().isEmpty()
-                        .or(Hor_TxtLabel.textProperty().isEmpty())
-        );
-
-        btnEliminar.disableProperty().bind(
-                Estr_TxtLabel.textProperty().isEmpty()
-                        .or(Hor_TxtLabel.textProperty().isEmpty())
-        );
-        boolean selectedIndex = false;
-        if (cbxTipoIncidencia.getSelectionModel().getSelectedIndex() != -1 && cbxEstadoIncidencia.getSelectionModel().getSelectedIndex() != -1) {
-            selectedIndex = true;
-        } else {
-            selectedIndex = false;
-        }
-        if (selectedIndex) {
-            cbxTipoIncidencia.setDisable(false);
-        }
-    }*/
     private void handleLimpiarFormulario(ActionEvent event) {
         Estr_TxtLabel.setText(" ");
         Hor_TxtLabel.setText(" ");
@@ -292,9 +272,9 @@ public class IncidenciaCLViewController {
 
     private void handleAnadir(ActionEvent anadirEvent) {
         // try {
-        boolean juan = camposCorrectos();
-        LOG.info("SOY JUAN Y ESTOY " + juan);
-        if (juan) {
+
+        if (camposCorrectos()) {
+
             //Solo se admiten numeros no negativos
             LOG.info("Añadiendo la Incidencia");
             incidencia = new Incidencia();
@@ -305,6 +285,13 @@ public class IncidenciaCLViewController {
             incidencia.setHoras(new Integer(Hor_TxtLabel.getText()));
 
             incidenciaManager.createIncidencia(incidencia);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("CREAR");
+            alert.setHeaderText(null);
+            alert.setResizable(false);
+            alert.setContentText("La incidencia ha sido creado con existo");
+            alert.show();
             LOG.info(incidencia.toString());
             //Agregar nueva pieza a tabla
             tablaIncidencias.getItems().add(incidencia);
@@ -313,7 +300,12 @@ public class IncidenciaCLViewController {
             tablaIncidencias.refresh();
 
         } else {
-
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("CREAR");
+            alert.setHeaderText(null);
+            alert.setResizable(false);
+            alert.setContentText("La incidencia NO ha sido creado con existo");
+            alert.show();
             //introducir texto en el mensaje de error
             //mostrar mensaje de Error
             lblError.setVisible(true);
@@ -366,10 +358,10 @@ public class IncidenciaCLViewController {
     }
 
     private void handleModificar(ActionEvent Event) {
-        boolean pedro = camposCorrectos();
-        LOG.info("SOY PEDRO Y ESTOY" + pedro);
-        if (!pedro) {
-            LOG.info("Añadiendo la Incidencia");
+        boolean campCor = camposCorrectos();
+        if (campCor) {
+
+            LOG.info("Modificando la Incidencia " + camposCorrectos() + " HHHHHHHHHHHHHHHHHHHHH");
             incidencia = new Incidencia();
 
             Incidencia incidenciaSelec = tablaIncidencias.getSelectionModel().getSelectedItem();
@@ -380,18 +372,24 @@ public class IncidenciaCLViewController {
             incidenciaSelec.setHoras(new Integer(Hor_TxtLabel.getText()));
 
             incidenciaManager.editIncidencia(incidenciaSelec, String.valueOf(incidenciaSelec.getId()));
-
-            LOG.info(incidencia.toString());
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Modificar");
+            alert.setHeaderText(null);
+            alert.setResizable(false);
+            alert.setContentText("Se ha modificado la Incidencia");
+            alert.show();
             //Agregar nueva pieza a tabla
-
             //Actualizar tabla
             tablaIncidencias.refresh();
         } else {
+            LOG.info("NO Modificando la Incidencia" + camposCorrectos() + "HHHHHHHHHHHHHHHHHHHHH");
             //introducir texto en el mensaje de error
-            Estr_TxtLabel.setStyle("-fx-border-color: White;");
-            Hor_TxtLabel.setStyle("-fx-border-color: White;");
-            cbxEstadoIncidencia.setStyle("-fx-border-color: White;");
-            cbxTipoIncidencia.setStyle("-fx-border-color: White;");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Modificar");
+            alert.setHeaderText(null);
+            alert.setResizable(false);
+            alert.setContentText("NO Se ha modificado la Incidencia");
+            alert.show();
             //mostrar mensaje de Error
             lblError.setVisible(true);
 
@@ -400,33 +398,42 @@ public class IncidenciaCLViewController {
 
     private boolean camposCorrectos() {
         boolean patronesTextoBien = true;
-
+        boolean estrPatron = true;
+        boolean horasPatron = true;
         Matcher matcher = null;
 
         matcher = VALID_EST.matcher(Estr_TxtLabel.getText());
-        if (matcher.find()) {
-            LOG.info("PATRON DE ESTRELLAS: ESTA MAL");
+        if (!matcher.find()) {
+            LOG.info("PATRON DE ESTRELLAS: ESTA MAL" + matcher.find() + "PATRON es " + VALID_EST + "EL texto " + Estr_TxtLabel.getText());
             lblError.setVisible(true);
             lblError.setText("Las Estrellas son medidas del 0 al 5");
             lblError.setTextFill(Color.web("#FF0000"));
-            patronesTextoBien = false;
+            estrPatron = false;
         } else {
-            LOG.info("PATRON DE ESTRELLAS: ESTA BIEN");
+            LOG.info("PATRON DE ESTRELLAS: ESTA BIEN" + matcher.find() + "PATRON es " + VALID_EST + "EL texto " + Estr_TxtLabel.getText());
             lblError.setVisible(false);
             lblError.setText("");
+            estrPatron = true;
         }
 
         matcher = VALID_HOR.matcher(Hor_TxtLabel.getText());
-        if (!matcher.find()) {
-            LOG.info("PATRON DE HORAS: ESTA MAL");
+        boolean lag= matcher.find();
+        if (!lag) {
+            LOG.info("PATRON DE HORAS: ESTA MAL" + lag + "PATRON es " + VALID_HOR + "EL texto " + Hor_TxtLabel.getText());
             lblError.setVisible(true);
             lblError.setText("Solo se permiten 2 digitos en las Horas");
             lblError.setTextFill(Color.web("#FF0000"));
-            patronesTextoBien = false;
+            horasPatron = false;
         } else {
-            LOG.info("PATRON DE HORAS: ESTA BIEN");
-           // lblError.setVisible(false);
-           // lblError.setText("");
+            LOG.info("PATRON DE HORAS: ESTA BIEN" + lag + VALID_HOR + "EL texto " + Hor_TxtLabel.getText());
+            // lblError.setVisible(false);
+            // lblError.setText("");
+            horasPatron = true;
+        }
+        if (horasPatron && estrPatron) {
+            patronesTextoBien = true;
+        } else {
+            patronesTextoBien = false;
         }
         return patronesTextoBien;
     }
