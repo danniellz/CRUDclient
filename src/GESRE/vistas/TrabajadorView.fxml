@@ -22,7 +22,7 @@
             <menus>
                 <Menu mnemonicParsing="false" text="Archivo">
                     <items>
-                        <MenuItem fx:id="mnCerrarSesion" mnemonicParsing="false" text="Cerrar Sesión" />
+                        <MenuItem fx:id="mnCerrarSecion" mnemonicParsing="false" text="Cerrar Sesión" />
                         <MenuItem fx:id="mnSalir" mnemonicParsing="false" text="Salir" />
                     </items>
                 </Menu>

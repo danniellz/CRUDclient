@@ -33,10 +33,10 @@ public class GESREClient extends Application {
         try {
             LOG.info("Iniciando Ventana...");
             //Load the FXML file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/SignIn.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/TrabajadorView.fxml"));
             Parent root = (Parent) loader.load();
             //Get controller
-            SignInController controlador = loader.getController();
+           GestionTrabajadorViewController controlador = loader.getController();
             //Set the stage
             controlador.setStage(primaryStage);
             //initialize the window

@@ -42,11 +42,10 @@ import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 public class GestionTrabajadorViewControllerTest extends ApplicationTest {
 
     private static final String TEXT_50 = "XXXXXXXXXXXXXXXXXXXXXXXX"
-                                                                              + "XXXXXXXXXXXXXXXXXXXXXXXXXXX";
-    
+            + "XXXXXXXXXXXXXXXXXXXXXXXXXXX";
+
     private static final String TEXT_25 = "XXXXXXXXXXXXXXXXXXXXXXXX"
-                                                                              + "XXXXXXXXXXXXXXXXXXXXXXXX";
- 
+            + "XXXXXXXXXXXXXXXXXXXXXXXX";
 
     private Pane paneGeneralTrabajador;
     private Pane fxPane;
@@ -157,17 +156,28 @@ public class GestionTrabajadorViewControllerTest extends ApplicationTest {
         verifyThat("#txtBuscar", hasText(""));
         verifyThat("#txtContrasenia", hasText(""));
         verifyThat("#txtRepiteContrasenia", hasText(""));
+        verifyThat("#lblErrorNombreCompleto", hasText(""))   ;
+ 
 
-        verifyThat("#datePikerFechaContrato", isVisible());
-        verifyThat("#btnAnadir", isVisible());
-        verifyThat("#btnModificar", isVisible());
-        verifyThat("#btnEliminar", isVisible());
-        verifyThat("#btnLimpiar", isVisible());
-        verifyThat("#btnBuscar", isVisible());
-        verifyThat("#btnInforme", isVisible());
-        verifyThat("#tablaTrabajadores", isVisible());
+        verifyThat(
+                "#datePikerFechaContrato", isVisible());
+        verifyThat(
+                "#btnAnadir", isVisible());
+        verifyThat(
+                "#btnModificar", isVisible());
+        verifyThat(
+                "#btnEliminar", isVisible());
+        verifyThat(
+                "#btnLimpiar", isVisible());
+        verifyThat(
+                "#btnBuscar", isVisible());
+        verifyThat(
+                "#btnInforme", isVisible());
+        verifyThat(
+                "#tablaTrabajadores", isVisible());
 
-        verifyThat("#txtNombreCompleto", (TextField t) -> t.isFocused());
+        verifyThat(
+                "#txtNombreCompleto", (TextField t) -> t.isFocused());
     }
 
     /**

@@ -52,7 +52,7 @@ public interface TrabajadorManager {
      * @param name
      * @return Colección de los trabajadores existentes.
      */
-    public Collection<Trabajador> buscarTrabajadorPorNombre(String name);
+    public Collection<Trabajador> buscarTrabajadorPorNombre(String name) ;
 
     /**
      * Método que busca a todos los trabajadores.

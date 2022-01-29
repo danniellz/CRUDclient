@@ -165,7 +165,7 @@ public class TrabajadorManagerImplementacion implements TrabajadorManager {
      * @return Una colección de objetos Trabajador con los datos.
      */
     @Override
-    public Collection<Trabajador> buscarTrabajadorPorNombre(String name) {
+    public Collection<Trabajador> buscarTrabajadorPorNombre(String name)  {
         List<Trabajador> trabajadores = null;
         try {
             LOGGER.info("TrabajadorManagerImplementation: Buscando trabajador por el nombre");
