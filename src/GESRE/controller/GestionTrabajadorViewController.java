@@ -464,6 +464,7 @@ public class GestionTrabajadorViewController {
      * @param newValue El valor nuevo de la propiedad.
      */
     private void handleTablaSeleccionada(ObservableValue observable, Object oldValue, Object newValue) {
+        lblErrorBuscar.setText("");
         if (newValue != null) {
             //  datePikerFechaContrato.setDisable(true);
             Trabajador trabajador = (Trabajador) newValue;
@@ -481,8 +482,7 @@ public class GestionTrabajadorViewController {
             txtNombreUsuario.textProperty().addListener(this::handleValidarTextoModificado);
             txtContrasenia.textProperty().addListener(this::handleValidarTextoModificado);
             txtRepiteContrasenia.textProperty().addListener(this::handleValidarTextoModificado);
-            txtBuscar.textProperty().addListener(this::handleValidarTexto);
-            txtBuscar.textProperty().addListener(this::validarCampoTextoBuscar);
+
             btnAnadir.setDisable(true);
             btnModificar.setDisable(false);
             btnEliminar.setDisable(false);
@@ -510,7 +510,7 @@ public class GestionTrabajadorViewController {
         boolean errorDatePicker = datePickerVacio();
         boolean errorContrasenias = comprobarContrasenias();
 
-        if (patronesTextoBien() || !errorDatePicker && !errorContrasenias) {
+        if (patronesTextoBien() && !errorDatePicker && !errorContrasenias) {
             try {
 
                 //Comprueba si existe el login
@@ -536,9 +536,11 @@ public class GestionTrabajadorViewController {
                 //Manda al trabajador para crearlos
                 trabajadorGestion.createTrabajador(nuvoTrabajador);
                 //Actualiza la tabla 
-                handleBtnLimpiar(event);
                 ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
                 tablaTrabajadores.setItems(trabajadoresObservableList);
+                handleBtnLimpiar(event);
+                lblErrorBuscar.setText("Se ha creado correctamente");
+                lblErrorBuscar.setTextFill(Color.web("GREEN"));
 
             } catch (LoginExisteException le) {
                 LOGGER.severe(le.getMessage());
@@ -559,26 +561,29 @@ public class GestionTrabajadorViewController {
      * @param event
      */
     private void handleBtnModificar(ActionEvent event) {
-        boolean errorPatrones = patronesTextoBien();
+
         boolean errorDatePicker = datePickerVacio();
         boolean errorContrasenias = comprobarContrasenias();
 
-        if (patronesTextoBien() || !errorDatePicker && !errorContrasenias) {
-
+        if (patronesTextoBien() && !errorDatePicker && !errorContrasenias) {
             Trabajador trabajadorSelecionado = tablaTrabajadores.getSelectionModel().getSelectedItem();
-
             trabajadorSelecionado.setFullName(txtNombreCompleto.getText());
+
             trabajadorSelecionado.setEmail(txtEmail.getText());
             trabajadorSelecionado.setPrecioHora(new Integer(txtPrecioHora.getText()));
             trabajadorSelecionado.setLogin(txtNombreUsuario.getText());
-
             trabajadorSelecionado.setFechaContrato(convertToDateViaSqlDate(datePikerFechaContrato.getValue()));
             trabajadorSelecionado.setPassword(txtContrasenia.getText());
 
             trabajadorGestion.editTrabajador(trabajadorSelecionado);
             tablaTrabajadores.getSelectionModel().clearSelection();
             tablaTrabajadores.refresh();
+            lblErrorBuscar.setText("Se ha modificado correctamente ");
+            lblErrorBuscar.setTextFill(Color.web("GREEN"));
 
+        } else {
+            lblErrorBuscar.setText("Error: No se puede modificar");
+            lblErrorBuscar.setTextFill(Color.web("RED"));
         }
 
     }
@@ -608,7 +613,7 @@ public class GestionTrabajadorViewController {
 
             for (Trabajador trabajador : t) {
                 for (Trabajador trabajador1 : tbj) {
-                    if (!seleccion.getFullName().equals(trabajador.getFullName())) {
+                    if (trabajador.getFullName().equals(trabajador1.getFullName())) {
                         esta = true;
                         break;
                     } else {
@@ -617,7 +622,7 @@ public class GestionTrabajadorViewController {
                 }
             }
 
-            if (esta) {
+            if (!esta) {
                 LOGGER.info("Borrando");
                 tablaTrabajadores.getItems().remove(seleccion);
                 tablaTrabajadores.getSelectionModel().clearSelection();
@@ -630,7 +635,8 @@ public class GestionTrabajadorViewController {
                 lblErrorBuscar.setTextFill(Color.web("#FF0000"));
             }
 
-            camposTextoVacios();
+            handleBtnLimpiar(event);
+            lblErrorBuscar.setText("Trabajador eliminado correctamente");
 
         }
 
@@ -659,7 +665,7 @@ public class GestionTrabajadorViewController {
         lblErrorNombreCompleto.setText("");
         lblErrorNombreUsuario.setText("");
         lblErrorPrecioHora.setText("");
-
+        lblErrorRepiteContrasenia.setText("");
         btnAnadir.setDisable(false);
         //btnLimpiar.setDisable(true);
 
@@ -673,6 +679,7 @@ public class GestionTrabajadorViewController {
      * @param event
      */
     private void handleBtnBuscar(ActionEvent event) {
+        //handleBtnLimpiar(event);
         boolean esta = false;
         if (cbxFiltro.getValue().equals("Todos")) {
             ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
@@ -762,6 +769,7 @@ public class GestionTrabajadorViewController {
 
     private void cbListener(ObservableValue ov, String oldValue, String newValue) {
         btnBuscar.setDisable(false);
+
         if (cbxFiltro.getValue().equals("Todos")) {
             txtBuscar.setDisable(true);
             btnBuscar.setDisable(false);
@@ -1085,9 +1093,12 @@ public class GestionTrabajadorViewController {
             lblErrorBuscar.setText("El nombre sólo debe contener letras");
             lblErrorBuscar.setTextFill(Color.web("#FF0000"));
             patronesBuscarBien = false;
-        } else {
-            lblErrorBuscar.setText("");
-
+        } 
+        
+        if (txtBuscar.getText().isEmpty()) {
+             lblErrorBuscar.setText("Error: Escribe un nombre a buscar");
+            lblErrorBuscar.setTextFill(Color.web("#FF0000"));
+            patronesBuscarBien = false;
         }
         return patronesBuscarBien;
     }
@@ -1180,4 +1191,5 @@ public class GestionTrabajadorViewController {
         txtRepiteContrasenia.textProperty().addListener(this::handleValidarTexto);
 
     }
+
 }
