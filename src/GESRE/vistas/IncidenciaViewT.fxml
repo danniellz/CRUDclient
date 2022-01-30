@@ -11,48 +11,49 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane id="piezaPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="signupsigninclient.controller.LogOutController">
+<Pane id="piezaPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.IncidenciaTRViewController">
    <children>
       <Pane layoutX="12.0" layoutY="36.0" prefHeight="168.0" prefWidth="776.0" style="-fx-background-color: lightgrey; -fx-border-color: black;">
          <children>
-            <ComboBox id="TipoIncidencia" layoutX="27.0" layoutY="129.0" prefWidth="150.0" />
-            <Button layoutX="601.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Añadir" />
-            <Button layoutX="601.0" layoutY="45.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Borrar" />
-            <Button layoutX="601.0" layoutY="78.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Editar" />
-            <Button layoutX="601.0" layoutY="116.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Limpiar" />
+            <ComboBox id="TipoIncidencia" fx:id="cbxTipoIncidencia" layoutX="27.0" layoutY="129.0" prefWidth="150.0" />
+            <Button fx:id="btnAnadir" layoutX="601.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Añadir" />
+            <Button fx:id="btnEliminar" layoutX="601.0" layoutY="45.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Borrar" />
+            <Button fx:id="btnModificar" layoutX="601.0" layoutY="78.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Editar" />
+            <Button fx:id="btnLimpiar" layoutX="601.0" layoutY="116.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Limpiar" />
             <Label layoutX="34.0" layoutY="24.0" text="GESTIÓN DE INCIDENCIAS">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
             <Label layoutX="33.0" layoutY="108.0" prefHeight="17.0" prefWidth="112.0" text="Tipo de Incidencia" />
-            <ComboBox id="EstadoIncidencia" layoutX="208.0" layoutY="129.0" prefWidth="150.0" />
+            <ComboBox id="EstadoIncidencia" fx:id="cbxEstadoIncidencia" layoutX="208.0" layoutY="129.0" prefWidth="150.0" />
             <Label layoutX="208.0" layoutY="108.0" prefHeight="17.0" prefWidth="67.0" text="Estado" />
             <Label layoutX="30.0" layoutY="53.0" prefHeight="17.0" prefWidth="59.0" text="Precio" />
-            <TextField id="Precio" layoutX="29.0" layoutY="70.0" prefHeight="25.0" prefWidth="120.0" promptText="Precio Incidencia" />
+            <TextField id="Precio" fx:id="Prec_TxtLabel" layoutX="29.0" layoutY="70.0" prefHeight="25.0" prefWidth="120.0" promptText="Precio Incidencia" />
             <Label layoutX="208.0" layoutY="53.0" prefHeight="17.0" prefWidth="59.0" text="Horas" />
-            <TextField layoutX="208.0" layoutY="70.0" prefHeight="25.0" prefWidth="120.0" promptText="Horas Totales" />
-            <ComboBox layoutX="374.0" layoutY="129.0" prefWidth="150.0" />
+            <TextField fx:id="Hor_TxtLabel" layoutX="208.0" layoutY="70.0" prefHeight="25.0" prefWidth="120.0" promptText="Horas Totales" />
+            <ComboBox fx:id="cbxPieza" layoutX="374.0" layoutY="129.0" prefWidth="150.0" />
             <Label layoutX="374.0" layoutY="108.0" text="Pieza" />
-            <DatePicker layoutX="374.0" layoutY="72.0" prefHeight="25.0" prefWidth="150.0" />
+            <DatePicker fx:id="dateFech" layoutX="374.0" layoutY="72.0" prefHeight="25.0" prefWidth="150.0" />
             <Label layoutX="374.0" layoutY="53.0" prefHeight="17.0" prefWidth="95.0" text="Fecha Recogida" />
          </children>
       </Pane>
        <fx:include fx:id="hBoxMenu" source="menu.fxml" />
-      <TableView layoutY="249.0" prefHeight="351.0" prefWidth="800.0">
+      <TableView fx:id="tablaIncidencias" layoutY="249.0" prefHeight="351.0" prefWidth="800.0">
         <columns>
-          <TableColumn prefWidth="146.0" text="Tipo Incidencia" />
-            <TableColumn prefWidth="115.0" text="Estado" />
-            <TableColumn minWidth="0.0" prefWidth="56.0" text="Precio" />
-            <TableColumn minWidth="0.0" prefWidth="107.0" text="Usuario" />
-            <TableColumn prefWidth="79.0" text="Horas" />
-            <TableColumn prefWidth="98.0" text="Estrellas" />
-            <TableColumn prefWidth="87.0" text="Pieza" />
-            <TableColumn prefWidth="111.0" text="Fecha Recogida" />
+          <TableColumn fx:id="tipoIncidenciaCL" prefWidth="146.0" text="Tipo Incidencia" />
+            <TableColumn fx:id="estadoCL" prefWidth="115.0" text="Estado" />
+            <TableColumn fx:id="precioCL" minWidth="0.0" prefWidth="56.0" text="Precio" />
+            <TableColumn fx:id="clienteCL" minWidth="0.0" prefWidth="107.0" text="Cliente" />
+            <TableColumn fx:id="horasCL" prefWidth="79.0" text="Horas" />
+            <TableColumn fx:id="estrellasCL" prefWidth="98.0" text="Estrellas" />
+            <TableColumn fx:id="piezaCL" prefWidth="87.0" text="Pieza" />
+            <TableColumn fx:id="fechaRecogidaCL" prefWidth="111.0" text="Fecha Recogida" />
         </columns>
       </TableView>
-      <Button id="Informe" layoutX="674.0" layoutY="213.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Informe" />
-      <ToggleButton layoutX="45.0" layoutY="213.0" mnemonicParsing="false" text="Incidencias Recogidas" />
+      <Button id="Informe" fx:id="btnInforme" layoutX="674.0" layoutY="213.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Informe" />
+      <ToggleButton fx:id="btnToogleFiltro" layoutX="45.0" layoutY="213.0" mnemonicParsing="false" text="Incidencias Recogidas" />
       <Button layoutX="569.0" layoutY="213.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="95.0" text="Gestion Pieza" />
+      <Label fx:id="lblError" disable="true" layoutX="255.0" layoutY="217.0" prefHeight="17.0" prefWidth="205.0" text="Label" />
    </children>
 </Pane>

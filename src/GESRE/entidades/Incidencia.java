@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Entidad Incidencia
- * 
+ *
  * @author Aritz Arrieta
  */
 @XmlRootElement
@@ -38,7 +38,7 @@ public class Incidencia implements Serializable {
     private Set<Recoge> recoge;
 
     private Cliente cliente;
-    
+
     private Pieza pieza;
     /**
      * enumeracion del Tipo de las Incidencias
@@ -80,6 +80,14 @@ public class Incidencia implements Serializable {
      */
     public Double getPrecio() {
         return precio;
+    }
+
+    public Set<Recoge> getRecoge() {
+        return recoge;
+    }
+
+    public Pieza getPieza() {
+        return pieza;
     }
 
     /**
@@ -182,7 +190,7 @@ public class Incidencia implements Serializable {
 
     /**
      * Hashcode
-     * 
+     *
      * @return devuelve el hashcode
      */
     @Override
