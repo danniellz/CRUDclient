@@ -16,14 +16,14 @@ public interface ClienteManager {
     
     public Collection<Cliente> findAllClientes();
     
-    public Collection<Cliente> findAllClienteWithIncidencia(Cliente cliente);
+    public Collection<Cliente> findAllClienteWithIncidencia();
     
-    public Cliente findClienteByFullName(String fullName);
+    public Collection<Cliente> findClienteByFullName(String fullName);
     
     public void createCliente(Cliente cliente);
     
-    public void editCliente(Cliente cliente, String id);
+    public void editCliente(Cliente cliente, int id);
     
-    public void deleteCliente(String id);
+    public void deleteCliente(int id);
     
 }

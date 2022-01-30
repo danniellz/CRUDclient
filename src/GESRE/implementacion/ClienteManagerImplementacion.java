@@ -9,6 +9,8 @@ import GESRE.entidades.Cliente;
 import GESRE.rest.ClienteRESTclient;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
 
 /**
@@ -18,6 +20,7 @@ import javax.ws.rs.core.GenericType;
 public class ClienteManagerImplementacion implements GESRE.interfaces.ClienteManager {
     
     private ClienteRESTclient webClient;
+    private static final Logger LOGGER=Logger.getLogger("");
     
     public ClienteManagerImplementacion(){
         webClient = new ClienteRESTclient();
@@ -27,13 +30,17 @@ public class ClienteManagerImplementacion implements GESRE.interfaces.ClienteMan
     public Collection<Cliente> findAllClientes() {
         List<Cliente> clientes = null;
         
-        clientes = webClient.findAll(new GenericType<List<Cliente>>() {});
+        try {
+            clientes = webClient.findAll(new GenericType<List<Cliente>>() {});
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "UsersManager: Exception finding all users, {0}", ex.getMessage());
+        }
         
         return clientes;
     }
 
     @Override
-    public Collection<Cliente> findAllClienteWithIncidencia(Cliente cliente) {
+    public Collection<Cliente> findAllClienteWithIncidencia() {
         List<Cliente> clientes = null;
         
         clientes = webClient.findAllClienteWithIncidencia(new GenericType<List<Cliente>>() {});
@@ -42,12 +49,12 @@ public class ClienteManagerImplementacion implements GESRE.interfaces.ClienteMan
     }
 
     @Override
-    public Cliente findClienteByFullName(String fullName) {
-        Cliente cliente = null;
+    public Collection<Cliente> findClienteByFullName(String fullName) {
+        List<Cliente> clientes = null;
         
-        webClient.findClienteByFullName(new GenericType<List<Cliente>>() {}, fullName);
+        clientes = webClient.findClienteByFullName(new GenericType<List<Cliente>>() {}, fullName);
         
-        return cliente;
+        return clientes;
     }
 
     @Override
@@ -58,14 +65,14 @@ public class ClienteManagerImplementacion implements GESRE.interfaces.ClienteMan
     }
 
     @Override
-    public void editCliente(Cliente cliente, String id) {
+    public void editCliente(Cliente cliente, int id) {
         
         webClient.edit(cliente, id);
         
     }
 
     @Override
-    public void deleteCliente(String id) {
+    public void deleteCliente(int id) {
         
         webClient.remove(id);
         

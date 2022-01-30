@@ -29,7 +29,7 @@ public class ClienteRESTclient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:10785/GESREserver/webresources";
+    private static final String BASE_URI = "http://localhost:8080/GESREserver/webresources";
 
     public ClienteRESTclient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -42,7 +42,7 @@ public class ClienteRESTclient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public void edit(Object requestEntity, String id) throws ClientErrorException {
+    public void edit(Object requestEntity, int id) throws ClientErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
@@ -67,7 +67,7 @@ public class ClienteRESTclient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public void remove(String id) throws ClientErrorException {
+    public void remove(int id) throws ClientErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
 

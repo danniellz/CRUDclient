@@ -6,7 +6,9 @@
 package GESRE.factoria;
 
 import GESRE.implementacion.ClienteManagerImplementacion;
+import GESRE.implementacion.UsuarioManagerImplentacion;
 import GESRE.interfaces.ClienteManager;
+import GESRE.interfaces.UsuarioManager;
 import java.util.logging.Logger;
 
 /**
@@ -26,6 +28,13 @@ public class GestionFactoria {
         ClienteManager clienteManager = new ClienteManagerImplementacion();
         
         return clienteManager;
+    }
+    
+    public static UsuarioManager createUsuarioManager() {
+
+        UsuarioManager usuarioManager = new UsuarioManagerImplentacion();
+
+        return usuarioManager;
     }
     
 }
