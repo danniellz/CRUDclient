@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Clase que define los atributos y los métodos de la entidad "Trabajador".
@@ -84,7 +85,7 @@ public class Trabajador extends Usuario implements Serializable {
      *
      * @return las piezas de la colección
      */
-    //@XmlTransient
+    @XmlTransient
     public Set<Pieza> getPiezas() {
         return piezas;
     }

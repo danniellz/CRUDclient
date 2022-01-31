@@ -7,9 +7,9 @@ package GESRE.factoria;
 
 
 import GESRE.implementacion.PiezasManagerImplementation;
-import GESRE.implementacion.TrabajadorGestionImplementation;
+import GESRE.implementacion.TrabajadorManagerImplementacion;
 import GESRE.interfaces.PiezasManager;
-import GESRE.interfaces.TrabajadorGestion;
+import GESRE.interfaces.TrabajadorManager;
 
 import java.util.logging.Logger;
 
@@ -32,7 +32,7 @@ public class GestionFactoria {
      */
     public static TrabajadorManager getTrabajadorGestion() {
         LOGGER.info("GestionFactoria: Creando la implementacion de Trabajador");
-        TrabajadorGestion trabajadorGestion = new TrabajadorGestionImplementation();
+        TrabajadorManager trabajadorGestion = new TrabajadorManagerImplementacion();
         return trabajadorGestion;
     }
 

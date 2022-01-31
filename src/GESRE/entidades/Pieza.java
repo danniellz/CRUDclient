@@ -50,7 +50,7 @@ public class Pieza implements Serializable {
      *
      * @return devuelve el trabajador
      */
-    @XmlTransient//Si se quita la anotacion aparence toda la informcaion relacionada con el trabajador
+    //@XmlTransient//Si se quita la anotacion aparence toda la informcaion relacionada con el trabajador
     public Trabajador getTrabajador() {
         return trabajador;
     }
@@ -162,9 +162,13 @@ public class Pieza implements Serializable {
      */
     @Override
     public int hashCode() {
-        int hash = 3;
+        int hash = 7;
         hash = 97 * hash + Objects.hashCode(this.id);
-       
+        hash = 97 * hash + Objects.hashCode(this.nombre);
+        hash = 97 * hash + Objects.hashCode(this.descripcion);
+        hash = 97 * hash + Objects.hashCode(this.stock);
+        hash = 97 * hash + Objects.hashCode(this.trabajador);
+        hash = 97 * hash + Objects.hashCode(this.incidencias);
         return hash;
     }
 
@@ -216,6 +220,5 @@ public class Pieza implements Serializable {
     public String toString() {
         return "Pieza{" + "id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", stock=" + stock + '}';
     }
-    
 
 }
