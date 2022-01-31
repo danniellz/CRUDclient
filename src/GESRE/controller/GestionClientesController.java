@@ -8,6 +8,7 @@ import GESRE.excepcion.LoginExisteException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.ClienteManager;
 import GESRE.interfaces.UsuarioManager;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -28,6 +29,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -35,6 +37,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -71,9 +74,9 @@ public class GestionClientesController {
     @FXML
     private TextField correoTxt;
     @FXML
-    private TextField contrasenaTxt;
+    private PasswordField contrasenaTxt;
     @FXML
-    private TextField repiteContrasenaTxt;
+    private PasswordField repiteContrasenaTxt;
     @FXML
     private DatePicker fechaRegistroDate;
 
@@ -163,6 +166,7 @@ public class GestionClientesController {
             editarBtn.setOnAction(this::handleBtnEditar);
             borrarBtn.setOnAction(this::handleBtnBorrar);
             buscarBtn.setOnAction(this::handleBtnBuscar);
+            trabajadoresBtn.setOnAction(this::handleBtnTrabajadores);
 
             //Listeners
             usuarioTxt.textProperty().addListener(this::handleValidarTexto);
@@ -417,6 +421,23 @@ public class GestionClientesController {
         }
     }
 
+    private void handleBtnTrabajadores(ActionEvent trabajadoresEvent) {
+        try{
+            LOG.info("Starting Gestion de Trabajadores window...");
+            //Load the FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/GestionTrabajadoresView.fxml"));
+            Parent root = (Parent)loader.load();
+            //Get controller
+            GestionTrabajadoresController controlador = ((GestionTrabajadoresController)loader.getController());
+            //Set the stage
+            controlador.setStage(stage);
+            //initialize the window
+            controlador.initStage(root);
+        }catch(IOException ex){
+            LOG.log(Level.SEVERE, "Error Starting Gestion de Trabajadores window", ex);
+        }
+    }
+    
     public void handleCloseRequest(WindowEvent closeEvent) {
         try {
             LOG.info("Confirm Closing");
