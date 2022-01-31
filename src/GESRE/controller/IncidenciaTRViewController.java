@@ -15,7 +15,11 @@ import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.IncidenciaManager;
 import GESRE.interfaces.PiezasManager;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +27,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -38,6 +44,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -46,6 +53,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 
 /**
  *
@@ -124,8 +132,7 @@ public class IncidenciaTRViewController {
     private TableColumn<Incidencia, String> estrellasCL;
     @FXML
     private TableColumn<Incidencia, Float> horasCL;
-    
-    
+
     @FXML
     private TableColumn<Incidencia, Float> precioCL;
 //________________Recoge____________ 
@@ -134,7 +141,7 @@ public class IncidenciaTRViewController {
 
 //________________Cliente____________
     @FXML
-    private TableColumn<Cliente, String> clienteCL;
+    private TableColumn<Incidencia, String> clienteCL;
 //________________Pieza____________
     @FXML
     private TableColumn<Pieza, String> piezaCL;
@@ -171,20 +178,27 @@ public class IncidenciaTRViewController {
             stage.setTitle("Gestion Incidencias");
             //acciones de la Ventana
             stage.setOnCloseRequest(this::handleCloseRequest);
-
+            
             tablaIncidencias.getSelectionModel().selectedItemProperty().addListener(this::handleTablaIncidenciasSelection);
             //Establecer valores del combobox
 
             ObservableList<TipoIncidencia> tipoIn = FXCollections.observableArrayList(TipoIncidencia.values());
             ObservableList<EstadoIncidencia> estados = FXCollections.observableArrayList(EstadoIncidencia.values());
-            ObservableList<Pieza> piezas = FXCollections.observableArrayList((Pieza) piezaManager.findAllPiezaByTrabajadorId(incidencia.getPieza(), 3));
 
+            ObservableList<Pieza> piezas = FXCollections.observableArrayList(piezaManager.findAllPiezaByTrabajadorId(pieza, 3));
+            LOG.info(piezas.get(piezas.size() - 1).getNombre());
+            ObservableList<Pieza> pieName = FXCollections.observableArrayList();
+           /* for (Pieza pie : piezas) {
+
+                pieName.add(pie.getId());
+            }*/
             cbxEstadoIncidencia.setItems(estados);
             cbxTipoIncidencia.setItems(tipoIn);
             cbxPieza.setItems(piezas);
             //*********estado inicial de la ventana*********
-           
+
             lblError.setVisible(false);
+            btnAnadir.setDisable(true);
             habilitarBotones();
 
             //**************-Controles de los campos de Texto-*****************
@@ -201,32 +215,44 @@ public class IncidenciaTRViewController {
             tipoIncidenciaCL.setCellValueFactory(new PropertyValueFactory<>("tipoIncidencia"));
             estadoCL.setCellValueFactory(new PropertyValueFactory<>("estado"));
             precioCL.setCellValueFactory(new PropertyValueFactory<>("precio"));
-            clienteCL.setCellValueFactory(new PropertyValueFactory<>("usuario"));
+
             horasCL.setCellValueFactory(new PropertyValueFactory<>("horas"));
             estrellasCL.setCellValueFactory(new PropertyValueFactory<>("estrellas"));
-            piezaCL.setCellValueFactory(new PropertyValueFactory<>("pieza"));
-            fechaRecogidaCL.setCellValueFactory(new PropertyValueFactory<>("pieza"));
+            //________Entidad de Cliente___________
+//            clienteCL.setCellValueFactory(new PropertyValueFactory<>("cliente"));
+            //______Entidad de Pieza_______
+            piezaCL.setCellValueFactory(new PropertyValueFactory<>("pieza_id"));
+            // piezaCL.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPieza().getNombre()));
 
-            IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findAll());
-            tablaIncidencias.setItems(IncidenciaList);
+           
+        
+        //______Entidad de Recoge______
+        fechaRecogidaCL.setCellValueFactory(new PropertyValueFactory<>("fechaRecogida"));
 
-            btnLimpiar.setOnAction(this::handleLimpiarFormulario);
-            //btnAnadir.setOnAction(this::handleAnadir);
+        IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findAll());
+        tablaIncidencias.setItems(IncidenciaList);
 
-            btnModificar.setOnAction(this::handleModificar);
-            btnEliminar.setOnAction(this::handleEliminar);
-            //el boton de Busqueda funciona con un toogle button
-            btnToogleFiltro.setOnAction(this::handleFiltro);
+        btnLimpiar.setOnAction(this::handleLimpiarFormulario);
+        //btnAnadir.setOnAction(this::handleAnadir);
 
-            //mostrar la Ventana
-            stage.show();
-        } catch (Exception e) {
+        btnModificar.setOnAction(this::handleModificar);
+        btnEliminar.setOnAction(this::handleEliminar);
+        //el boton de Busqueda funciona con un toogle button
+        btnToogleFiltro.setOnAction(this::handleFiltro);
+
+        //mostrar la Ventana
+        stage.show();
+    }
+    catch (Exception e
+
+    
+        ) {
             LOG.log(Level.SEVERE, "Fallo al iniciar la Ventana de Gestion de Incidencias", e);
-        }
-
     }
 
-    public void handleCloseRequest(WindowEvent closeEvent) {
+}
+
+public void handleCloseRequest(WindowEvent closeEvent) {
         try {
             LOG.info("Confirmando cierre de ventana...");
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -268,6 +294,7 @@ public class IncidenciaTRViewController {
         Hor_TxtLabel.setText(" ");
         cbxTipoIncidencia.getSelectionModel().select(-1);
         cbxEstadoIncidencia.getSelectionModel().select(-1);
+        cbxPieza.getSelectionModel().select(-1);
         habilitarBotones();
     }
 
@@ -277,12 +304,10 @@ public class IncidenciaTRViewController {
             incidencia = (Incidencia) newValue;
             cbxTipoIncidencia.getSelectionModel().select(incidencia.getTipoIncidencia());
             cbxEstadoIncidencia.getSelectionModel().select(incidencia.getEstado());
-            cbxPieza.getSelectionModel().select((Pieza) piezaManager.findAllPiezaByTrabajadorId(pieza, 3));
-            
-            
+            cbxPieza.getSelectionModel().select(incidencia.getPieza());
+
             Prec_TxtLabel.setText(incidencia.getPrecio().toString());
             Hor_TxtLabel.setText(incidencia.getHoras().toString());
-            
 
             LOG.info("Información de Incidencia: " + incidencia.toString());
         } else {
@@ -292,57 +317,13 @@ public class IncidenciaTRViewController {
             Hor_TxtLabel.setText("");
             cbxTipoIncidencia.getSelectionModel().select(-1);
             cbxEstadoIncidencia.getSelectionModel().select(-1);
+            cbxPieza.getSelectionModel().select(-1);
         }
         //Focus login field
         Hor_TxtLabel.requestFocus();
     }
 
-    /*private void handleAnadir(ActionEvent anadirEvent) {
-        // try {
-
-        if (camposCorrectos()) {
-
-            //Solo se admiten numeros no negativos
-            LOG.info("Añadiendo la Incidencia");
-            incidencia = new Incidencia();
-            //incidencia.setId(2);
-            incidencia.setTipoIncidencia(cbxTipoIncidencia.getSelectionModel().getSelectedItem());
-            incidencia.setEstado(cbxEstadoIncidencia.getSelectionModel().getSelectedItem());
-            incidencia.setEstrellas(new Integer(Prec_TxtLabel.getText()));
-            incidencia.setHoras(new Integer(Hor_TxtLabel.getText()));
-
-            incidenciaManager.createIncidencia(incidencia);
-
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("CREAR");
-            alert.setHeaderText(null);
-            alert.setResizable(false);
-            alert.setContentText("La incidencia ha sido creado con existo");
-            alert.show();
-            LOG.info(incidencia.toString());
-            //Agregar nueva pieza a tabla
-            tablaIncidencias.getItems().add(incidencia);
-
-            //Actualizar tabla
-            tablaIncidencias.refresh();
-
-        } else {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("CREAR");
-            alert.setHeaderText(null);
-            alert.setResizable(false);
-            alert.setContentText("La incidencia NO ha sido creado con existo");
-            alert.show();
-            //introducir texto en el mensaje de error
-            //mostrar mensaje de Error
-            lblError.setVisible(true);
-        }
-
-        } catch (Exception e) {
-        LOG.severe("NO FUNICONA EL CREATE "+e.getLocalizedMessage());
-        }
-    }*/
-
+ 
     private void handleEliminar(ActionEvent Event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Eliminar");
@@ -397,6 +378,8 @@ public class IncidenciaTRViewController {
             incidenciaSelec.setEstado(cbxEstadoIncidencia.getSelectionModel().getSelectedItem());
             incidenciaSelec.setPrecio(new Double(Prec_TxtLabel.getText()));
             incidenciaSelec.setHoras(new Integer(Hor_TxtLabel.getText()));
+            incidenciaSelec.setCliente(incidencia.getCliente());
+            
             incidenciaSelec.setPieza(cbxPieza.getSelectionModel().getSelectedItem());
 
             incidenciaManager.editIncidencia(incidenciaSelec, String.valueOf(incidenciaSelec.getId()));
@@ -410,7 +393,7 @@ public class IncidenciaTRViewController {
             //Actualizar tabla
             tablaIncidencias.refresh();
         } else {
-            LOG.info("NO Modificando la Incidencia" + camposCorrectos() );
+            LOG.info("NO Modificando la Incidencia" + camposCorrectos());
             //introducir texto en el mensaje de error
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Modificar");
@@ -491,19 +474,19 @@ public class IncidenciaTRViewController {
     private void habilitarBotones() {
 
         if (!camposTextoVacios()) {
-            btnAnadir.setDisable(false);
+           // btnAnadir.setDisable(false);
             btnModificar.setDisable(false);
             btnEliminar.setDisable(false);
 
         } else {
-            btnAnadir.setDisable(true);
+            //btnAnadir.setDisable(true);
             btnModificar.setDisable(true);
             btnEliminar.setDisable(true);
         }
     }
 
     private boolean camposTextoVacios() {
-        if (Prec_TxtLabel.getText().isEmpty() || Hor_TxtLabel.getText().isEmpty() || cbxTipoIncidencia.getSelectionModel().getSelectedIndex() == -1 || cbxEstadoIncidencia.getSelectionModel().getSelectedIndex() == -1 ) {
+        if (Prec_TxtLabel.getText().isEmpty() || Hor_TxtLabel.getText().isEmpty() || cbxTipoIncidencia.getSelectionModel().getSelectedIndex() == -1 || cbxEstadoIncidencia.getSelectionModel().getSelectedIndex() == -1) {
             LOG.info("los campos estan vacios");
             return true;
         } else {

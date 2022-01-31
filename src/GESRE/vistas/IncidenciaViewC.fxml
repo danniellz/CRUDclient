@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:id="incidenciaPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.IncidenciaCLViewController">
+<Pane fx:id="incidenciaCPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.IncidenciaCLViewController">
    <children>
       <Pane layoutX="12.0" layoutY="36.0" prefHeight="154.0" prefWidth="776.0" style="-fx-background-color: lightgrey; -fx-border-color: black;">
          <children>

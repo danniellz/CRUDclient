@@ -11,15 +11,15 @@ import GESRE.entidades.TipoIncidencia;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.IncidenciaManager;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static javafx.application.Application.launch;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,6 +42,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -160,11 +167,6 @@ public class IncidenciaCLViewController {
             cbxTipoIncidencia.setItems(tipoIn);
 
             //*********estado inicial de la ventana*********
-            /*btnModificar.setDisable(true);
-            btnEliminar.setDisable(true);
-            btnLimpiar.setDisable(true);
-            btnAnadir.setDisable(true);
-            btnInforme.setDisable(true);*/
             lblError.setVisible(false);
             habilitarBotones();
 
@@ -189,7 +191,7 @@ public class IncidenciaCLViewController {
 
             btnLimpiar.setOnAction(this::handleLimpiarFormulario);
             btnAnadir.setOnAction(this::handleAnadir);
-
+            btnInforme.setOnAction(this::handleInforme);
             btnModificar.setOnAction(this::handleModificar);
             btnEliminar.setOnAction(this::handleEliminar);
             //el boton de Busqueda funciona con un toogle button
@@ -247,7 +249,38 @@ public class IncidenciaCLViewController {
         cbxEstadoIncidencia.getSelectionModel().select(-1);
         habilitarBotones();
     }
-
+ private void handleInforme(ActionEvent event) {
+        try {
+            LOG.info("Comenzandoa imprimir los datos de la tabla Trabajador...");
+            JasperReport report = JasperCompileManager.compileReport(getClass()
+                            .getResourceAsStream("/GESRE/archivos/incidenciaCReportGesre.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems
+                    = new JRBeanCollectionDataSource((Collection<Incidencia>) tablaIncidencias.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+           Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Imprimir");
+                alert.setHeaderText(null);
+                alert.setResizable(false);
+                alert.setContentText("Las Incidencias no han podido ser Imprimidas");
+                alert.show();
+            LOG.log(Level.SEVERE,
+                    "IncidenciaCLController: Error printing report: {0}",
+                    ex.getMessage());
+        }
+    }
     private void handleTablaIncidenciasSelection(ObservableValue observable, Object oldValue, Object newValue) {
         //Si una fila esta seleccionada mover los datos de la fila a los campos
         if (newValue != null) {
@@ -271,49 +304,49 @@ public class IncidenciaCLViewController {
     }
 
     private void handleAnadir(ActionEvent anadirEvent) {
-        // try {
 
-        if (camposCorrectos()) {
+        try {
+            if (camposCorrectos()) {
 
-            //Solo se admiten numeros no negativos
-            LOG.info("Añadiendo la Incidencia");
-            incidencia = new Incidencia();
-            incidencia.setId(2);
-            incidencia.setTipoIncidencia(cbxTipoIncidencia.getSelectionModel().getSelectedItem());
-            incidencia.setEstado(cbxEstadoIncidencia.getSelectionModel().getSelectedItem());
-            incidencia.setEstrellas(new Integer(Estr_TxtLabel.getText()));
-            incidencia.setHoras(new Integer(Hor_TxtLabel.getText()));
+                //Solo se admiten numeros no negativos
+                LOG.info("Añadiendo la Incidencia");
+                incidencia = new Incidencia();
+                incidencia.setId(2);
+                incidencia.setTipoIncidencia(cbxTipoIncidencia.getSelectionModel().getSelectedItem());
+                incidencia.setEstado(cbxEstadoIncidencia.getSelectionModel().getSelectedItem());
+                incidencia.setEstrellas(new Integer(Estr_TxtLabel.getText()));
+                incidencia.setHoras(new Integer(Hor_TxtLabel.getText()));
 
-            incidenciaManager.createIncidencia(incidencia);
+                incidenciaManager.createIncidencia(incidencia);
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("CREAR");
-            alert.setHeaderText(null);
-            alert.setResizable(false);
-            alert.setContentText("La incidencia ha sido creado con existo");
-            alert.show();
-            LOG.info(incidencia.toString());
-            //Agregar nueva pieza a tabla
-            tablaIncidencias.getItems().add(incidencia);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("CREAR");
+                alert.setHeaderText(null);
+                alert.setResizable(false);
+                alert.setContentText("La incidencia ha sido creado con existo");
+                alert.show();
+                LOG.info(incidencia.toString());
+                //Agregar nueva pieza a tabla
+                tablaIncidencias.getItems().add(incidencia);
 
-            //Actualizar tabla
-            tablaIncidencias.refresh();
+                //Actualizar tabla
+                tablaIncidencias.refresh();
 
-        } else {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("CREAR");
-            alert.setHeaderText(null);
-            alert.setResizable(false);
-            alert.setContentText("La incidencia NO ha sido creado con existo");
-            alert.show();
-            //introducir texto en el mensaje de error
-            //mostrar mensaje de Error
-            lblError.setVisible(true);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("CREAR");
+                alert.setHeaderText(null);
+                alert.setResizable(false);
+                alert.setContentText("La incidencia NO ha sido creado con existo");
+                alert.show();
+                //introducir texto en el mensaje de error
+                //mostrar mensaje de Error
+                lblError.setVisible(true);
+            }
+
+        } catch (Exception e) {
+            LOG.severe("NO FUNICONA EL CREATE " + e.getLocalizedMessage());
         }
-
-        /*} catch (Exception e) {
-        LOG.severe("NO FUNICONA EL CREATE "+e.getLocalizedMessage());
-        }*/
     }
 
     private void handleEliminar(ActionEvent Event) {
@@ -336,10 +369,10 @@ public class IncidenciaCLViewController {
                 tablaIncidencias.getSelectionModel().clearSelection();
                 tablaIncidencias.refresh();
 
-                //camposTextoVacios();
+                
             } else {
-                /*  lblError.setText("No se ha podido eliminar la Incidencia");
-                lblError.setTextFill(Color.web("#FF0000"));*/
+                lblError.setText("No se ha podido eliminar la Incidencia");
+                lblError.setTextFill(Color.web("#FF0000"));
             }
         }
     }
@@ -417,7 +450,7 @@ public class IncidenciaCLViewController {
         }
 
         matcher = VALID_HOR.matcher(Hor_TxtLabel.getText());
-        boolean lag= matcher.find();
+        boolean lag = matcher.find();
         if (!lag) {
             LOG.info("PATRON DE HORAS: ESTA MAL" + lag + "PATRON es " + VALID_HOR + "EL texto " + Hor_TxtLabel.getText());
             lblError.setVisible(true);

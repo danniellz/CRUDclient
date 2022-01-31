@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane id="piezaPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.IncidenciaTRViewController">
+<Pane id="incidenciaTPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.IncidenciaTRViewController">
    <children>
       <Pane layoutX="12.0" layoutY="36.0" prefHeight="168.0" prefWidth="776.0" style="-fx-background-color: lightgrey; -fx-border-color: black;">
          <children>
@@ -43,17 +43,16 @@
         <columns>
           <TableColumn fx:id="tipoIncidenciaCL" prefWidth="146.0" text="Tipo Incidencia" />
             <TableColumn fx:id="estadoCL" prefWidth="115.0" text="Estado" />
-            <TableColumn fx:id="precioCL" minWidth="0.0" prefWidth="56.0" text="Precio" />
-            <TableColumn fx:id="clienteCL" minWidth="0.0" prefWidth="107.0" text="Cliente" />
-            <TableColumn fx:id="horasCL" prefWidth="79.0" text="Horas" />
-            <TableColumn fx:id="estrellasCL" prefWidth="98.0" text="Estrellas" />
-            <TableColumn fx:id="piezaCL" prefWidth="87.0" text="Pieza" />
-            <TableColumn fx:id="fechaRecogidaCL" prefWidth="111.0" text="Fecha Recogida" />
+            <TableColumn fx:id="precioCL" minWidth="0.0" prefWidth="92.0" text="Precio" />
+            <TableColumn fx:id="horasCL" prefWidth="88.0" text="Horas" />
+            <TableColumn fx:id="estrellasCL" prefWidth="97.0" text="Estrellas" />
+            <TableColumn fx:id="piezaCL" prefWidth="113.0" text="Pieza" />
+            <TableColumn fx:id="fechaRecogidaCL" prefWidth="137.0" text="Fecha Recogida" />
         </columns>
       </TableView>
       <Button id="Informe" fx:id="btnInforme" layoutX="674.0" layoutY="213.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Informe" />
       <ToggleButton fx:id="btnToogleFiltro" layoutX="45.0" layoutY="213.0" mnemonicParsing="false" text="Incidencias Recogidas" />
-      <Button layoutX="569.0" layoutY="213.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="95.0" text="Gestion Pieza" />
+      <Button fx:id="btnGestionPiezas" layoutX="569.0" layoutY="213.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="95.0" text="Gestion Pieza" />
       <Label fx:id="lblError" disable="true" layoutX="255.0" layoutY="217.0" prefHeight="17.0" prefWidth="205.0" text="Label" />
    </children>
 </Pane>
