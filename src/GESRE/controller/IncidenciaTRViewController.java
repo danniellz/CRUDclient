@@ -187,11 +187,8 @@ public class IncidenciaTRViewController {
 
             ObservableList<Pieza> piezas = FXCollections.observableArrayList(piezaManager.findAllPiezaByTrabajadorId(pieza, 3));
             LOG.info(piezas.get(piezas.size() - 1).getNombre());
-            ObservableList<Pieza> pieName = FXCollections.observableArrayList();
-           /* for (Pieza pie : piezas) {
-
-                pieName.add(pie.getId());
-            }*/
+            
+          
             cbxEstadoIncidencia.setItems(estados);
             cbxTipoIncidencia.setItems(tipoIn);
             cbxPieza.setItems(piezas);
