@@ -8,8 +8,10 @@ package GESRE.factoria;
 
 import GESRE.implementacion.PiezasManagerImplementation;
 import GESRE.implementacion.TrabajadorManagerImplementacion;
+import GESRE.implementacion.UsuarioManagerImplentacion;
 import GESRE.interfaces.PiezasManager;
 import GESRE.interfaces.TrabajadorManager;
+import GESRE.interfaces.UsuarioManager;
 
 import java.util.logging.Logger;
 
@@ -40,5 +42,13 @@ public class GestionFactoria {
         LOGGER.info("GestionFactoria: Creando la implementacion de Piezas");
         PiezasManager piezaManager = new PiezasManagerImplementation();
         return piezaManager;
+    }
+    
+     public static UsuarioManager getUsuarioGestion() {
+        LOGGER.info("GestionFactoria: Creando la implementacion de Trabajador");
+
+        UsuarioManager UsuarioGestion = new UsuarioManagerImplentacion();
+
+        return UsuarioGestion;
     }
 }

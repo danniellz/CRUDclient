@@ -5,12 +5,11 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Clase que define los atributos y los métodos de la entidad "Trabajador".
  *
- * @author Jonathan Viñan
+ * @author Jonathan Viñan.
  */
 //Coleccion de queries para realizar operaciones en la base de datos.
 @XmlRootElement
@@ -21,7 +20,7 @@ public class Trabajador extends Usuario implements Serializable {
     /**
      * Precio a las horas incurridas en el Trabajador
      */
-    private Double precioHora;
+    private Integer precioHora;
 
     /**
      * Fecha del contrato del Trabajador
@@ -49,7 +48,7 @@ public class Trabajador extends Usuario implements Serializable {
      *
      * @return
      */
-    public Double getPrecioHora() {
+    public Integer getPrecioHora() {
         return precioHora;
     }
 
@@ -58,7 +57,7 @@ public class Trabajador extends Usuario implements Serializable {
      *
      * @param precioHora
      */
-    public void setPrecioHora(Double precioHora) {
+    public void setPrecioHora(Integer precioHora) {
         this.precioHora = precioHora;
     }
 
@@ -85,7 +84,7 @@ public class Trabajador extends Usuario implements Serializable {
      *
      * @return las piezas de la colección
      */
-    @XmlTransient
+    //@XmlTransient
     public Set<Pieza> getPiezas() {
         return piezas;
     }
