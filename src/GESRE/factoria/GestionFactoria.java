@@ -6,7 +6,9 @@
 package GESRE.factoria;
 
 import GESRE.implementacion.TrabajadorManagerImplementacion;
+import GESRE.implementacion.UsuarioManagerImplentacion;
 import GESRE.interfaces.TrabajadorManager;
+import GESRE.interfaces.UsuarioManager;
 import java.util.logging.Logger;
 
 /**
@@ -32,5 +34,13 @@ public class GestionFactoria {
         TrabajadorManager trabajadorGestion = new TrabajadorManagerImplementacion();
 
         return trabajadorGestion;
+    }
+
+    public static UsuarioManager getUsuarioGestion() {
+        LOGGER.info("GestionFactoria: Creando la implementacion de Trabajador");
+
+        UsuarioManager UsuarioGestion = new UsuarioManagerImplentacion();
+
+        return UsuarioGestion;
     }
 }

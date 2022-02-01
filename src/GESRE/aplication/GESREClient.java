@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import GESRE.controller.SignInController;
+import GESRE.entidades.SignIn;
 
 /**
  * class responsible for starting the application
@@ -35,7 +36,7 @@ public class GESREClient extends Application {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/TrabajadorView.fxml"));
             Parent root = (Parent) loader.load();
             //Get controller
-            GestionTrabajadorViewController controlador = loader.getController();
+           GestionTrabajadorViewController controlador = loader.getController();
             //Set the stage
             controlador.setStage(primaryStage);
             //initialize the window
