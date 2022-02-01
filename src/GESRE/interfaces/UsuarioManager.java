@@ -10,6 +10,7 @@ import GESRE.excepcion.EmailExisteException;
 import GESRE.excepcion.EmailNoExisteException;
 import GESRE.excepcion.LoginExisteException;
 import GESRE.excepcion.LoginNoExisteException;
+import GESRE.excepcion.ServerDesconectadoException;
 import GESRE.excepcion.UsuarioNoExisteException;
 import java.util.Collection;
 import javax.ws.rs.ClientErrorException;
@@ -43,10 +44,11 @@ public interface UsuarioManager {
      */
     public void removeUsuario(Usuario usuario);
 
-    public Collection<Usuario> buscarUsuarioPorLoginCrear(String login) throws LoginExisteException;
+    public Collection<Usuario> buscarUsuarioPorLoginCrear(String login) throws LoginExisteException,ServerDesconectadoException;
+
     public Collection<Usuario> buscarUserPorLoginSignIn(String login) throws LoginNoExisteException;
 
-    public Collection <Usuario> buscarUsuarioPorEmailCrear(String correo) throws EmailExisteException;
+    public Collection<Usuario> buscarUsuarioPorEmailCrear(String correo) throws EmailExisteException,ServerDesconectadoException;
 
     public Collection<Usuario> buscarUsuarioPorLoginYContrasenia_Usuario(String login, String password) throws UsuarioNoExisteException;
 

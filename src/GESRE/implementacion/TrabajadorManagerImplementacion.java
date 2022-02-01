@@ -6,18 +6,20 @@
 package GESRE.implementacion;
 
 import GESRE.entidades.Trabajador;
+import GESRE.excepcion.ServerDesconectadoException;
 import GESRE.interfaces.TrabajadorManager;
 import GESRE.rest.TrabajadorRESTClient;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.GenericType;
 
 /**
  * Esta clase implementa la interfaz de lógica (TrabajadorManager) usando un web
- * Client RESTful para acceder a la lógica de negocio en un servidor de aplicaciones Java EE.
- * de aplicaciones Java EE.
+ * Client RESTful para acceder a la lógica de negocio en un servidor de
+ * aplicaciones Java EE. de aplicaciones Java EE.
  *
  * @author Jonathan Viñan
  */
@@ -122,15 +124,18 @@ public class TrabajadorManagerImplementacion implements TrabajadorManager {
      * @throws ClientErrorException Si hay algun error durante el proceso.
      */
     @Override
-    public Collection<Trabajador> buscarTodosLosTrabajadores() {
+    public Collection<Trabajador> buscarTodosLosTrabajadores() throws ServerDesconectadoException {
         List<Trabajador> trabajadores = null;
         try {
             LOGGER.info("TrabajadorManagerImplementation: Buscando todos los trabajadores");
             //Solicitar a webClient los datos de todos los trabajadores de la bace de datos
             trabajadores = this.webClient.buscarTodosLosTrabajadores_XML(new GenericType<List<Trabajador>>() {
             });
-        } catch (ClientErrorException e) {
-            LOGGER.severe(e.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE,
+                    "TrabajadorManagerImplementacion: Exception buscar todos los trabajadores, {0}",
+                    ex.getMessage());
+            throw new ServerDesconectadoException("Error conecxion el trabajador\n" + ex.getMessage());
         }
         return trabajadores;
     }
@@ -140,21 +145,24 @@ public class TrabajadorManagerImplementacion implements TrabajadorManager {
      * RESTful.
      *
      * @return Una colección de objetos Trabajador con los datos.
+     * @throws GESRE.excepcion.ServerDesconectadoException
      * @throws ClientErrorException Si hay algun error durante el proceso.
      */
     @Override
-    public Collection<Trabajador> trabajadoresSinIncidencias() {
+    public Collection<Trabajador> trabajadoresSinIncidencias() throws ServerDesconectadoException {
         List<Trabajador> trabajadores = null;
         try {
             LOGGER.info("TrabajadorManagerImplementation: Buscando todos los trabajadores sin Incidencias");
             //Solicitar a webClient los datos de todos los trabajadores sin incidencas.
             trabajadores = webClient.buscarTrabajadoresSinIncidencias_XML(new GenericType<List<Trabajador>>() {
             });
-        } catch (ClientErrorException e) {
-            LOGGER.severe(e.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE,
+                    "TrabajadorManagerImplementacion: Exception buscar por incidencas, {0}",
+                    ex.getMessage());
+            throw new ServerDesconectadoException("Error conecxion del trabajador\n" + ex.getMessage());
         }
         return trabajadores;
-
     }
 
     /**
@@ -165,15 +173,18 @@ public class TrabajadorManagerImplementacion implements TrabajadorManager {
      * @return Una colección de objetos Trabajador con los datos.
      */
     @Override
-    public Collection<Trabajador> buscarTrabajadorPorNombre(String name)  {
+    public Collection<Trabajador> buscarTrabajadorPorNombre(String name) throws ServerDesconectadoException {
         List<Trabajador> trabajadores = null;
         try {
             LOGGER.info("TrabajadorManagerImplementation: Buscando trabajador por el nombre");
             //Solicitar a webClient los datos de del trabajador buscadon por su nombre.
             trabajadores = webClient.buscarTrabajadorPorNombre_XML(new GenericType<List<Trabajador>>() {
             }, name);
-        } catch (ClientErrorException e) {
-            LOGGER.severe(e.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE,
+                    "UsersManager: Exception buscar por nombre, {0}",
+                    ex.getMessage());
+            throw new ServerDesconectadoException("Error conecxion el trabajador\n" + ex.getMessage());
         }
         return trabajadores;
     }

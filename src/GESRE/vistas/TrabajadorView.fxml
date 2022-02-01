@@ -46,7 +46,7 @@
                 <TextField fx:id="txtPrecioHora" alignment="TOP_RIGHT" layoutX="22.0" layoutY="214.0" prefHeight="25.0" prefWidth="66.0" promptText="0.0" />
                 <Label fx:id="lblErrorPrecioHora" layoutX="21.0" layoutY="243.0" prefHeight="17.0" prefWidth="131.0" />
                 <Label fx:id="lblFechaContrato" layoutX="158.0" layoutY="199.0" prefHeight="17.0" prefWidth="174.0" text="Fecha de contrato" />
-                <DatePicker fx:id="datePikerFechaContrato" layoutX="158.0" layoutY="213.0" promptText="dd/mm/aaaa" />
+                <DatePicker fx:id="datePickerFechaContrato" layoutX="158.0" layoutY="213.0" promptText="dd/mm/aaaa" />
                 <Label fx:id="lblErrorFechaContrato" layoutX="158.0" layoutY="243.0" prefHeight="17.0" prefWidth="131.0" />
                 <Label fx:id="lblNombreUsuario" layoutX="388.0" layoutY="69.0" prefHeight="17.0" prefWidth="219.0" text="Nombre de Usuario" />
                 <TextField fx:id="txtNombreUsuario" layoutX="388.0" layoutY="86.0" prefHeight="25.0" prefWidth="219.0" />
@@ -76,7 +76,7 @@
         </Pane>
       
         <ComboBox fx:id="cbxFiltro" layoutX="12.0" layoutY="310.0" prefHeight="25.0" prefWidth="125.0" promptText="Filtro" />
-        <TextField fx:id="txtBuscar" layoutX="142.0" layoutY="310.0" prefHeight="25.0" prefWidth="184.0" promptText="Buscar Trabajador" />
+        <TextField fx:id="txtBuscar" layoutX="142.0" layoutY="310.0" prefHeight="25.0" prefWidth="184.0" promptText="Nombre del Trabajador" />
         <Button fx:id="btnBuscar" layoutX="334.0" layoutY="310.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Buscar" />
         <Button fx:id="btnGEstionarClientes" layoutX="635.0" layoutY="310.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="143.0" text="Gestionar Clientes" />
         <TableView fx:id="tablaTrabajadores" layoutX="13.0" layoutY="342.0" prefHeight="251.0" prefWidth="776.0">

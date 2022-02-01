@@ -7,7 +7,6 @@ package GESRE.implementacion;
 
 import GESRE.entidades.Usuario;
 import GESRE.excepcion.EmailExisteException;
-import GESRE.excepcion.EmailNoExisteException;
 import GESRE.excepcion.LoginExisteException;
 import GESRE.excepcion.LoginNoExisteException;
 import GESRE.excepcion.UsuarioNoExisteException;
@@ -16,7 +15,6 @@ import GESRE.rest.UsuarioRESTClient;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.security.auth.login.LoginException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.GenericType;
 
@@ -142,14 +140,14 @@ public class UsuarioManagerImplentacion implements UsuarioManager {
     }
 
     @Override
-    public Collection<Usuario> buscarUsuarioPorLoginYContrasenia_Usuario(String login, String password)  throws  UsuarioNoExisteException{
+    public Collection<Usuario> buscarUsuarioPorLoginYContrasenia_Usuario(String login, String password) throws UsuarioNoExisteException {
         List<Usuario> usuarios = null;
         try {
             LOGGER.info("UsuarioManagerImplementation: Buscando trabajador por login y contraseñas");
             usuarios = webClient.buscarUsuarioPorLoginYContrasenia_XML(new GenericType<List<Usuario>>() {
             }, login, password);
             if (!usuarios.isEmpty()) {
-                throw  new UsuarioNoExisteException();
+                throw new UsuarioNoExisteException();
             }
         } catch (ClientErrorException e) {
             LOGGER.severe(e.getMessage());

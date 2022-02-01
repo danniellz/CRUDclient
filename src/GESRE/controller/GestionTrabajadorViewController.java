@@ -5,6 +5,7 @@
  */
 package GESRE.controller;
 
+import GESRE.excepcion.ServerDesconectadoException;
 import GESRE.entidades.Trabajador;
 import static GESRE.entidades.UserPrivilege.TRABAJADOR;
 import static GESRE.entidades.UserStatus.ENABLED;
@@ -13,7 +14,6 @@ import GESRE.excepcion.LoginExisteException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.TrabajadorManager;
 import GESRE.interfaces.UsuarioManager;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -183,7 +184,7 @@ public class GestionTrabajadorViewController {
 
     //********DATE PICKER********
     @FXML
-    private DatePicker datePikerFechaContrato;
+    private DatePicker datePickerFechaContrato;
 
     //********COMBOBOX********
     @FXML
@@ -221,12 +222,12 @@ public class GestionTrabajadorViewController {
 
     //*********ENTIDADA GESTION********
     /**
-     * Variable que hace una llamada al método que gestiona los grupos de la
-     * factoría.
+     * Variable que hace una llamada al método que gestiona los trabajadores de
+     * la factoría.
      */
     TrabajadorManager trabajadorGestion = GestionFactoria.getTrabajadorGestion();
     /**
-     * Variable que hace una llamada al método que gestiona los grupos de la
+     * Variable que hace una llamada al método que gestiona los usuarios de la
      * factoría.
      */
     UsuarioManager usuarioManager = GestionFactoria.getUsuarioGestion();
@@ -266,23 +267,23 @@ public class GestionTrabajadorViewController {
             btnAnadir.setDisable(true);
             btnModificar.setDisable(true);
             btnEliminar.setDisable(true);
-            btnLimpiar.setDisable(true);
-            btnBuscar.setDisable(true);
+            btnBuscar.setDisable(false);
             btnLimpiar.setDisable(true);
             txtNombreCompleto.requestFocus();
             txtBuscar.setDisable(true);
 
             //Gargar filtros de los casos de usos.
             cargarFiltros();
-            // Añade listeners a propiedades de cambio de texto
+
+            // Metodo dond se añade listeners a propiedades de cambio de texto
             textoNuevo();
 
             //Añadir la seleccion de la tabla a los campos de texto
             tablaTrabajadores.getSelectionModel().selectedItemProperty().addListener(this::handleTablaSeleccionada);
 
             //DatePicker Fecha contrato
-            datePikerFechaContrato.setValue(LocalDate.now());
-            noSeleccionarFechaAnterior(datePikerFechaContrato);
+            datePickerFechaContrato.setValue(LocalDate.now());
+            noSeleccionarFechaAnterior(datePickerFechaContrato);
 
             //Definir columnas de la tabla trabajador
             nombreUsuarioCL.setCellValueFactory(new PropertyValueFactory<>("login"));
@@ -299,7 +300,6 @@ public class GestionTrabajadorViewController {
             //Llenar la tabla de datos (Lista de todos los trabajadores)
             ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
             tablaTrabajadores.setItems(trabajadoresObservableList);
-
             //Añade acciones a los botones
             btnAnadir.setOnAction(this::handleBtnAnadir);
             btnModificar.setOnAction(this::handleBtnModificar);
@@ -316,8 +316,13 @@ public class GestionTrabajadorViewController {
             //Muestra la ventana
             stage.show();
 
-        } catch (Exception e) {
+        } catch (ServerDesconectadoException e) {
             LOGGER.log(Level.SEVERE, "Stage init error", e);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setTitle("ERROR SERVIDOR");
+            alert.setContentText("No hay conecxion con el servidor. Intentalo mas tarde");
+            alert.showAndWait();
         }
 
     }
@@ -346,7 +351,10 @@ public class GestionTrabajadorViewController {
         if (txtNombreCompleto.getText().length() > MAX_LENGHT) {
             String nombre = txtNombreCompleto.getText().substring(0, MAX_LENGHT);
             txtNombreCompleto.setText(nombre);
-
+            lblErrorNombreCompleto.setText("Maximo de caracteres alcanzados 50");
+            lblErrorNombreCompleto.setTextFill(Color.web("#FF0000"));
+        } else {
+            lblErrorNombreCompleto.setText("");
         }
 
         if (txtEmail.getText().length() > MAX_LENGHT) {
@@ -354,31 +362,45 @@ public class GestionTrabajadorViewController {
             txtEmail.setText(email);
             lblErrorEmail.setText("Maximo de caracteres alcanzados 50");
             lblErrorEmail.setTextFill(Color.web("#FF0000"));
-
+        } else {
+            lblErrorEmail.setText("");
         }
 
         if (txtNombreUsuario.getText().length() > MAX_LENGHT_USER) {
             String usuario = txtNombreUsuario.getText().substring(0, MAX_LENGHT_USER);
             txtNombreUsuario.setText(usuario);
+            lblErrorNombreUsuario.setText("Maximo de caracteres alcanzados 25");
+            lblErrorNombreUsuario.setTextFill(Color.web("#FF0000"));
 
+        } else {
+            lblErrorNombreUsuario.setText("");
         }
 
         if (txtContrasenia.getText().length() > MAX_LENGHT_USER) {
             String contrasenia = txtContrasenia.getText().substring(0, MAX_LENGHT_USER);
             txtContrasenia.setText(contrasenia);
+            lblErrorContrasenia.setText("Maximo de caracteres alcanzados 25");
+            lblErrorContrasenia.setTextFill(Color.web("#FF0000"));
 
+        } else {
+            lblErrorContrasenia.setText("");
         }
         if (txtRepiteContrasenia.getText().length() > MAX_LENGHT_USER) {
             String repiteContrasenia = txtRepiteContrasenia.getText().substring(0, MAX_LENGHT_USER);
             txtRepiteContrasenia.setText(repiteContrasenia);
-
+            lblErrorRepiteContrasenia.setText("Maximo de caracteres alcanzados 25");
+            lblErrorRepiteContrasenia.setTextFill(Color.web("#FF0000"));
+        } else {
+            lblErrorRepiteContrasenia.setText("");
         }
 
         if (txtPrecioHora.getText().length() > MAX_LENGHT_CANTIDAD) {
             String precioHora = txtPrecioHora.getText().substring(0, new Integer((int) MAX_LENGHT_CANTIDAD));
             txtPrecioHora.setText(precioHora);
-            lblErrorPrecioHora.setText("Maximo  de 2 cifras");
+            lblErrorPrecioHora.setText("Maximo de 2 cifras");
             lblErrorPrecioHora.setTextFill(Color.web("#FF0000"));
+        } else {
+            lblErrorPrecioHora.setText("");
         }
 
         habilitarBotones();
@@ -394,6 +416,7 @@ public class GestionTrabajadorViewController {
             btnAnadir.setDisable(false);
             btnModificar.setDisable(true);
             btnEliminar.setDisable(true);
+            btnAnadir.setDisable(false);
 
         } else {
             btnAnadir.setDisable(true);
@@ -450,7 +473,6 @@ public class GestionTrabajadorViewController {
                     }
                 }
             };
-
             return cell;
         });
     }
@@ -465,8 +487,8 @@ public class GestionTrabajadorViewController {
      */
     private void handleTablaSeleccionada(ObservableValue observable, Object oldValue, Object newValue) {
         lblErrorBuscar.setText("");
+
         if (newValue != null) {
-            //  datePikerFechaContrato.setDisable(true);
             Trabajador trabajador = (Trabajador) newValue;
             txtNombreCompleto.setText(trabajador.getFullName());
             txtEmail.setText(trabajador.getEmail());
@@ -474,56 +496,59 @@ public class GestionTrabajadorViewController {
             txtNombreUsuario.setText(trabajador.getLogin());
             txtContrasenia.setText(trabajador.getPassword());
             txtRepiteContrasenia.setText(trabajador.getPassword());
-            datePikerFechaContrato.setValue(convertToLocalDateViaInstant(trabajador.getFechaContrato()));
+            datePickerFechaContrato.setValue(convertToLocalDateViaInstant(trabajador.getFechaContrato()));
 
+            //Se comprueba el cambio de texto
             txtNombreCompleto.textProperty().addListener(this::handleValidarTextoModificado);
             txtEmail.textProperty().addListener(this::handleValidarTextoModificado);
             txtPrecioHora.textProperty().addListener(this::handleValidarTextoModificado);
             txtNombreUsuario.textProperty().addListener(this::handleValidarTextoModificado);
             txtContrasenia.textProperty().addListener(this::handleValidarTextoModificado);
             txtRepiteContrasenia.textProperty().addListener(this::handleValidarTextoModificado);
-
+            lblErrorRepiteContrasenia.setText("");
             btnAnadir.setDisable(true);
             btnModificar.setDisable(false);
             btnEliminar.setDisable(false);
+            btnBuscar.setDisable(false);
         } else {
+            //Cuando se no se recoge una fila, los campos estaran vacios
             txtNombreCompleto.setText("");
             txtEmail.setText("");
             txtPrecioHora.setText("");
             txtNombreUsuario.setText("");
             txtContrasenia.setText("");
             txtRepiteContrasenia.setText("");
+            datePickerFechaContrato.setValue(LocalDate.now());
             tablaTrabajadores.getSelectionModel().clearSelection();
             btnAnadir.setDisable(false);
             btnLimpiar.setDisable(false);
         }
+        //El foco esta en el campo Nombre completo
         txtNombreCompleto.requestFocus();
     }
 
     /**
      * Método que añade un trabajador nuevo a la tabla.
      *
-     * @param event
+     * @param event El evento de acción.
      */
     private void handleBtnAnadir(ActionEvent event) {
         boolean errorPatrones = patronesTextoBien();
         boolean errorDatePicker = datePickerVacio();
         boolean errorContrasenias = comprobarContrasenias();
-
+        //Se comprueba que no haya erroes en los campos de texto
         if (patronesTextoBien() && !errorDatePicker && !errorContrasenias) {
             try {
-
                 //Comprueba si existe el login
                 LOGGER.info("Usuario Controlador: Comprobando si existe el login");
                 usuarioManager.buscarUsuarioPorLoginCrear(txtNombreUsuario.getText());
                 //Comprueba si existe el email
                 LOGGER.info("Usuario Controlador: Comprobando si existe el email");
                 usuarioManager.buscarUsuarioPorEmailCrear(txtEmail.getText());
-
+                //Se recoge la fecha actual
                 Date date = new Date(System.currentTimeMillis());
-
                 Trabajador nuvoTrabajador = new Trabajador();
-                //Añade los datos escritos de los campos a los atribus correspondientes
+                //Añade los datos escritos de los campos a los atributos correspondientes
                 nuvoTrabajador.setFullName(txtNombreCompleto.getText());
                 nuvoTrabajador.setEmail(txtEmail.getText());
                 nuvoTrabajador.setPrecioHora(new Integer(txtPrecioHora.getText()));
@@ -532,13 +557,17 @@ public class GestionTrabajadorViewController {
                 nuvoTrabajador.setStatus(ENABLED);
                 nuvoTrabajador.setPrivilege(TRABAJADOR);
                 nuvoTrabajador.setLastPasswordChange(date);
-                nuvoTrabajador.setFechaContrato(convertToDateViaSqlDate(datePikerFechaContrato.getValue()));
-                //Manda al trabajador para crearlos
+                nuvoTrabajador.setFechaContrato(convertToDateViaSqlDate(datePickerFechaContrato.getValue()));
+                //Manda al trabajador para crearlo en labase de datos
                 trabajadorGestion.createTrabajador(nuvoTrabajador);
                 //Actualiza la tabla 
                 ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
                 tablaTrabajadores.setItems(trabajadoresObservableList);
+                //Limpia los campos
                 handleBtnLimpiar(event);
+                //Actualiza la tabla
+                tablaTrabajadores.refresh();
+                //Informa confimacion de creacion
                 lblErrorBuscar.setText("Se ha creado correctamente");
                 lblErrorBuscar.setTextFill(Color.web("GREEN"));
 
@@ -550,6 +579,12 @@ public class GestionTrabajadorViewController {
                 LOGGER.severe(ee.getMessage());
                 lblErrorEmail.setText("El email ya existe");
                 lblErrorEmail.setTextFill(Color.web("#FF0000"));
+            } catch (ServerDesconectadoException cliente) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText(null);
+                alert.setTitle("ERROR SERVIDOR");
+                alert.setContentText("No hay conecxion con el servidor. Intentalo mas tarde");
+                alert.showAndWait();
             }
         } else {
 
@@ -557,41 +592,75 @@ public class GestionTrabajadorViewController {
     }
 
     /**
+     * Metodo que modifica un trabajador seleccionado se la tabla
      *
-     * @param event
+     * @param event El evento de acción.
      */
     private void handleBtnModificar(ActionEvent event) {
-
         boolean errorDatePicker = datePickerVacio();
         boolean errorContrasenias = comprobarContrasenias();
-
+        Trabajador trabajadorSelecionado = tablaTrabajadores.getSelectionModel().getSelectedItem();
         if (patronesTextoBien() && !errorDatePicker && !errorContrasenias) {
-            Trabajador trabajadorSelecionado = tablaTrabajadores.getSelectionModel().getSelectedItem();
-            trabajadorSelecionado.setFullName(txtNombreCompleto.getText());
-
-            trabajadorSelecionado.setEmail(txtEmail.getText());
-            trabajadorSelecionado.setPrecioHora(new Integer(txtPrecioHora.getText()));
-            trabajadorSelecionado.setLogin(txtNombreUsuario.getText());
-            trabajadorSelecionado.setFechaContrato(convertToDateViaSqlDate(datePikerFechaContrato.getValue()));
-            trabajadorSelecionado.setPassword(txtContrasenia.getText());
-
-            trabajadorGestion.editTrabajador(trabajadorSelecionado);
-            tablaTrabajadores.getSelectionModel().clearSelection();
-            tablaTrabajadores.refresh();
-            lblErrorBuscar.setText("Se ha modificado correctamente ");
-            lblErrorBuscar.setTextFill(Color.web("GREEN"));
-
+            if (!txtNombreUsuario.equals(trabajadorSelecionado.getLogin())) {
+                try {
+                    //Comprueba si el campo login se ha modificado
+                    if (nuevoTexto(txtNombreUsuario.getText(), trabajadorSelecionado.getLogin())) {
+                        //Comprueba si existe el login
+                        LOGGER.info("Usuario Controlador: Comprobando si existe el login");
+                        usuarioManager.buscarUsuarioPorLoginCrear(txtNombreUsuario.getText());
+                    }
+                    //Comprueba si el campo email se ha modificado
+                    if (nuevoTexto(txtEmail.getText(), trabajadorSelecionado.getEmail())) {
+                        //Comprueba si existe el login
+                        LOGGER.info("Usuario Controlador: Comprobando si existe el login");
+                        usuarioManager.buscarUsuarioPorEmailCrear(txtEmail.getText());
+                    }
+                    trabajadorSelecionado.setFullName(txtNombreCompleto.getText());
+                    trabajadorSelecionado.setEmail(txtEmail.getText());
+                    trabajadorSelecionado.setPrecioHora(new Integer(txtPrecioHora.getText()));
+                    trabajadorSelecionado.setLogin(txtNombreUsuario.getText());
+                    trabajadorSelecionado.setFechaContrato(convertToDateViaSqlDate(datePickerFechaContrato.getValue()));
+                    trabajadorSelecionado.setPassword(txtContrasenia.getText());
+                    trabajadorGestion.editTrabajador(trabajadorSelecionado);
+                    tablaTrabajadores.getSelectionModel().clearSelection();
+                    //Actualiza la tabla 
+                    ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
+                    tablaTrabajadores.setItems(trabajadoresObservableList);
+                    lblErrorBuscar.setText("Se ha modificado correctamente");
+                    lblErrorBuscar.setTextFill(Color.web("GREEN"));
+                } catch (LoginExisteException e) {
+                    LOGGER.info("Exception: Login existe");
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText(null);
+                    alert.setTitle("ERROR LOGIN");
+                    alert.setContentText("El login ya existe");
+                    alert.showAndWait();
+                } catch (EmailExisteException e) {
+                    LOGGER.info("Exception: Email existe");
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText(null);
+                    alert.setTitle("ERROR EMAIL");
+                    alert.setContentText("El emal ya existe");
+                    alert.showAndWait();
+                } catch (ServerDesconectadoException e) {
+                    LOGGER.info("Exception: Servidor desconectado");
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText(null);
+                    alert.setTitle("ERROR SERVIDOR");
+                    alert.setContentText("No hay conecxion con el servidor. Intentalo mas tarde.");
+                    alert.showAndWait();
+                }
+            }
         } else {
-            lblErrorBuscar.setText("Error: No se puede modificar");
+            lblErrorBuscar.setText("Error : No se puede modificar");
             lblErrorBuscar.setTextFill(Color.web("RED"));
         }
-
     }
 
     /**
      * Método que elimina un trabajador de la tabla.
      *
-     * @param event
+     * @param event El evento de acción.
      */
     private void handleBtnEliminar(ActionEvent event) {
         boolean esta = false;
@@ -605,41 +674,46 @@ public class GestionTrabajadorViewController {
         ButtonType button = result.orElse(ButtonType.CANCEL);
 
         if (button == ButtonType.OK) {
-            Trabajador seleccion = ((Trabajador) tablaTrabajadores.getSelectionModel().getSelectedItem());
+            try {
+                Trabajador seleccion = ((Trabajador) tablaTrabajadores.getSelectionModel().getSelectedItem());
 
-            trabajadorGestion.removeTrabajador(seleccion);
-            Collection<Trabajador> tbj = trabajadorGestion.buscarTodosLosTrabajadores();
-            Collection<Trabajador> t = trabajadorGestion.buscarTrabajadorPorNombre(seleccion.getFullName());
-
-            for (Trabajador trabajador : t) {
+                trabajadorGestion.removeTrabajador(seleccion);
+                Collection<Trabajador> tbj = trabajadorGestion.buscarTodosLosTrabajadores();
                 for (Trabajador trabajador1 : tbj) {
-                    if (trabajador.getFullName().equals(trabajador1.getFullName())) {
+                    if (seleccion.getFullName().equals(trabajador1.getFullName())) {
                         esta = true;
                         break;
-                    } else {
-                        esta = false;
                     }
                 }
+                if (!esta) {
+                    LOGGER.info("Borrando");
+                    tablaTrabajadores.getItems().remove(seleccion);
+                    tablaTrabajadores.getSelectionModel().clearSelection();
+                    tablaTrabajadores.refresh();
+                    LOGGER.info("Borrado con exito");
+                    // handleBtnLimpiar(event);
+                    borradoAlerta();
+                    lblErrorBuscar.setText("Trabajador eliminado correctamente");
+                    lblErrorBuscar.setTextFill(Color.web("GREEN"));
+                } else {
+                    LOGGER.info("ALERTA DE ERROR");
+                    errorBorrar();
+                    handleBtnLimpiar(event);
+                    lblErrorBuscar.setText("No se ha borrado el trabajador");
+                    lblErrorBuscar.setTextFill(Color.web("#FF0000"));
+                }
+            } catch (Exception e) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText(null);
+                alert.setTitle("ERROR SERVIDOR");
+                alert.setContentText("No hay conecxion con el servidor. Intentalo mas tarde.");
+                alert.showAndWait();
             }
 
-            if (!esta) {
-                LOGGER.info("Borrando");
-                tablaTrabajadores.getItems().remove(seleccion);
-                tablaTrabajadores.getSelectionModel().clearSelection();
-                tablaTrabajadores.refresh();
-                LOGGER.info("Borrado con exito");
-            } else {
-                LOGGER.info("ALERTA DE ERROR");
-                errorBorrar();
-                lblErrorBuscar.setText("ERROR: EL TRABAJADOR ESTA ACTIVO");
-                lblErrorBuscar.setTextFill(Color.web("#FF0000"));
-            }
-
-            handleBtnLimpiar(event);
-            lblErrorBuscar.setText("Trabajador eliminado correctamente");
-
+        } else {
+            lblErrorBuscar.setText("Borrado cancelado");
+            lblErrorBuscar.setTextFill(Color.web("#FF0000"));
         }
-
     }
 
     /**
@@ -652,12 +726,12 @@ public class GestionTrabajadorViewController {
         txtNombreCompleto.setText("");
         txtEmail.setText("");
         txtPrecioHora.setText("");
-        datePikerFechaContrato.setValue(LocalDate.now());
+        datePickerFechaContrato.setValue(LocalDate.now());
         txtNombreUsuario.setText("");
         txtContrasenia.setText("");
         txtRepiteContrasenia.setText("");
         txtBuscar.setText("");
-
+        //Cambia los label de error a texto vacio
         lblErrorContrasenia.setText("");
         lblErrorBuscar.setText("");
         lblErrorEmail.setText("");
@@ -667,47 +741,59 @@ public class GestionTrabajadorViewController {
         lblErrorPrecioHora.setText("");
         lblErrorRepiteContrasenia.setText("");
         btnAnadir.setDisable(false);
-        //btnLimpiar.setDisable(true);
-
         txtNombreCompleto.requestFocus();
         textoNuevo();
         tablaTrabajadores.getSelectionModel().clearSelection();
     }
 
     /**
+     * Metodo para de busqueda dependiendo su eleccion del comboBox
      *
-     * @param event
+     * @param event El evento de acción.
      */
     private void handleBtnBuscar(ActionEvent event) {
-        //handleBtnLimpiar(event);
-        boolean esta = false;
-        if (cbxFiltro.getValue().equals("Todos")) {
-            ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
-            tablaTrabajadores.setItems(trabajadoresObservableList);
-            tablaTrabajadores.refresh();
+        lblErrorBuscar.setText("");
+        try {
 
-        }
-        if (cbxFiltro.getValue().equals("Un trabajador")) {
-
-            if (patronesBuscarBien()) {
-                ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTrabajadorPorNombre(txtBuscar.getText()));
+            //Carga en la tabla todo los trabajadores
+          //  ObservableList<Trabajador> trabajadoresObservableLista = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
+         //   tablaTrabajadores.setItems(trabajadoresObservableLista);
+          //  tablaTrabajadores.refresh();
+            
+            if (cbxFiltro.getValue().equals("Todos")) {
+                //Carga en la tabla todo los trabajadores
+                ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
+                tablaTrabajadores.setItems(trabajadoresObservableList);
+                tablaTrabajadores.refresh();
+            }
+            if (cbxFiltro.getValue().equals("Un trabajador")) {
+                if (patronesBuscarBien()) {
+                    //Carga en la tabla el nombre a buscar
+                    ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTrabajadorPorNombre(txtBuscar.getText()));
+                    tablaTrabajadores.setItems(trabajadoresObservableList);
+                    tablaTrabajadores.refresh();
+                }
+            }
+            if (cbxFiltro.getValue().equals("Sin incidencias")) {
+                //Carga en la todos los trabajadores que no tienen incidencias recogidas
+                ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.trabajadoresSinIncidencias());
                 tablaTrabajadores.setItems(trabajadoresObservableList);
                 tablaTrabajadores.refresh();
             }
 
+        } catch (ServerDesconectadoException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setTitle("ERROR SERVIDOR");
+            alert.setContentText("No hay conecxion con el servidor. Intentalo mas tarde.");
+            alert.showAndWait();
         }
-        if (cbxFiltro.getValue().equals("Sin incidencias")) {
-            ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.trabajadoresSinIncidencias());
-            tablaTrabajadores.setItems(trabajadoresObservableList);
-            tablaTrabajadores.refresh();
-
-        }
-
     }
 
     /**
+     * Metodo que muestra un informe de la tabla para imprimir
      *
-     * @param event
+     * @param event El evento de la accion
      */
     private void handleImprimirInfotmeAction(ActionEvent event) {
         try {
@@ -754,11 +840,10 @@ public class GestionTrabajadorViewController {
      */
     private boolean datePickerVacio() {
         boolean vacio = false;
-
-        if (datePikerFechaContrato.getValue() == null) {
-            lblErrorFechaContrato.setText("Introducir una fecha");
+        //Se comprueba que campo datePicker no esta vacio
+        if (datePickerFechaContrato.getValue() == null) {
+            lblErrorFechaContrato.setText("Introduce una fecha");
             lblErrorFechaContrato.setTextFill(Color.web("#FF0000"));
-
             vacio = true;
         } else {
             lblErrorFechaContrato.setText("");
@@ -767,13 +852,19 @@ public class GestionTrabajadorViewController {
         return vacio;
     }
 
+    /**
+     * Metodo que llena el comboBox de los valores de busqueda
+     *
+     * @param ov objeto
+     * @param oldValue objeto viejo
+     * @param newValue objeto nuevo
+     */
     private void cbListener(ObservableValue ov, String oldValue, String newValue) {
         btnBuscar.setDisable(false);
-
+        //Carga los item del comboBox
         if (cbxFiltro.getValue().equals("Todos")) {
             txtBuscar.setDisable(true);
             btnBuscar.setDisable(false);
-
         } else if (cbxFiltro.getValue().equals("Un trabajador")) {
             txtBuscar.setText("");
             txtBuscar.setDisable(false);
@@ -781,13 +872,18 @@ public class GestionTrabajadorViewController {
         } else if (cbxFiltro.getValue().equals("Sin incidencias")) {
             txtBuscar.setDisable(true);
             btnBuscar.setDisable(false);
-
+        } else if (cbxFiltro.getValue().equals("errorAñadir")) {
+            txtBuscar.setDisable(true);
+            btnBuscar.setDisable(false);
+        } else if (cbxFiltro.getValue().equals("errorModificar_Borrar")) {
+            txtBuscar.setDisable(true);
+            btnBuscar.setDisable(false);
         }
     }
 
     /**
-     * Comprueba si algún campo de texto de Titulo, Autor, Editorial, Genero,
-     * CantidadTotal o Isbn está vacio.
+     * Comprueba si algún campo de texto de Nombre completo, Email, Precio Hora,
+     * Contraseña, Nombre Usuario o Repetir Comtraseña está vacio.
      *
      * @return Una variable indicando si hay algun campo de texto vacio o no.
      */
@@ -812,9 +908,6 @@ public class GestionTrabajadorViewController {
         if (!txtNombreCompleto.getText().isEmpty() || txtEmail.getText().isEmpty()
                 || txtPrecioHora.getText().isEmpty() || txtNombreUsuario.getText().isEmpty()
                 || txtContrasenia.getText().isEmpty() || txtRepiteContrasenia.getText().isEmpty()) {
-            //btnAnadir.setDisable(false);
-            //btnModificar.setDisable(false);
-            //btnEliminar.setDisable(false);
             return true;
         } else {
             return false;
@@ -822,7 +915,7 @@ public class GestionTrabajadorViewController {
     }
 
     /**
-     * Metodo que el facha Date a un DateSQL
+     * Metodo que pasa la facha Date a un DateSQL
      *
      * @param dateToConvert Date a cambio de DateSql
      * @return Devuelve el date en sql
@@ -844,26 +937,6 @@ public class GestionTrabajadorViewController {
     }
 
     /**
-     * Metodo que comprueba que si el nombre existe en la base de datos
-     *
-     * @param nombre El nombra del trabajador a buscar
-     * @return Decuelve true o false si el nombre se ha encontrado
-     */
-    private boolean comprobrarNombre(String nombre) {
-        Collection<Trabajador> trabajador = null;
-        //   trabajador = trabajadorGestion.buscarTrabajadorPorNombre(nombre);
-
-        if (trabajador.size() > 0) {
-            for (Trabajador t : trabajador) {
-                if (t.getFullName().equals(nombre)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * Comprueba que los patrone de nombre completo, email, precio/hora, fecha,
      * nombre usuario contraseña y repetir contraseñas son correctos.
      *
@@ -871,9 +944,9 @@ public class GestionTrabajadorViewController {
      */
     private boolean patronesTextoBien() {
         boolean patronesTextoBien = true;
-
+        //Controlador de los campos de texto 
         Matcher matcher = null;
-
+        //Compruba que no tenga numeros y ni caracteres especiales
         matcher = VALID_NOMBRE_COMPLETO.matcher(txtNombreCompleto.getText());
         if (!matcher.find()) {
             lblErrorNombreCompleto.setText("El Nombre completo sólo debe contener letras");
@@ -882,7 +955,7 @@ public class GestionTrabajadorViewController {
         } else {
             lblErrorNombreCompleto.setText("");
         }
-
+        //Valida que no tenga caractes especiales
         matcher = VALID_USUARIO.matcher(txtNombreUsuario.getText());
         if (!matcher.find()) {
             lblErrorNombreUsuario.setText("El usuario sólo debe contener letras y numeros");
@@ -891,14 +964,16 @@ public class GestionTrabajadorViewController {
         } else {
             lblErrorNombreUsuario.setText("");
         }
+        //Valida que el formato email este bien
         matcher = VALID_EMAIL.matcher(txtEmail.getText());
         if (!matcher.find()) {
-            lblErrorEmail.setText("Email es inválido ");
+            lblErrorEmail.setText("Email es inválido");
             lblErrorEmail.setTextFill(Color.web("#FF0000"));
             patronesTextoBien = false;
         } else {
             lblErrorEmail.setText("");
         }
+        //Valida que el campo sean cifras
         matcher = VALID_NUMERO.matcher(txtPrecioHora.getText());
         if (!matcher.find()) {
             lblErrorPrecioHora.setText("Deben ser numeros");
@@ -1086,17 +1161,17 @@ public class GestionTrabajadorViewController {
      */
     private boolean patronesBuscarBien() {
         boolean patronesBuscarBien = true;
-
+        //Valida que el campo de texto no tenga numeros
         Matcher matcher = null;
         matcher = VALID_NOMBRE_COMPLETO.matcher(txtBuscar.getText());
         if (!matcher.find()) {
             lblErrorBuscar.setText("El nombre sólo debe contener letras");
             lblErrorBuscar.setTextFill(Color.web("#FF0000"));
             patronesBuscarBien = false;
-        } 
-        
+        }
+        //Informa si el campo de texto esta vacio
         if (txtBuscar.getText().isEmpty()) {
-             lblErrorBuscar.setText("Error: Escribe un nombre a buscar");
+            lblErrorBuscar.setText("Error: Escribe un nombre a buscar");
             lblErrorBuscar.setTextFill(Color.web("#FF0000"));
             patronesBuscarBien = false;
         }
@@ -1190,6 +1265,33 @@ public class GestionTrabajadorViewController {
         txtContrasenia.textProperty().addListener(this::handleValidarTexto);
         txtRepiteContrasenia.textProperty().addListener(this::handleValidarTexto);
 
+    }
+
+    /**
+     * Metodo de llada a una alerta de Informacion que afirmacion
+     */
+    private void borradoAlerta() {
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(null);
+        alert.setTitle("BORRADO");
+        alert.setContentText("El trabajador ha sido borrado con exito");
+        alert.showAndWait();
+    }
+
+    /**
+     * Metodo para compara si son iguales los login
+     *
+     * @param login del tabajadoir de la base de datos
+     * @param tLogin del campo de texto
+     * @return Valor vedadero o falso
+     */
+    private boolean nuevoTexto(String login, String tLogin) {
+        boolean cambio = true;
+        if (tLogin.equals(login)) {
+            cambio = false;
+        }
+        return cambio;
     }
 
 }

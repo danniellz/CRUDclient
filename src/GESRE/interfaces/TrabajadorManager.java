@@ -6,6 +6,7 @@
 package GESRE.interfaces;
 
 import GESRE.entidades.Trabajador;
+import GESRE.excepcion.*;
 import java.util.Collection;
 
 /**
@@ -51,15 +52,17 @@ public interface TrabajadorManager {
      *
      * @param name
      * @return Colección de los trabajadores existentes.
+     * @throws GESRE.excepcion.NombreNoEncontradoException
+     * @throws GESRE.excepcion.ServerDesconectadoException
      */
-    public Collection<Trabajador> buscarTrabajadorPorNombre(String name) ;
+    public Collection<Trabajador> buscarTrabajadorPorNombre(String name) throws  ServerDesconectadoException;
 
     /**
      * Método que busca a todos los trabajadores.
      *
      * @return Colección de los trabajadores de la base de datos.
      */
-    public Collection<Trabajador> buscarTodosLosTrabajadores();
+    public Collection<Trabajador> buscarTodosLosTrabajadores()throws ServerDesconectadoException;
 
     /**
      * Método que busca todos los trabajadores que no hayan recogido ninguna
@@ -67,5 +70,5 @@ public interface TrabajadorManager {
      *
      * @return Colección de los trabajadores sin incidencas.
      */
-    public Collection<Trabajador> trabajadoresSinIncidencias();
+    public Collection<Trabajador> trabajadoresSinIncidencias()throws ServerDesconectadoException;
 }
