@@ -122,13 +122,16 @@ public class PiezaViewController {
     private MenuItem mnCerrarSesion;
     @FXML
     private MenuItem mnSalir;
-
     /**
      * Variable que hace una llamada al método que gestiona los grupos de la
      * factoría.
      */
-    PiezasManager piezasManager = GestionFactoria.getPiezaManager();
+    PiezasManager piezasManager;
     TrabajadorManager trabajadorManager = GestionFactoria.getTrabajadorGestion();
+
+    public PiezaViewController() throws ServerDesconectadoException {
+        this.piezasManager = GestionFactoria.getPiezaManager();
+    }
 
     /**
      * Establece el Stage de PiezaView

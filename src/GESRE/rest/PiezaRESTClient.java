@@ -22,6 +22,7 @@ import javax.ws.rs.core.GenericType;
  * </pre>
  *
  * @author Daniel Brizuela
+ * @version 1.0
  */
 public class PiezaRESTClient {
 

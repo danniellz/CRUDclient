@@ -1,11 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package GESRE.factoria;
 
 
+import GESRE.excepcion.ServerDesconectadoException;
 import GESRE.implementacion.PiezasManagerImplementation;
 import GESRE.implementacion.TrabajadorManagerImplementacion;
 import GESRE.implementacion.UsuarioManagerImplentacion;
@@ -19,6 +15,7 @@ import java.util.logging.Logger;
  * Clase de factoría que gestiona las implementaciones.
  *
  * @author Jonathan, Daniel
+ * @version 1.0
  */
 public class GestionFactoria {
 
@@ -38,7 +35,7 @@ public class GestionFactoria {
         return trabajadorGestion;
     }
 
-    public static PiezasManager getPiezaManager() {
+    public static PiezasManager getPiezaManager() throws ServerDesconectadoException {
         LOGGER.info("GestionFactoria: Creando la implementacion de Piezas");
         PiezasManager piezaManager = new PiezasManagerImplementation();
         return piezaManager;
