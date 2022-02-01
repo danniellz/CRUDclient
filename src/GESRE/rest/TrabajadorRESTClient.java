@@ -45,7 +45,7 @@ public class TrabajadorRESTClient {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("entidades.trabajador");//entidades.trabajador
     }
-
+                    
     /**
      * Crea una reperesentación XML de la entidad Trabajdor y la manda al
      * servicio web trabajador RESTful como petición para crearlo.

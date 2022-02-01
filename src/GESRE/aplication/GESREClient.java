@@ -1,8 +1,6 @@
 package GESRE.aplication;
 
 import GESRE.controller.GestionTrabajadorViewController;
-import GESRE.controller.PiezaViewController;
-import GESRE.controller.ResetContraController;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import GESRE.controller.SignInController;
+import GESRE.entidades.SignIn;
 
 /**
  * class responsible for starting the application
@@ -29,7 +28,7 @@ public class GESREClient extends Application {
      * @param primaryStage stage object (window)
      * @throws Exception throws an error if the start method fails
      */
-    /*@Override
+    @Override
     public void start(Stage primaryStage) throws Exception {
         try {
             LOG.info("Iniciando Ventana...");
@@ -37,51 +36,15 @@ public class GESREClient extends Application {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/TrabajadorView.fxml"));
             Parent root = (Parent) loader.load();
             //Get controller
-            GestionTrabajadorViewController controlador = loader.getController();
+           GestionTrabajadorViewController controlador = loader.getController();
             //Set the stage
             controlador.setStage(primaryStage);
-            //initialize the window
-            controlador.initStage(root);
-        } catch (IOException ex) {
-            LOG.log(Level.SEVERE, "Error Starting SignIn window", ex);
-        }
-    }*/
-    Integer id = 3;
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        try {
-            LOG.info("Iniciando Ventana...");
-            //Load the FXML file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/PiezaView.fxml"));
-            Parent root = (Parent) loader.load();
-            //Get controller
-            PiezaViewController controlador = loader.getController();
-            //Set the stage
-            controlador.setStage(primaryStage, id);
             //initialize the window
             controlador.initStage(root);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "Error Starting SignIn window", ex);
         }
     }
-    
-    /*@Override
-    public void start(Stage primaryStage) throws Exception {
-        try {
-            LOG.info("Iniciando Ventana...");
-            //Load the FXML file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/ResetContra.fxml"));
-            Parent root = (Parent) loader.load();
-            //Get controller
-            ResetContraController controlador = loader.getController();
-            //Set the stage
-            controlador.setStage(primaryStage);
-            //initialize the window
-            controlador.initStage(root);
-        } catch (IOException ex) {
-            LOG.log(Level.SEVERE, "Error Starting SignIn window", ex);
-        }
-    }*/
 
     /**
      * Main class, start the application
