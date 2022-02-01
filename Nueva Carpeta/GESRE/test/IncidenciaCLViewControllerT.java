@@ -8,12 +8,15 @@ import GESRE.entidades.TipoIncidencia;
 import javafx.scene.control.TextField;
 import groovyjarjarasm.asm.Label;
 import java.util.logging.Logger;
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
@@ -24,6 +27,7 @@ import org.testfx.framework.junit.ApplicationTest;
 import static org.testfx.matcher.base.NodeMatchers.isDisabled;
 import static org.testfx.matcher.base.NodeMatchers.isEnabled;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
+import static org.testfx.matcher.control.ButtonMatchers.isDefaultButton;
 import org.testfx.matcher.control.ComboBoxMatchers;
 import static org.testfx.matcher.control.ComboBoxMatchers.hasSelectedItem;
 import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
@@ -68,7 +72,7 @@ public class IncidenciaCLViewControllerT extends ApplicationTest {
         Hor_TxtLabel = lookup("#Hor_TxtLabel").query();
         Estr_TxtLabel = lookup("#Estr_TxtLabel").query();
 
-        tablaIncidencia = lookup("#tablaIncidencia").queryTableView();
+        tablaIncidencia = lookup("#tablaIncidencias").queryTableView();
         cbxTipoIncidencia = lookup("#cbxTipoIncidencia").queryComboBox();
         cbxEstadoIncidencia = lookup("#cbxEstadoIncidencia").queryComboBox();
     }
@@ -210,7 +214,7 @@ public class IncidenciaCLViewControllerT extends ApplicationTest {
     }
 
     @Test
-
+    @Ignore
     public void testE_ControlCaracteres() {
         //seleccionar algo en el cbxTipoIncidencia, como faltan campos los botones estan deshabilitados
         clickOn(cbxTipoIncidencia);
@@ -251,7 +255,34 @@ public class IncidenciaCLViewControllerT extends ApplicationTest {
     @Test
     @Ignore
     public void testF_seleccionTabla() {
-       
+        //Obtener el tamaño de la tabla
+        int filas = tablaIncidencia.getItems().size();
+        assertNotEquals("La tabla no tiene datos", filas, 0);
+
+        //Seleccionar fila
+        Node fila = lookup(".table-row-cell").nth(0).query();
+        //assertNotNull("La fila es nula, no contiene datos",fila);
+        clickOn(fila);
+        //Obtener los datos de la fila seleccionada
+        Incidencia incidenciaSeleccionada = (Incidencia) tablaIncidencia.getSelectionModel().getSelectedItem();
+        //Comprobar si los datos estan en los campos y se habilitan los botones correspondientes
+        verifyThat(Hor_TxtLabel, hasText(incidenciaSeleccionada.getHoras().toString()));
+        verifyThat(Estr_TxtLabel, hasText(incidenciaSeleccionada.getEstrellas().toString()));
+
+        verifyThat("#btnAnadir", isEnabled());
+        verifyThat("#btnEliminar", isEnabled());
+        verifyThat("#btnModificar", isEnabled());
+        //deseleccionar fila
+        press(KeyCode.CONTROL);
+        clickOn(fila);
+        release(KeyCode.CONTROL);
+        //Comprobar que no hay datos al deseleccionar
+
+        verifyThat("#Estr_TxtLabel", hasText(""));
+        verifyThat("#Hor_TxtLabel", hasText(""));
+        verifyThat("#btnAnadir", isDisabled());
+        verifyThat("#btnEliminar", isDisabled());
+        verifyThat("#btnModificar", isDisabled());
     }
 
     @Test
@@ -295,6 +326,59 @@ public class IncidenciaCLViewControllerT extends ApplicationTest {
         verifyThat("La incidencia ha sido creado con existo", isVisible());
     }
 
+    @Test
+    @Ignore
+    public void testH_EditarIncidenciaOK() {
+        //Obtener el tamaño de la tabla
+        int filas = tablaIncidencia.getItems().size();
+        assertNotEquals("La tabla no tiene datos", filas, 0);
+
+        //Seleccionar fila
+        Node fila = lookup(".table-row-cell").nth(0).query();
+        //assertNotNull("La fila es nula, no contiene datos",fila);
+        clickOn(fila);
+        //Obtener los datos de la fila seleccionada
+        Incidencia incidenciaSeleccionada = (Incidencia) tablaIncidencia.getSelectionModel().getSelectedItem();
+           
+        clickOn(cbxTipoIncidencia);
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        
+        clickOn(cbxEstadoIncidencia);
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        
+        clickOn("#Hor_TxtLabel");
+        write("22");
+        
+        clickOn("#Estr_TxtLabel");
+        write("2");
+        
+       clickOn("#btnModificar");
+       verifyThat("Se ha modificado la Incidencia", isVisible());
+        
+        
+        
+    }
+    @Test
+    //@Ignore
+    public void testI_EliminarIncidenciaOK(){
+         //Obtener el tamaño de la tabla
+        int filas = tablaIncidencia.getItems().size();
+        assertNotEquals("La tabla no tiene datos", filas, 0);
+
+        //Seleccionar fila
+        Node fila = lookup(".table-row-cell").nth(0).query();
+        //assertNotNull("La fila es nula, no contiene datos",fila);
+        clickOn(fila);
+        
+        verifyThat("#btnEliminar", isEnabled());
+        clickOn("#btnEliminar");
+        verifyThat("¿Seguro que quieres eliminar la incidencia?", isVisible());
+        
+        clickOn(isDefaultButton());
+         
+    }
     public void vaciarCampos() {
         clickOn("#btnLimpiar");
         verifyThat("#Estr_TxtLabel", hasText(""));

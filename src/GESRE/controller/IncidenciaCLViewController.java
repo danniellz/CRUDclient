@@ -422,7 +422,7 @@ public class IncidenciaCLViewController {
             //Actualizar tabla
             tablaIncidencias.refresh();
         } else {
-            LOG.info("NO Modificando la Incidencia" + camposCorrectos() + "HHHHHHHHHHHHHHHHHHHHH");
+            LOG.info("NO Modificando la Incidencia" + camposCorrectos());
             //introducir texto en el mensaje de error
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Modificar");
