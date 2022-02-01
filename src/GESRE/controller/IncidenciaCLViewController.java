@@ -70,7 +70,7 @@ public class IncidenciaCLViewController {
     private static final int MAX_LENGHT_HOR = 2;
 
     public static final Pattern VALID_EST = Pattern.compile("[0-5]", Pattern.CASE_INSENSITIVE);
-    public static final Pattern VALID_HOR = Pattern.compile("[0-99]", Pattern.CASE_INSENSITIVE);
+    public static final Pattern VALID_HOR = Pattern.compile("-?([0-9]*)?", Pattern.CASE_INSENSITIVE);
 
     //**************label de Informacion *****************
     @FXML
@@ -243,17 +243,18 @@ public class IncidenciaCLViewController {
     }
 
     private void handleLimpiarFormulario(ActionEvent event) {
-        Estr_TxtLabel.setText(" ");
-        Hor_TxtLabel.setText(" ");
+        Estr_TxtLabel.setText("");
+        Hor_TxtLabel.setText("");
         cbxTipoIncidencia.getSelectionModel().select(-1);
         cbxEstadoIncidencia.getSelectionModel().select(-1);
         habilitarBotones();
     }
- private void handleInforme(ActionEvent event) {
+
+    private void handleInforme(ActionEvent event) {
         try {
             LOG.info("Comenzandoa imprimir los datos de la tabla Trabajador...");
             JasperReport report = JasperCompileManager.compileReport(getClass()
-                            .getResourceAsStream("/GESRE/archivos/incidenciaCReportGesre.jrxml"));
+                    .getResourceAsStream("/GESRE/archivos/incidenciaCReportGesre.jrxml"));
             //Data for the report: a collection of UserBean passed as a JRDataSource 
             //implementation 
             JRBeanCollectionDataSource dataItems
@@ -270,17 +271,18 @@ public class IncidenciaCLViewController {
         } catch (JRException ex) {
             //If there is an error show message and
             //log it.
-           Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Imprimir");
-                alert.setHeaderText(null);
-                alert.setResizable(false);
-                alert.setContentText("Las Incidencias no han podido ser Imprimidas");
-                alert.show();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Imprimir");
+            alert.setHeaderText(null);
+            alert.setResizable(false);
+            alert.setContentText("Las Incidencias no han podido ser Imprimidas");
+            alert.show();
             LOG.log(Level.SEVERE,
                     "IncidenciaCLController: Error printing report: {0}",
                     ex.getMessage());
         }
     }
+
     private void handleTablaIncidenciasSelection(ObservableValue observable, Object oldValue, Object newValue) {
         //Si una fila esta seleccionada mover los datos de la fila a los campos
         if (newValue != null) {
@@ -345,7 +347,13 @@ public class IncidenciaCLViewController {
             }
 
         } catch (Exception e) {
-            LOG.severe("NO FUNICONA EL CREATE " + e.getLocalizedMessage());
+            LOG.severe("NO FUNCIONA EL CREATE " + e.getLocalizedMessage());
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("CREAR");
+            alert.setHeaderText(null);
+            alert.setResizable(false);
+            alert.setContentText("La incidencia NO ha sido creado con existo(deben ser numeros)");
+            alert.show();
         }
     }
 
@@ -369,7 +377,6 @@ public class IncidenciaCLViewController {
                 tablaIncidencias.getSelectionModel().clearSelection();
                 tablaIncidencias.refresh();
 
-                
             } else {
                 lblError.setText("No se ha podido eliminar la Incidencia");
                 lblError.setTextFill(Color.web("#FF0000"));
@@ -423,6 +430,7 @@ public class IncidenciaCLViewController {
             alert.setResizable(false);
             alert.setContentText("NO Se ha modificado la Incidencia");
             alert.show();
+            
             //mostrar mensaje de Error
             lblError.setVisible(true);
 
@@ -436,36 +444,36 @@ public class IncidenciaCLViewController {
         Matcher matcher = null;
 
         matcher = VALID_EST.matcher(Estr_TxtLabel.getText());
-        if (!matcher.find()) {
+        if (!matcher.find() || Estr_TxtLabel.getText().contains("-") || Estr_TxtLabel.getText().contains("[a-zA-Z]*")) {
             LOG.info("PATRON DE ESTRELLAS: ESTA MAL" + matcher.find() + "PATRON es " + VALID_EST + "EL texto " + Estr_TxtLabel.getText());
-            lblError.setVisible(true);
             lblError.setText("Las Estrellas son medidas del 0 al 5");
-            lblError.setTextFill(Color.web("#FF0000"));
             estrPatron = false;
         } else {
             LOG.info("PATRON DE ESTRELLAS: ESTA BIEN" + matcher.find() + "PATRON es " + VALID_EST + "EL texto " + Estr_TxtLabel.getText());
-            lblError.setVisible(false);
-            lblError.setText("");
+
             estrPatron = true;
         }
-
         matcher = VALID_HOR.matcher(Hor_TxtLabel.getText());
         boolean lag = matcher.find();
-        if (!lag) {
+        if (!lag || Hor_TxtLabel.getText().contains("-") || Hor_TxtLabel.getText().contains("[a-zA-Z]*")) {
             LOG.info("PATRON DE HORAS: ESTA MAL" + lag + "PATRON es " + VALID_HOR + "EL texto " + Hor_TxtLabel.getText());
-            lblError.setVisible(true);
+
             lblError.setText("Solo se permiten 2 digitos en las Horas");
-            lblError.setTextFill(Color.web("#FF0000"));
+
             horasPatron = false;
         } else {
             LOG.info("PATRON DE HORAS: ESTA BIEN" + lag + VALID_HOR + "EL texto " + Hor_TxtLabel.getText());
-            // lblError.setVisible(false);
-            // lblError.setText("");
+
             horasPatron = true;
         }
         if (horasPatron && estrPatron) {
             patronesTextoBien = true;
+            lblError.setVisible(false);
+            lblError.setText("");
         } else {
+            lblError.setVisible(true);
+
+            lblError.setTextFill(Color.web("#FF0000"));
             patronesTextoBien = false;
         }
         return patronesTextoBien;
