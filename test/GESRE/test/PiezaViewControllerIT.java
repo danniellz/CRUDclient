@@ -5,7 +5,9 @@ import GESRE.controller.PiezaViewController;
 import GESRE.entidades.Pieza;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
@@ -227,6 +229,7 @@ public class PiezaViewControllerIT extends ApplicationTest {
     }
 
     @Test
+    @Ignore
     public void testF_crearPiezaOK() {
         //Obtener el numero de filas
         int filas = tablaPiezas.getItems().size();
@@ -243,11 +246,11 @@ public class PiezaViewControllerIT extends ApplicationTest {
         write("Buen tornillo");
         clickOn("#txtStock");
         write("10");
-        //Verificar si se activa el boton y al presionar si se borran los campos y crea la pieza
+        //Verificar si se activa el boton y al presionar si se borran los campos, aparece la ventana de confirmacion y crea la pieza
         verifyThat("#btnAnadir", isEnabled());
         clickOn("#btnAnadir");
         verifyThat("La Pieza '" + caracter + "' se ha creado con exito!", isVisible());
-        clickOn("Aceptar");
+        clickOn(isDefaultButton());
         verifyThat("#piezaPanel", isVisible());
 
         //Comprobar si los campos se borran al crear la pieza
@@ -258,9 +261,344 @@ public class PiezaViewControllerIT extends ApplicationTest {
         //Comprobar si se añadio a la tabla
         assertEquals("La pieza no ha sido añadida a la tabla!", filas + 1, tablaPiezas.getItems().size());
         //ver si la pieza esta en el modelo de tabla
-        /*List<Pieza> piezas = tablaPiezas.getItems();
-        assertEquals("La pieza no ha sido añadida a la tabla!", piezas.stream().filter(p->p.getNombre().equals(caracter)).count(), 1);*/
+        //List<Pieza> piezas = tablaPiezas.getItems();
+        //assertEquals("La pieza no ha sido añadida a la tabla!", piezas.stream().filter(p->p.getNombre().equals(caracter)).count(), 1);
 
+    }
+    
+    @Test
+    //@Ignore
+    public void testG_seleccionTabla() { 
+        //Obtener el tamaño de la tabla
+        int filas=tablaPiezas.getItems().size();
+        assertNotEquals("La tabla no tiene datos",filas,0);
+        
+        //Seleccionar fila
+        Node fila=lookup(".table-row-cell").nth(0).query();
+        assertNotNull("La fila es nula, no contiene datos",fila);
+        clickOn(fila);
+        //Obtener los datos de la fila seleccionada
+        Pieza piezaSeleccionada=(Pieza)tablaPiezas.getSelectionModel().getSelectedItem();
+        //Comprobar si los datos estan en los campos y se habilitan los botones correspondientes
+        verifyThat(txtNombre,hasText(piezaSeleccionada.getNombre()));
+        verifyThat(txtADescripcion,hasText(piezaSeleccionada.getDescripcion()));
+        verifyThat(txtStock,hasText(piezaSeleccionada.getStock().toString()));
+        verifyThat("#btnAnadir",isEnabled());
+        verifyThat("#btnBorrar",isEnabled());
+        verifyThat("#btnEditar",isEnabled());
+        //deseleccionar fila
+        press(KeyCode.CONTROL);
+        clickOn(fila);
+        release(KeyCode.CONTROL);
+        //Comprobar que no hay datos al deseleccionar
+        verifyThat(txtNombre,hasText(""));
+        verifyThat(txtADescripcion,hasText(""));
+        verifyThat(txtStock,isDisabled());
+        verifyThat("#btnAnadir",isDisabled());
+        verifyThat("#btnBorrar",isDisabled());
+        verifyThat("#btnEditar",isDisabled());
+        
+    }
+
+    @Test
+    @Ignore
+    public void testG_piezaExiste() {
+        //Seleccioanr la primera fila
+        Node fila = lookup(".table-row-cell").nth(0).query();
+        assertNotNull("La fila es nula, no contiene datos", fila);
+        clickOn(fila);
+        //Obtener los datos de la fila seleccionada
+        Pieza piezaSeleccionada = (Pieza) tablaPiezas.getSelectionModel().getSelectedItem();
+        int indexSeleccionado = tablaPiezas.getSelectionModel().getSelectedIndex();
+
+        //Verificar si los datos de la tabla aparecen en los campos
+        verifyThat("#txtNombre", hasText(piezaSeleccionada.getNombre()));
+        verifyThat("#txtADescripcion", hasText(piezaSeleccionada.getDescripcion()));
+        verifyThat("#txtStock", hasText(piezaSeleccionada.getStock().toString()));
+
+        //Comprobar al presionar el boron de Añadir si el mensaje aparece
+        clickOn("#btnAnadir");
+        verifyThat("#messageLbl", isEnabled());
+        verifyThat("La Pieza ya existe", isVisible());
+
+        limpiarCampos();
+    }
+
+    @Test
+    @Ignore
+    public void testH_editarPiezaOK() {
+        //Obtener el numero de filas
+        int filas = tablaPiezas.getItems().size();
+        assertNotEquals("La tabla no tiene datos", filas, 0);
+        //Variables
+        String caracter = "Nueva Pieza ";
+        String desc = "Nueva descripcion";
+        String stock = "0";
+        Random rn = new Random();
+        caracter += (char) (rn.nextInt(122 - 97) + 97);
+        caracter += (char) (rn.nextInt(122 - 97) + 97);
+        caracter += (char) (rn.nextInt(122 - 97) + 97);
+        //Seleccioanr la primera fila
+        Node fila = lookup(".table-row-cell").nth(0).query();
+        assertNotNull("La fila es nula, no contiene datos", fila);
+        clickOn(fila);
+        //Obtener los datos de la fila seleccionada
+        Pieza piezaSeleccionada = (Pieza) tablaPiezas.getSelectionModel().getSelectedItem();
+
+        //Verificar si los datos de la tabla aparecen en los campos
+        verifyThat("#txtNombre", hasText(piezaSeleccionada.getNombre()));
+        verifyThat("#txtADescripcion", hasText(piezaSeleccionada.getDescripcion()));
+        verifyThat("#txtStock", hasText(piezaSeleccionada.getStock().toString()));
+
+        //Cambiar los datos de la pieza
+        txtNombre.clear();
+        clickOn("#txtNombre");
+        write(caracter);
+        txtADescripcion.clear();
+        clickOn("#txtADescripcion");
+        write("Nueva descripcion");
+        txtStock.clear();
+        clickOn("#txtStock");
+        write("0");
+
+        //Comprobar si se ha editado correctamente
+        clickOn("#btnEditar");
+        verifyThat("La Pieza '" + caracter + "' se ha actualizado con exito!", isVisible());
+
+        //Verificar si los datos de la fila son los que se han escrito
+        clickOn(isDefaultButton());
+        fila = lookup(".table-row-cell").nth(0).query();
+        assertNotNull("La fila es nula, no contiene datos", fila);
+        clickOn(fila);
+        piezaSeleccionada = tablaPiezas.getSelectionModel().getSelectedItem();
+
+        verifyThat("#txtNombre", hasText(caracter));
+        verifyThat("#txtADescripcion", hasText(desc));
+        verifyThat("#txtStock", hasText(stock));
+
+    }
+
+    @Test
+    @Ignore
+    public void testI_borrarPiezaOK() {
+        //Obtener el numero de filas
+        int filas = tablaPiezas.getItems().size();
+        assertNotEquals("La tabla no tiene datos", filas, 0);
+
+        //Seleccioanr la primera fila
+        Node fila = lookup(".table-row-cell").nth(0).query();
+        assertNotNull("La fila es nula, no contiene datos", fila);
+        clickOn(fila);
+        //Obtener los datos de la fila seleccionada
+        Pieza piezaSeleccionada = (Pieza) tablaPiezas.getSelectionModel().getSelectedItem();
+
+        //Borrar
+        verifyThat("#btnBorrar", isEnabled());
+        clickOn("#btnBorrar");
+        verifyThat("¿Borrar la fila seleccionada?\n"
+                + "La operación no se puede revertir", isVisible());
+
+        //Verificar si la ventana de confirmacion aparece
+        clickOn(isDefaultButton());
+        verifyThat("La Pieza '" + piezaSeleccionada.getNombre() + "' se ha Borrado con exito!", isVisible());
+        //verificar si se ha eliminado de la tabla
+        assertEquals("La fila no se ha borrado!", filas - 1, tablaPiezas.getItems().size());
+
+        //Comprobar si los campos se borran al borrar la pieza
+        verifyThat("#txtNombre", hasText(""));
+        verifyThat("#txtADescripcion", hasText(""));
+        verifyThat("#txtStock", hasText(""));
+
+    }
+
+    @Test
+    @Ignore
+    public void testJ_comprobarBuscarPorFiltrado() {
+        //Obtener el numero de filas
+        int filas = tablaPiezas.getItems().size();
+        //para comprobar el final del filtrado por todo, porque ne el camino "filas" cambia su valor a 1
+        int filas2 = tablaPiezas.getItems().size();
+        assertNotEquals("La tabla no tiene datos", filas, 0);
+        //Verificar buscar por NOMBRE
+        clickOn("#cbxFiltro");
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        verifyThat(cbxFiltro, hasSelectedItem("Nombre"));
+        verifyThat("#txtNombreFiltro", isEnabled());
+
+        //Seleccionar la primera fila (prueba para buscar esta pieza)
+        Node fila = lookup(".table-row-cell").nth(0).query();
+        assertNotNull("La fila es nula, no contiene datos", fila);
+        clickOn(fila);
+        //Obtener los datos de la fila seleccionada
+        Pieza piezaSeleccionada = (Pieza) tablaPiezas.getSelectionModel().getSelectedItem();
+        String nombrePieza = piezaSeleccionada.getNombre();
+
+        clickOn("#txtNombreFiltro");
+        write(nombrePieza);
+
+        clickOn("#btnBuscar");
+
+        //Comprobar que solo aparece la pieza
+        assertEquals("Pieza no encontrada", filas = 1, tablaPiezas.getItems().size());
+
+        //Seleccioanr la primera fila (prueba para buscar esta pieza)
+        fila = lookup(".table-row-cell").nth(0).query();
+        assertNotNull("La fila es nula, no contiene datos", fila);
+        clickOn(fila);
+        //Obtener los datos de la fila seleccionada
+        piezaSeleccionada = tablaPiezas.getSelectionModel().getSelectedItem();
+
+        assertEquals("La pieza no es la que buscabaa", nombrePieza, piezaSeleccionada.getNombre());
+
+        limpiarCampos();
+
+        //Verificar buscar por STOCK
+        clickOn("#cbxFiltro");
+        type(KeyCode.DOWN);
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        verifyThat(cbxFiltro, hasSelectedItem("Stock"));
+        verifyThat("#txtNombreFiltro", isDisabled());
+        clickOn("#btnBuscar");
+
+        /*List<Pieza> piezas = tablaPiezas.getItems();
+        assertEquals("Se ha encontrado pieza sin stock", piezas.stream().filter(p->p.getStock()!=0));*/
+        //Verificar buscar por TODO
+        clickOn("#cbxFiltro");
+        type(KeyCode.UP);
+        clickOn("#cbxFiltro");
+        type(KeyCode.UP);
+        type(KeyCode.ENTER);
+        verifyThat(cbxFiltro, hasSelectedItem("Todo"));
+        verifyThat("#txtNombreFiltro", isDisabled());
+        clickOn("#btnBuscar");
+        assertEquals("No se ha listado todas las piezas del trabajador", filas2, tablaPiezas.getItems().size());
+
+    }
+
+    @Test
+    public void testK_borrarPiezaError() {
+        clickOn("#txtNombre");
+        write("Pieza para borrar");
+        clickOn("#txtADescripcion");
+        write("Buena pieza");
+        clickOn("#txtStock");
+        write("0");
+        verifyThat("#btnBorrar", isEnabled());
+        clickOn("#btnBorrar");
+        verifyThat("La Pieza que quiere borrar no existe", isVisible());
+        clickOn(isDefaultButton());
+
+    }
+
+    @Test
+    public void testL_editarPiezaError() {
+        clickOn("#txtNombre");
+        write("Pieza para borrar");
+        clickOn("#txtADescripcion");
+        write("Buena pieza");
+        clickOn("#txtStock");
+        write("0");
+        verifyThat("#btnEditar", isEnabled());
+        clickOn("#btnEditar");
+        verifyThat("La Pieza que quiere Actualizar no existe", isVisible());
+        clickOn(isDefaultButton());
+
+    }
+
+    @Test
+    public void testM_editarPiezaSinCambiosYconNombreExistente() {
+        //Obtener el numero de filas
+        int filas = tablaPiezas.getItems().size();
+        assertNotEquals("La tabla no tiene datos", filas, 0);
+
+        //Seleccioanr la primera fila (prueba para buscar esta pieza)
+        Node fila = lookup(".table-row-cell").nth(0).query();
+        assertNotNull("La fila es nula, no contiene datos", fila);
+        clickOn(fila);
+        //Obtener los datos de la fila seleccionada
+        Pieza piezaSeleccionada = tablaPiezas.getSelectionModel().getSelectedItem();
+
+        //Sin cambios
+        clickOn("#btnEditar");
+        verifyThat("No se han detectado cambios", isVisible());
+        clickOn(isDefaultButton());
+
+        //Nombre existente
+        txtNombre.clear();
+        clickOn("#txtNombre");
+        write("Tornillo Grande");
+        verifyThat("#btnEditar", isEnabled());
+        clickOn("#btnEditar");
+
+        verifyThat("#messageLbl", isVisible());
+        verifyThat("La Pieza ya existe", isVisible());
+
+    }
+    
+    @Test
+    public void testN_ErrorInteraccionConPiezasDeOtroTrabajador(){
+        //Obtener el numero de filas
+        int filas = tablaPiezas.getItems().size();
+        //buscar por NOMBRE una pieza que pertenezca a otro trabajador
+        clickOn("#cbxFiltro");
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        verifyThat(cbxFiltro, hasSelectedItem("Nombre"));
+        verifyThat("#txtNombreFiltro", isEnabled());
+        
+        clickOn("#txtNombreFiltro");
+        write("Tornillo Pequeño");
+        clickOn("#btnBuscar");
+        
+        //verificar si se ha encontrado la pieza
+        assertEquals("La pieza no es lo que buscabas o no hay ninguna pieza con ese nombre!", filas = 1, tablaPiezas.getItems().size());
+        
+        //Seleccionar la fila
+        Node fila = lookup(".table-row-cell").nth(0).query();
+        assertNotNull("La fila es nula, no contiene datos", fila);
+        clickOn(fila);
+        //Obtener los datos de la fila seleccionada
+        Pieza piezaSeleccionada = (Pieza) tablaPiezas.getSelectionModel().getSelectedItem();
+        
+        //Verificar que los datos estan en los campos
+        verifyThat("#txtNombre", hasText(piezaSeleccionada.getNombre()));
+        verifyThat("#txtADescripcion", hasText(piezaSeleccionada.getDescripcion()));
+        verifyThat("#txtStock", hasText(piezaSeleccionada.getStock().toString()));
+        
+        //Verificar si se han bloqueado los campos
+        verifyThat("#txtNombre", isDisabled());
+        verifyThat("#txtADescripcion", isDisabled());
+        verifyThat("#txtStock", isDisabled());
+        
+        //Verificar si aparecen los mensajes de error
+        clickOn("#btnAnadir");
+        verifyThat("La Pieza ya existe", isVisible());
+        clickOn("#btnBorrar");
+        verifyThat("No puedes Borrar la pieza de otro trabajador", isVisible());
+        clickOn(isDefaultButton());
+        clickOn("#btnEditar");
+        verifyThat("No puedes Actualizar la pieza de otro trabajador", isVisible());
+        clickOn(isDefaultButton());
+    }
+
+    
+    @Test
+    @Ignore
+    public void testN_ventanaGestionIncidenciasSeAbre() {
+        //Abrir la ventana de gestion de incidencias del trabajador
+        verifyThat("#btnGestionIncidencia", isEnabled());
+        clickOn("#btnGestionIncidencia");
+        verifyThat("#incidenciaTPanel", isVisible());
+
+        clickOn("#btnGestionPiezas");
+        verifyThat("#piezaPanel", isVisible());
+    }
+
+    @Test
+    @Ignore
+    public void testO_informePiezas() {
     }
 
     /**
