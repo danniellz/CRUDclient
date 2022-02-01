@@ -1,21 +1,18 @@
 package GESRE.controller;
 
 import GESRE.entidades.Cliente;
-import GESRE.entidades.UserPrivilege;
 import static GESRE.entidades.UserPrivilege.CLIENTE;
 import static GESRE.entidades.UserStatus.ENABLED;
+import GESRE.excepcion.EmailExisteException;
 import GESRE.excepcion.LoginExisteException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.ClienteManager;
 import GESRE.interfaces.UsuarioManager;
+import GESRE.seguridad.Seguridad;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -53,12 +50,25 @@ import javafx.stage.WindowEvent;
 public class GestionClientesController {
 
     //
+
+    /**
+     * Patron para el campo usuario
+     */
     public static final Pattern PATRON_USUARIO = Pattern.compile("^[A-Z0-9]+$", Pattern.CASE_INSENSITIVE);
 
+    /**
+     * Patron para el campo nombre
+     */
     public static final Pattern PATRON_NOMBRE = Pattern.compile("^[A-Z\\s]+$", Pattern.CASE_INSENSITIVE);
 
+    /**
+     * Patron para el campo correo
+     */
     public static final Pattern PATRON_EMAIL = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
+    /**
+     * Patron para los campos contraseña
+     */
     public static final Pattern PATRON_CONTRA = Pattern.compile("^[A-Z0-9]+$", Pattern.CASE_INSENSITIVE);
 
     //LOGGER
@@ -116,12 +126,22 @@ public class GestionClientesController {
     private final ClienteManager clienteManager = GestionFactoria.createClienteManager();
     private final UsuarioManager usuarioManager = GestionFactoria.createUsuarioManager();
 
+    /**
+     * 
+     * Metodo para definir el stage de la ventana
+     * @param gestionClientesStage Stage de la ventana
+     */
     public void setStage(Stage gestionClientesStage) {
         stage = gestionClientesStage;
     }
 
+    /**
+     * Metodo para inicializar la ventana
+     * @param root
+     */
     public void initStage(Parent root) {
         try {
+            LOG.info("Initializing GestionClientes window");
             //Creates a new Scene
             Scene scene = new Scene(root);
 
@@ -181,14 +201,23 @@ public class GestionClientesController {
             //Show window (asynchronous)
             stage.show();
         } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Stage init error", e);
+            LOG.severe("No se ha podido iniciar la ventana");
         }
 
     }
 
+    /**
+     * Metodo para controlar la seleccion en la tabla
+     * @param observable Campo a observar
+     * @param oldValue Valor antiguo
+     * @param newValue Valor nuevo
+     */
     private void handleTableSelectionChanged(ObservableValue observable, Object oldValue, Object newValue) {
 
         if (newValue != null) {
+            
+            LOG.info("Cliente seleccionado en la tabla");
+            
             Cliente cliente = (Cliente) newValue;
             usuarioTxt.setText(cliente.getLogin());
             nombreTxt.setText(cliente.getFullName());
@@ -209,6 +238,9 @@ public class GestionClientesController {
             buscarTxt.setDisable(true);
             buscarBtn.setDisable(true);
         } else {
+            
+            LOG.info("Cliente deseleccionado de la tabla");
+            
             //If there is not a row selected, clean window fields and disable create, modify and delete buttons
             usuarioTxt.setText("");
             nombreTxt.setText("");
@@ -225,6 +257,12 @@ public class GestionClientesController {
         usuarioTxt.requestFocus();
     }
 
+    /**
+     * Metodo para validar el texto de los campos
+     * @param observable Campo a observar
+     * @param oldValue Valor antiguo
+     * @param newValue Valor nuevo
+     */
     private void handleValidarTexto(ObservableValue observable, String oldValue, String newValue) {
         StringProperty textProperty = (StringProperty) observable;
         TextField changedTextField = (TextField) textProperty.getBean();
@@ -257,7 +295,14 @@ public class GestionClientesController {
         }
     }
 
+    /**
+     * Metodo para controlar la accion del boton limpiar
+     * @param limpiarEvent Evento de limpiar
+     */
     private void handleBtnLimpiar(ActionEvent limpiarEvent) {
+        
+        LOG.info("Limpiando datos");
+        
         usuarioTxt.setText("");
         nombreTxt.setText("");
         correoTxt.setText("");
@@ -269,24 +314,39 @@ public class GestionClientesController {
         clientesTabla.getSelectionModel().clearSelection();
     }
 
+    /**
+     * Metodo para controlar la accion del boton buscar
+     * @param buscarEvent Evento de buscar
+     */
     private void handleBtnBuscar(ActionEvent buscarEvent) {
+        
+        LOG.info("Buscando cliente");
+        
         datosClientes = FXCollections.observableArrayList(clienteManager.findClienteByFullName(buscarTxt.getText()));
         clientesTabla.setItems(datosClientes);
     }
 
+    /**
+     * Metodo para controlar la accion del boton añadir
+     * @param anadirEvent Evento de añadir
+     */
     private void handleBtnAnadir(ActionEvent anadirEvent) {
+        
+        LOG.info("Creando cliente");
+        
         if (patronesCorrectos()) {
             if (contrasenaCorrecta()) {
                 if (contrasenaTxt.getText().equals(repiteContrasenaTxt.getText())) {
                     try {
                         usuarioManager.buscarUsuarioPorLoginCrear(usuarioTxt.getText());
+                        usuarioManager.buscarUsuarioPorEmailCrear(correoTxt.getText());
                         
                         Cliente cliente = new Cliente();
 
                         cliente.setLogin(usuarioTxt.getText());
                         cliente.setFullName(nombreTxt.getText());
                         cliente.setEmail(correoTxt.getText());
-                        cliente.setPassword(contrasenaTxt.getText());
+                        cliente.setPassword(Seguridad.cifrarConClavePublica(contrasenaTxt.getText()));
                         cliente.setFechaRegistro(Date.from(fechaRegistroDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
                         cliente.setLastPasswordChange(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
                         cliente.setPrivilege(CLIENTE);
@@ -318,12 +378,22 @@ public class GestionClientesController {
                             deshabilitarBotones(true);
                             usuarioTxt.requestFocus();
                         }
+                        
+                        LOG.info("Cliente creado correctamente");
+                        
                     } catch (LoginExisteException ex) {
-                        Logger.getLogger(GestionClientesController.class.getName()).log(Level.SEVERE, null, ex);
+                        LOG.severe("Ya existe un cliente con ese login");
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setHeaderText(null);
                         alert.setTitle("Error");
-                        alert.setContentText("El usuario ya existe");
+                        alert.setContentText("Ya existe un cliente con ese login");
+                        alert.showAndWait();
+                    } catch (EmailExisteException ex) {
+                        LOG.severe("Ya existe un cliente con ese correo");
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setHeaderText(null);
+                        alert.setTitle("Error");
+                        alert.setContentText("Ya existe un cliente con ese correo");
                         alert.showAndWait();
                     }
                 } else {
@@ -337,7 +407,12 @@ public class GestionClientesController {
         }
     }
 
+    /**
+     * Metodo para la accion del boton borrar
+     * @param borrarEvent Evento de borrar
+     */
     private void handleBtnBorrar(ActionEvent borrarEvent) {
+        LOG.info("Borrando cliente");
         try {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setHeaderText("¿Esta seguro de que desea eliminarlo?");
@@ -368,13 +443,24 @@ public class GestionClientesController {
             } else {
                 //Cancel the event process
                 borrarEvent.consume();
+                LOG.info("Borrado de cliente cancelado");
             }
         } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Delete request error", e);
+            LOG.severe("No se ha podido crear el cliente");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setTitle("Error");
+            alert.setContentText("No se ha podido borrar el cliente");
+            alert.showAndWait();
         }
     }
 
+    /**
+     * Metodo para controlar la accion del boton editar
+     * @param editarEvent Evento de editar
+     */
     private void handleBtnEditar(ActionEvent editarEvent) {
+        LOG.info("Modificando cliente");
         if (patronesCorrectos()) {
             try {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -411,19 +497,26 @@ public class GestionClientesController {
                         clientesTabla.setItems(datosClientes);
                         clientesTabla.refresh();
                     }
+                    LOG.info("Cliente modificado correctamente");
                 } else {
+                    LOG.info("Modificacion de cliente cancelada");
                     //Cancel the event process
                     editarEvent.consume();
                 }
             } catch (Exception e) {
-                LOG.log(Level.SEVERE, "Edit request error", e);
+                LOG.severe("No se ha podido modificar el cliente");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText(null);
+                alert.setTitle("Error");
+                alert.setContentText("No se ha podido modificar el cliente");
+                alert.showAndWait();
             }
         }
     }
 
     private void handleBtnTrabajadores(ActionEvent trabajadoresEvent) {
         try{
-            LOG.info("Starting Gestion de Trabajadores window...");
+            LOG.info("Iniciando ventana Gestion de Trabajadores");
             //Load the FXML file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/GestionTrabajadoresView.fxml"));
             Parent root = (Parent)loader.load();
@@ -434,10 +527,19 @@ public class GestionClientesController {
             //initialize the window
             controlador.initStage(root);
         }catch(IOException ex){
-            LOG.log(Level.SEVERE, "Error Starting Gestion de Trabajadores window", ex);
+            LOG.severe("No se ha podido abrir la ventana");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setTitle("Error");
+            alert.setContentText("No se ha podido abrir la ventana de Gestion de Trabajadores");
+            alert.showAndWait();
         }
     }
     
+    /**
+     * Metodo para controlar el cierre de la aplicacion
+     * @param closeEvent Evento de cerrar
+     */
     public void handleCloseRequest(WindowEvent closeEvent) {
         try {
             LOG.info("Confirm Closing");
@@ -458,6 +560,12 @@ public class GestionClientesController {
         }
     }
 
+    /**
+     * Metodo para controlar los filtros de busqueda
+     * @param observable Campo observable
+     * @param oldValue Valor antiguo
+     * @param newValue Valor nuevo
+     */
     public void handleFiltros(ObservableValue observable, Object oldValue, Object newValue) {
         if (newValue != null) {
             if (buscarCombo.getValue().equals("Todos")) {
@@ -483,6 +591,12 @@ public class GestionClientesController {
         }
     }
 
+    /**
+     * Metodo para controlar el campo buscar
+     * @param observable Campo observable
+     * @param oldValue Valor antiguo
+     * @param newValue Valor nuevo
+     */
     public void handleBuscarTxt(ObservableValue observable, Object oldValue, Object newValue) {
         int maxLenght = 50;
 
@@ -498,6 +612,10 @@ public class GestionClientesController {
         }
     }
 
+    /**
+     * Metodo para comprobar que los patrones de texto sean correctos
+     * @return Devuelve si los campos cumplen con los patrones o no
+     */
     private boolean patronesCorrectos() {
         Matcher matcher = null;
         String mensaje = "Los siguientes campos contienen caracteres no permitidos o el formato no es correcto: ";
@@ -540,6 +658,10 @@ public class GestionClientesController {
         return correcto;
     }
 
+    /**
+     * Metodo para comprobar que la contraseña cumple con los patrones
+     * @return Devuelve si la contraseña cumple con los patrones
+     */
     private boolean contrasenaCorrecta() {
         Matcher matcher = null;
         String mensaje = "El formato de la contraseña es incorrecto";
@@ -561,6 +683,9 @@ public class GestionClientesController {
         return correcto;
     }
     
+    /**
+     * Metodo para definir el formato de fecha en la tabla
+     */
     private void definirFormatoFecha() {
         fechaRegistroColumn.setCellFactory(colum -> {
             TableCell<Cliente, Date> cell = new TableCell<Cliente, Date>() {
@@ -581,6 +706,10 @@ public class GestionClientesController {
         });
     }
 
+    /**
+     * Metodo para comprobar que todos los campos estan informados
+     * @return Devuelve si todos los campos estan informados o no
+     */
     private boolean camposInformados() {
         if (usuarioTxt.getText().isEmpty() || nombreTxt.getText().isEmpty() || correoTxt.getText().isEmpty() || contrasenaTxt.getText().isEmpty() || repiteContrasenaTxt.getText().isEmpty()) {
             return false;
@@ -589,6 +718,10 @@ public class GestionClientesController {
         }
     }
 
+    /**
+     * metodo para habilitar y deshabilitar los botones
+     * @param deshabilitar Si se quieren habilitar o deshabilitar
+     */
     private void deshabilitarBotones(Boolean deshabilitar) {
         anadirBtn.setDisable(deshabilitar);
         borrarBtn.setDisable(deshabilitar);
