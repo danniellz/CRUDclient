@@ -2,7 +2,9 @@ package GESRE.controller;
 
 import GESRE.entidades.Pieza;
 import GESRE.entidades.Trabajador;
+import GESRE.excepcion.PiezaDeOtroTrabajadorException;
 import GESRE.excepcion.PiezaExisteException;
+import GESRE.excepcion.ServerDesconectadoException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.PiezasManager;
 import GESRE.interfaces.TrabajadorManager;
@@ -30,6 +32,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -112,11 +115,13 @@ public class PiezaViewController {
     private Trabajador trabajador = null;
     private Alert alert = null;
 
-    //********MENU********
+    //********BARRA MENU********
     @FXML
-    private MenuItem cerrarSesion;
+    private MenuBar menuBar;
     @FXML
-    private MenuItem salir;
+    private MenuItem mnCerrarSesion;
+    @FXML
+    private MenuItem mnSalir;
 
     /**
      * Variable que hace una llamada al método que gestiona los grupos de la
@@ -140,8 +145,10 @@ public class PiezaViewController {
      * Inicializar Ventana
      *
      * @param root Contiene el FXML
+     * @throws GESRE.excepcion.ServerDesconectadoException Suelta una excepcion
+     * si no hay conexion con el servidor
      */
-    public void initStage(Parent root) {
+    public void initStage(Parent root) throws ServerDesconectadoException {
         try {
             LOG.info("PiezaViewController: Inicializando Stage...");
             //Crear nueva Scene
@@ -194,16 +201,22 @@ public class PiezaViewController {
             btnBorrar.setOnAction(this::handleBtnBorrar);
             btnBuscar.setOnAction(this::handleBtnBuscar);
             btnInforme.setOnAction(this::handleBtnInforme);
-            //cerrarSesion.setOnAction(this::handleCerrarSesion);
             //btnGestionIncidencia.setOnAction(this::startIncidenciaViewTWindow);
-            //salir.setOnAction(this::handleSalir);
 
+            //Añade acciones a los menuItems de la barra menu
+            //mnCerrarSesion.setOnAction(this::handleCerrarSesion);
+            //mnSalir.setOnAction(this::handleSalir);
             //Mostrar ventana (asincrona)
             stage.show();
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "PiezaViewController: Error al inicializar Stage", e);
-        }
+        } catch (ServerDesconectadoException e) {
+            LOG.severe(e.getMessage());
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setTitle("ERROR SERVIDOR");
+            alert.setContentText("No hay conexión con el servidor. Intentalo más tarde.");
+            alert.showAndWait();
 
+        }
     }
 
     /**
@@ -256,7 +269,6 @@ public class PiezaViewController {
         }
 
     }*/
-    
     /**
      * Llamar a este método limpiara todos los campos si están informados
      */
@@ -275,41 +287,50 @@ public class PiezaViewController {
      * Llamar a este método buscará las piezas por le nombre introducido
      */
     private void handleBtnBuscar(ActionEvent buscarEvent) {
-        LOG.info("PiezaViewController: Boton Buscar presionado");
-        //Deseleccionar la fila
-        tablaPiezas.getSelectionModel().clearSelection();
-        messageLbl.setVisible(false);
-        txtNombreFiltro.setStyle("-fx-border-color: White;");
+        try {
+            LOG.info("PiezaViewController: Boton Buscar presionado");
+            //Deseleccionar la fila
+            tablaPiezas.getSelectionModel().clearSelection();
+            messageLbl.setVisible(false);
+            txtNombreFiltro.setStyle("-fx-border-color: White;");
 
-        //Combobox TODO
-        if (cbxFiltro.getSelectionModel().getSelectedIndex() == 0) {
-            LOG.info("PiezaViewController: Filtro: Todo, buscando...");
-            datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByTrabajadorId(pieza, idTrabajador));
-        }
-        //Combobox NOMBRE
-        if (cbxFiltro.getSelectionModel().getSelectedIndex() == 1) {
-            if (txtNombreFiltro.getText().isEmpty()) {
-                LOG.warning("PiezaViewController: No has escrito un nombre para buscar");
-                messageLbl.setText("No has escrito un nombre para buscar");
-                messageLbl.setStyle("-fx-text-fill: #DC143C");
-                messageLbl.setVisible(true);
-                txtNombreFiltro.setStyle("-fx-border-color: #DC143C ; -fx-border-width: 1.5px ;");
-            } else {
-                LOG.info("Filtro: Nombre, buscando...");
-                datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByName(pieza, txtNombreFiltro.getText()));
+            //Combobox TODO
+            if (cbxFiltro.getSelectionModel().getSelectedIndex() == 0) {
+                LOG.info("PiezaViewController: Filtro: Todo, buscando...");
+                datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByTrabajadorId(pieza, idTrabajador));
+            }
+            //Combobox NOMBRE
+            if (cbxFiltro.getSelectionModel().getSelectedIndex() == 1) {
+                if (txtNombreFiltro.getText().isEmpty()) {
+                    LOG.warning("PiezaViewController: No has escrito un nombre para buscar");
+                    messageLbl.setText("No has escrito un nombre para buscar");
+                    messageLbl.setStyle("-fx-text-fill: #DC143C");
+                    messageLbl.setVisible(true);
+                    txtNombreFiltro.setStyle("-fx-border-color: #DC143C ; -fx-border-width: 1.5px ;");
+                } else {
+                    LOG.info("Filtro: Nombre, buscando...");
+                    datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByName(pieza, txtNombreFiltro.getText()));
+                }
+
+            }
+            //ComboBox STOCK
+            if (cbxFiltro.getSelectionModel().getSelectedIndex() == 2) {
+                LOG.info("Filtro: Stock, buscando...");
+                datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByStock(pieza, idTrabajador));
             }
 
+            //Agregar datos a tabla
+            tablaPiezas.setItems(datosPieza);
+            //Actualizar tabla
+            tablaPiezas.refresh();
+        } catch (ServerDesconectadoException e) {
+            LOG.severe(e.getMessage());
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setTitle("ERROR SERVIDOR");
+            alert.setContentText("No hay conexión con el servidor. Intentalo más tarde.");
+            alert.showAndWait();
         }
-        //ComboBox STOCK
-        if (cbxFiltro.getSelectionModel().getSelectedIndex() == 2) {
-            LOG.info("Filtro: Stock, buscando...");
-            datosPieza = FXCollections.observableArrayList(piezasManager.findAllPiezaByStock(pieza, idTrabajador));
-        }
-
-        //Agregar datos a tabla
-        tablaPiezas.setItems(datosPieza);
-        //Actualizar tabla
-        tablaPiezas.refresh();
     }
 
     /**
@@ -359,6 +380,7 @@ public class PiezaViewController {
                     alert.setHeaderText("La Pieza '" + pieza.getNombre() + "' se ha creado con exito!");
                     alert.setTitle("Nueva Pieza");
                     alert.show();
+
                 } catch (PiezaExisteException e) {
                     LOG.severe(e.getMessage());
                     messageLbl.setText("La Pieza ya existe");
@@ -366,6 +388,13 @@ public class PiezaViewController {
                     messageLbl.setVisible(true);
                     txtNombre.setStyle("-fx-border-color: #DC143C ; -fx-border-width: 1.5px ;");
                     txtNombre.requestFocus();
+                } catch (ServerDesconectadoException e) {
+                    LOG.severe(e.getMessage());
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText(null);
+                    alert.setTitle("ERROR SERVIDOR");
+                    alert.setContentText("No hay conexión con el servidor. Intentalo más tarde.");
+                    alert.showAndWait();
                 }
             } else {
                 LOG.severe("Solo se admiten números (positivos)");
@@ -403,12 +432,7 @@ public class PiezaViewController {
                 alert.show();
             } else {
                 if (txtNombre.isDisabled()) {
-                    LOG.warning("PiezaViewController: No puedes Borrar la pieza de otro trabajador");
-                    //Ventana de error sii la pieza es de otro trabajador
-                    alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setHeaderText("No puedes Borrar la pieza de otro trabajador");
-                    alert.setTitle("Error de borrado");
-                    alert.show();
+                    throw new PiezaDeOtroTrabajadorException("No puedes Borrar la pieza de otro trabajador");
                 } else {
                     LOG.info("PiezaViewController: Confirmando borrado...");
                     //Ventana de confirmacion
@@ -444,8 +468,20 @@ public class PiezaViewController {
                 }
             }
 
-        } catch (Exception e) {
+        } catch (ServerDesconectadoException e) {
             LOG.severe(e.getMessage());
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setTitle("ERROR SERVIDOR");
+            alert.setContentText("No hay conexión con el servidor. Intentalo más tarde.");
+            alert.showAndWait();
+        } catch (PiezaDeOtroTrabajadorException ex) {
+            LOG.severe("No puedes Borrar la pieza de otro trabajador");
+            //Ventana de error sii la pieza es de otro trabajador
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("No puedes Borrar la pieza de otro trabajador");
+            alert.setTitle("Error de borrado");
+            alert.show();
         }
     }
 
@@ -469,12 +505,7 @@ public class PiezaViewController {
                 alert.show();
             } else {
                 if (txtNombre.isDisabled()) {
-                    LOG.warning("PiezaViewController: No puedes Actualizar la pieza de otro trabajador");
-                    //Ventana de error si la pieza es de otro trabajador
-                    alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setHeaderText("No puedes Actualizar la pieza de otro trabajador");
-                    alert.setTitle("Error al Actualizar");
-                    alert.show();
+                    throw new PiezaDeOtroTrabajadorException("No puedes Actualizar la pieza de otro trabajador");
                 } else {
                     if (txtNombre.getText().equals(pieza.getNombre()) && txtADescripcion.getText().equals(pieza.getDescripcion()) && txtStock.getText().equals(pieza.getStock().toString())) {
                         LOG.warning("PiezaViewController: No se han detectado cambios");
@@ -527,8 +558,20 @@ public class PiezaViewController {
             messageLbl.setVisible(true);
             txtNombre.setStyle("-fx-border-color: #DC143C ; -fx-border-width: 1.5px ;");
             txtNombre.requestFocus();
-        } catch (Exception e) {
+        } catch (ServerDesconectadoException e) {
             LOG.severe(e.getMessage());
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setTitle("ERROR SERVIDOR");
+            alert.setContentText("No hay conexión con el servidor. Intentalo más tarde.");
+            alert.showAndWait();
+        } catch (PiezaDeOtroTrabajadorException ex) {
+            LOG.severe("No puedes Actualizar la pieza de otro trabajador");
+            //Ventana de error si la pieza es de otro trabajador
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("No puedes Actualizar la pieza de otro trabajador");
+            alert.setTitle("Error al Actualizar");
+            alert.show();
         }
     }
 
@@ -542,7 +585,7 @@ public class PiezaViewController {
         try {
             LOG.info("PiezaViewController: Confirmando cierre de ventana...");
             //Ventana de confirmacion
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setHeaderText("¿Estás seguro de querer Salir?");
             alert.setTitle("Salir");
             Optional<ButtonType> option = alert.showAndWait();
@@ -570,7 +613,7 @@ public class PiezaViewController {
         try {
             //Ventana de confirmacion
             LOG.info("PiezaViewController: Confirmar Cerrar Sesion");
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setHeaderText("¿Seguro que quieres cerrar sesión?");
             alert.setTitle("Cerrar Sesión");
             Optional<ButtonType> option = alert.showAndWait();

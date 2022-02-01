@@ -1,6 +1,8 @@
 package GESRE.aplication;
 
 import GESRE.controller.GestionTrabajadorViewController;
+import GESRE.controller.PiezaViewController;
+import GESRE.controller.ResetContraController;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,12 +35,12 @@ public class GESREClient extends Application {
         try {
             LOG.info("Iniciando Ventana...");
             //Load the FXML file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/TrabajadorView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/PiezaView.fxml"));
             Parent root = (Parent) loader.load();
             //Get controller
-           GestionTrabajadorViewController controlador = loader.getController();
+            PiezaViewController controlador = loader.getController();
             //Set the stage
-            controlador.setStage(primaryStage);
+            controlador.setStage(primaryStage, 3);
             //initialize the window
             controlador.initStage(root);
         } catch (IOException ex) {
