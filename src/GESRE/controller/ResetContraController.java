@@ -1,9 +1,12 @@
 package GESRE.controller;
 
+import GESRE.entidades.Usuario;
+import GESRE.excepcion.EmailExisteException;
 import GESRE.excepcion.ServerDesconectadoException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.UsuarioManager;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,11 +59,14 @@ public class ResetContraController {
     private Button btnResetear;
     @FXML
     private Button btnVolver;
+    
     /**
      * Variable que hace una llamada al método que gestiona los grupos de la
      * factoría.
      */
     UsuarioManager usuarioManager = GestionFactoria.getUsuarioGestion();
+    private Usuario usuario = null;
+    private List<Usuario> usuarios;
 
     /**
      * Establecer el Stage
@@ -168,8 +174,19 @@ public class ResetContraController {
             messageLbl.setVisible(false);
             txtCorreo.setStyle("");
             messageLbl.setStyle("-fx-border-color: WHITE;");
+            
+            try {
+                LOG.info("Verificando si el correo introducido existe...");
+                usuarios = (List<Usuario>) usuarioManager.buscarUsuarioPorEmailCrear(txtCorreo.getText());
+            } catch (EmailExisteException ex) {
+                LOG.info("El email pertenece al usuario: "+usuarios.toString());
+                usuarioManager.buscarUsuarioParaEnviarMailRecuperarContrasenia_Usuario(usuario);
+            } catch (ServerDesconectadoException ex) {
+                Logger.getLogger(ResetContraController.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
-            //Metodo buscar usuario por correo
+           
+            
         } else {
             LOG.warning("Formato de correo no válido");
             messageLbl.setText("Por Favor, Introduce un Correo valido");

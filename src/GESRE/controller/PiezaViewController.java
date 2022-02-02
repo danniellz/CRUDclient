@@ -32,7 +32,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -117,11 +116,10 @@ public class PiezaViewController {
 
     //********BARRA MENU********
     @FXML
-    private MenuBar menuBar;
-    @FXML
     private MenuItem mnCerrarSesion;
     @FXML
     private MenuItem mnSalir;
+
     /**
      * Variable que hace una llamada al método que gestiona los grupos de la
      * factoría.
@@ -207,8 +205,8 @@ public class PiezaViewController {
             //btnGestionIncidencia.setOnAction(this::startIncidenciaViewTWindow);
 
             //Añade acciones a los menuItems de la barra menu
-            //mnCerrarSesion.setOnAction(this::handleCerrarSesion);
-            //mnSalir.setOnAction(this::handleSalir);
+            mnCerrarSesion.setOnAction(this::handleCerrarSesion);
+            mnSalir.setOnAction(this::handleSalirMenu);
             //Mostrar ventana (asincrona)
             stage.show();
         } catch (ServerDesconectadoException e) {
@@ -383,6 +381,7 @@ public class PiezaViewController {
                     alert.setHeaderText("La Pieza '" + pieza.getNombre() + "' se ha creado con exito!");
                     alert.setTitle("Nueva Pieza");
                     alert.show();
+                    LOG.info("Pieza Creada!");
 
                 } catch (PiezaExisteException e) {
                     LOG.severe(e.getMessage());
@@ -448,6 +447,7 @@ public class PiezaViewController {
                         LOG.info("PiezaViewController: Borrado Confirmado de la Pieza " + pieza.getNombre());
                         pieza.setTrabajador(null);
                         piezasManager.editPieza(pieza, idTrabajador);
+                        LOG.info("PiezaViewController: Pieza desvinculada del trabajador, procediendo a borrar...");
                         //Borrar Pieza del servidor
                         piezasManager.removePieza(pieza.getId());
                         //Limpiar todos los campos
@@ -464,6 +464,7 @@ public class PiezaViewController {
                         alert.setHeaderText("La Pieza '" + pieza.getNombre() + "' se ha Borrado con exito!");
                         alert.setTitle("Borrado de Pieza");
                         alert.show();
+                        LOG.info("Pieza borrada!");
 
                     } else {
                         LOG.info("PiezaViewController: Borrado Cancelado");
@@ -548,6 +549,8 @@ public class PiezaViewController {
                         alert.setHeaderText("La Pieza '" + pieza.getNombre() + "' se ha actualizado con exito!");
                         alert.setTitle("Actualizar Pieza");
                         alert.show();
+
+                        LOG.info("Pieza Actualizada!");
                     }
                 }
 
@@ -579,11 +582,11 @@ public class PiezaViewController {
     }
 
     /**
-     * Llamar a este método cerrará la ventana
+     * Llamar a este método cerrará la ventana, boton exit
      *
      * @param salirWindowEvent evento de ventana
      */
-    public void handleSalir(WindowEvent salirWindowEvent) {
+    private void handleSalir(WindowEvent salirWindowEvent) {
         LOG.info("PiezaViewController: Salir presionado");
         try {
             LOG.info("PiezaViewController: Confirmando cierre de ventana...");
@@ -606,12 +609,39 @@ public class PiezaViewController {
     }
 
     /**
+     * Llamar a este método cerrará la ventana, mediante menubar
+     *
+     * @param salirEvent evento
+     */
+    private void handleSalirMenu(ActionEvent salirEvent) {
+        LOG.info("PiezaViewController: Salir presionado");
+        try {
+            LOG.info("PiezaViewController: Confirmando cierre de ventana...");
+            //Ventana de confirmacion
+            alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setHeaderText("¿Estás seguro de querer Salir?");
+            alert.setTitle("Salir");
+            Optional<ButtonType> option = alert.showAndWait();
+            if (option.get() == ButtonType.OK) {
+                LOG.info("PiezaViewController: Cerrando...");
+                Platform.exit();
+            } else {
+                LOG.info("PiezaViewController: Cierre del programa cancelado");
+                //Cancela el evento
+                salirEvent.consume();
+            }
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "PiezaViewController: Error al intentar cerrar la ventana", e);
+        }
+    }
+
+    /**
      * Llamar a este método cerrará la sesíón actual para volver a la ventana
      * deSignIn
      *
      * @param cerrarSesiontEvent Cerrar Sesion action event
      */
-    public void handleCerrarSesion(ActionEvent cerrarSesiontEvent) {
+    private void handleCerrarSesion(ActionEvent cerrarSesiontEvent) {
         LOG.info("PiezaViewController: Cerrar Sesion presionado");
         try {
             //Ventana de confirmacion
@@ -867,7 +897,7 @@ public class PiezaViewController {
      * @return devuelve un valor booleano si un numero o caracter especial es
      * detectado o no
      */
-    public boolean SpCharControl() {
+    private boolean SpCharControl() {
         LOG.info("Comrpobando si el campo Nombre contiene numeros o caracteres especiales...");
         boolean correcto = false;
         String comp = "[^A-Za-zÀ-ȕ\\s]";

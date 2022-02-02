@@ -35,12 +35,12 @@ public class GESREClient extends Application {
         try {
             LOG.info("Iniciando Ventana...");
             //Load the FXML file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/PiezaView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/ResetContra.fxml"));
             Parent root = (Parent) loader.load();
             //Get controller
-            PiezaViewController controlador = loader.getController();
+            ResetContraController controlador = loader.getController();
             //Set the stage
-            controlador.setStage(primaryStage, 3);
+            controlador.setStage(primaryStage);
             //initialize the window
             controlador.initStage(root);
         } catch (IOException ex) {
