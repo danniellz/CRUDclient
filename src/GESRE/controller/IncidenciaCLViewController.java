@@ -33,6 +33,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -130,10 +131,17 @@ public class IncidenciaCLViewController {
     private Pane incidenciaPanel;
 
     //////////////////////////////////////////////////////////////
+    //**********TextLabel*****************
     @FXML
     private TextField Estr_TxtLabel;
     @FXML
     private TextField Hor_TxtLabel;
+    ////////////////////////////////////////////////////////////
+    //**********MenuItem******************
+    @FXML
+    private MenuItem mnCerrarSecion;
+    @FXML
+    private MenuItem mnSalir;
 
     private ObservableList<Incidencia> IncidenciaList;
 
@@ -196,6 +204,10 @@ public class IncidenciaCLViewController {
             btnEliminar.setOnAction(this::handleEliminar);
             //el boton de Busqueda funciona con un toogle button
             btnToogleFiltro.setOnAction(this::handleFiltro);
+
+            //Añade acciones a los menuItems de la barra menu
+            //mnCerrarSecion.setOnAction(this::handleCerrarSesion);
+            mnSalir.setOnAction(this::handleSalir);
 
             //mostrar la Ventana
             stage.show();
@@ -303,6 +315,79 @@ public class IncidenciaCLViewController {
         }
         //Focus login field
         Hor_TxtLabel.requestFocus();
+    }
+
+    /**
+     * Cuadro de diálogo que se abre al pulsar la menuItem Salir de la pantalla
+     * para confirmar si se quiere cerrar la aplicación.
+     *
+     * @param event El evento de acción.
+     */
+    private void handleSalir(ActionEvent event) {
+        try {
+            LOG.info("Trabajador Controlador: Salir programa");
+
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+
+            alert.setTitle("Salir");
+            alert.setHeaderText(null);
+            alert.setContentText("¿Seguro que quieres cerrar la ventana?");
+
+            alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.get().equals(ButtonType.OK)) {
+                LOG.info("Trabajador Controlador: Cerrando aplicacion");
+                stage.close();
+                Platform.exit();
+            } else {
+                event.consume();
+                alert.close();
+            }
+        } catch (Exception ex) {
+
+            LOG.severe("UI GestionUsuariosController: Error printing report: {0}"
+                    + ex.getMessage());
+        }
+
+    }
+
+    /**
+     * Al pulsar el menuItem Cerrar Secion cierra la venta de gestion trabajador
+     * y abre SignIn
+     *
+     * @param event El evento de acción.
+     */
+    private void handleCerrarSesion(ActionEvent event) {
+
+        LOG.info("Trabajador Controlador: Salir programa para SignIn");
+
+        try {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+
+            alert.setTitle("Salir");
+            alert.setHeaderText(null);
+            alert.setContentText("¿Seguro que quieres cerrar la ventana?");
+
+            alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.get().equals(ButtonType.OK)) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/SignIn.fxml"));
+                Parent root = (Parent) loader.load();
+                SignInController controller = ((SignInController) loader.getController());
+                controller.setStage(stage);
+                controller.initStage(root);
+            } else {
+                event.consume();
+                alert.close();
+            }
+        } catch (Exception ex) {
+
+            LOG.severe("UI GestionUsuariosController: Error printing report: {0}"
+                    + ex.getMessage());
+        }
+
     }
 
     private void handleAnadir(ActionEvent anadirEvent) {
@@ -430,7 +515,7 @@ public class IncidenciaCLViewController {
             alert.setResizable(false);
             alert.setContentText("NO Se ha modificado la Incidencia");
             alert.show();
-            
+
             //mostrar mensaje de Error
             lblError.setVisible(true);
 

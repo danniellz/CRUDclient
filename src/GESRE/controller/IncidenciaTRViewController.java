@@ -105,6 +105,8 @@ public class IncidenciaTRViewController {
     private Button btnEliminar;
     @FXML
     private Button btnLimpiar;
+    @FXML
+    private Button btnGestionPiezas;
 
     //////////////////////////////////////////////////////////////
     //********COMBOBOX********
@@ -236,6 +238,11 @@ public class IncidenciaTRViewController {
         btnEliminar.setOnAction(this::handleEliminar);
         //el boton de Busqueda funciona con un toogle button
         btnToogleFiltro.setOnAction(this::handleFiltro);
+        
+        //boton para abrir la gestion de incidencia
+        
+        //*********VACIO******
+       // btnGestionPiezas.setOnAction(this::handlePiezas);
 
         //mostrar la Ventana
         stage.show();

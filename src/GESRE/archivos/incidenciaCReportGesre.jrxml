@@ -2,7 +2,21 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="712f93a0-5dca-4b9f-81dd-381281b1ff83">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="1"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{estrellas}>3]]></conditionExpression>
+			<style backcolor="#0AFC0A"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{estrellas}==3]]></conditionExpression>
+			<style backcolor="#FC9F0A"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{estrellas}<3]]></conditionExpression>
+			<style backcolor="#FC0A0A"/>
+		</conditionalStyle>
+	</style>
 	<field name="tipoIncidencia" class="GESRE.entidades.TipoIncidencia"/>
 	<field name="estado" class="GESRE.entidades.EstadoIncidencia"/>
 	<field name="horas" class="java.lang.Integer"/>
@@ -13,11 +27,22 @@
 	<title>
 		<band height="79" splitType="Stretch">
 			<staticText>
-				<reportElement x="146" y="31" width="242" height="20" uuid="4795ddc7-9d6f-48fc-97a5-49f6cdd950f4"/>
+				<reportElement x="124" y="15" width="274" height="38" uuid="4795ddc7-9d6f-48fc-97a5-49f6cdd950f4"/>
 				<textElement textAlignment="Center">
-					<font size="14" isBold="true" isUnderline="true"/>
+					<font size="24" isBold="true" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[INCIDENCIAS]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="455" y="0" width="100" height="20" uuid="ba928693-aad8-4122-8965-f6332b74dfe3"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="0" width="124" height="40" backcolor="#FFFFFF" uuid="07b72a22-a08c-41a3-81e1-739258a82c34"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[GESRE]]></text>
 			</staticText>
 		</band>
 	</title>
@@ -27,30 +52,30 @@
 	<columnHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement x="114" y="0" width="132" height="20" uuid="425fa71e-a67f-4289-8c48-996d0c27bc19"/>
-				<textElement>
-					<font isUnderline="true"/>
+				<reportElement mode="Opaque" x="145" y="0" width="164" height="20" backcolor="#CCCCCC" uuid="425fa71e-a67f-4289-8c48-996d0c27bc19"/>
+				<textElement textAlignment="Center">
+					<font isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Estado Incidencia]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="0" width="100" height="20" uuid="3c57bfdd-630f-44d9-aa2a-4aea0c3acea5"/>
-				<textElement>
-					<font isUnderline="true"/>
+				<reportElement mode="Opaque" x="0" y="0" width="145" height="20" backcolor="#CCCCCC" uuid="3c57bfdd-630f-44d9-aa2a-4aea0c3acea5"/>
+				<textElement textAlignment="Center">
+					<font isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[TipoIncidencia]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="309" y="0" width="100" height="20" uuid="34dffb49-c56b-4b27-8766-22206c041df8"/>
-				<textElement>
-					<font isUnderline="true"/>
+				<reportElement mode="Opaque" x="309" y="0" width="146" height="20" backcolor="#CCCCCC" uuid="34dffb49-c56b-4b27-8766-22206c041df8"/>
+				<textElement textAlignment="Center">
+					<font isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Estrellas]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="455" y="0" width="100" height="20" uuid="219e03ad-721d-4e91-9e21-e6b83c4f8775"/>
-				<textElement textAlignment="Right">
-					<font isUnderline="true"/>
+				<reportElement mode="Opaque" x="455" y="0" width="100" height="20" backcolor="#CCCCCC" uuid="219e03ad-721d-4e91-9e21-e6b83c4f8775"/>
+				<textElement textAlignment="Center">
+					<font isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Horas]]></text>
 			</staticText>
@@ -59,20 +84,24 @@
 	<detail>
 		<band height="21" splitType="Stretch">
 			<textField>
-				<reportElement x="114" y="0" width="100" height="20" uuid="004ba695-3586-48ac-b96f-995ff80539ba"/>
+				<reportElement x="145" y="0" width="164" height="20" uuid="004ba695-3586-48ac-b96f-995ff80539ba"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$F{estado}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="0" width="100" height="20" uuid="30fd4ab3-64ee-4442-8ee6-ea06053af4d4"/>
+				<reportElement x="0" y="0" width="145" height="20" uuid="30fd4ab3-64ee-4442-8ee6-ea06053af4d4"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$F{tipoIncidencia}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="309" y="1" width="100" height="20" uuid="d4af3256-21c4-49d2-a8f5-f641076490f1"/>
-				<textElement textAlignment="Center"/>
+				<reportElement style="style1" mode="Opaque" x="309" y="1" width="146" height="20" uuid="d4af3256-21c4-49d2-a8f5-f641076490f1"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{estrellas}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="476" y="0" width="79" height="20" uuid="1befe05c-85f7-4475-8ac3-ddf4012902e6"/>
+				<reportElement x="455" y="0" width="100" height="20" uuid="1befe05c-85f7-4475-8ac3-ddf4012902e6"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[$F{horas}]]></textFieldExpression>
 			</textField>
