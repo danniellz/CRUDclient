@@ -1,7 +1,12 @@
 package GESRE.controller;
 
-
+import GESRE.entidades.Usuario;
+import GESRE.excepcion.LoginNoExisteException;
+import GESRE.excepcion.UsuarioNoExisteException;
+import GESRE.factoria.GestionFactoria;
+import GESRE.interfaces.UsuarioManager;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,8 +24,10 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
 /**
  * SignIn window controller class
  *
@@ -72,7 +79,7 @@ public class SignInController {
             stage.setResizable(false);
             stage.setOnCloseRequest(this::handleCloseRequest);
             //Controls
-//            loginBtn.addEventHandler(ActionEvent.ACTION, this::handleButtonLogin);
+            loginBtn.addEventHandler(ActionEvent.ACTION, this::handleButtonLogin);
             signUpHl.addEventHandler(ActionEvent.ACTION, this::handleSignUpHyperLink);
             userTxt.textProperty().addListener(this::handleUserControl);
             passwordTxt.textProperty().addListener(this::handlePasswordControl);
@@ -94,8 +101,51 @@ public class SignInController {
      *
      * @param buttonPress Action event at pressing the login button
      */
-  /*  private void handleButtonLogin(ActionEvent buttonPress) {
-        username = userTxt.getText();
+    private void handleButtonLogin(ActionEvent buttonPress) {
+
+        LOG.info("SignIn Controlador: Pulsado boton Iniciar sesion");
+
+        try {
+
+            UsuarioManager usuarioGestion = GestionFactoria.getUsuarioGestion();
+            //Comprueba si existe el login
+            LOG.info("SignIn Controlador: Comprobando si existe el login");
+
+            Collection<Usuario> usuario = usuarioGestion.buscarUserPorLoginSignIn(userTxt.getText());
+
+            //Comprueba si el login y la contraseña están bien
+            LOG.info("SignIn Controlador: Comprobando login y contraseña");
+
+            usuarioGestion.buscarUsuarioPorLoginYContrasenia_Usuario(userTxt.getText(), passwordTxt.getText());
+
+            for (Usuario user : usuario) {
+                user.getPrivilege();
+
+                switch (user.getPrivilege()) {
+                    case ADMIN:
+                        //Abre la vista de UILibro
+                        LOG.info("SignIn Controlador: Abriendo la vista TrabajadorView");
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/TrabajadorView.fxml"));
+                        Parent root = (Parent) loader.load();
+                        GestionTrabajadorViewController controller = ((GestionTrabajadorViewController) loader.getController());
+                        controller.setStage(stage);
+                        controller.initStage(root);
+                        break;
+                }
+            }
+        } catch (LoginNoExisteException lne) {
+            LOG.severe(lne.getMessage());
+            errorLbl.setText("Usuario no encontrado");
+            errorLbl.setTextFill(Color.web("#FF0000"));
+        } catch (UsuarioNoExisteException une) {
+            LOG.severe(une.getMessage());
+            errorLbl.setText("Contraseña incorrecta");
+            errorLbl.setTextFill(Color.web("#FF0000"));
+        } catch (IOException e) {
+            LOG.severe(e.getMessage());
+        }
+
+        /*  username = userTxt.getText();
         password = passwordTxt.getText();
         try {
             LOG.info("Login Button Pressed");
@@ -188,6 +238,7 @@ public class SignInController {
             alert.setContentText("An unknow error has occured, please, try again later");
             alert.showAndWait(); 
         }
+         */
     }
 
     /**

@@ -1,6 +1,7 @@
 package GESRE.implementacion;
 
 import GESRE.entidades.Pieza;
+import GESRE.excepcion.PiezaExisteException;
 import GESRE.interfaces.PiezasManager;
 import GESRE.rest.PiezaRESTClient;
 import java.util.Collection;
@@ -11,8 +12,9 @@ import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.GenericType;
 
 /**
- * Esta clase implementa la interfaz de lógica 'PiezaManager' utilizando un Cliente Web RESTful
- * 
+ * Esta clase implementa la interfaz de lógica 'PiezaManager' utilizando un
+ * Cliente Web RESTful
+ *
  * @author Daniel Brizuela
  * @version 1.0
  */
@@ -21,8 +23,8 @@ public class PiezasManagerImplementation implements PiezasManager {
     private PiezaRESTClient webClient;
 
     /**
-    * 
-    */
+     *
+     */
     public PiezasManagerImplementation() {
         webClient = new PiezaRESTClient();
     }
@@ -30,16 +32,16 @@ public class PiezasManagerImplementation implements PiezasManager {
     private static final Logger LOG = Logger.getLogger(PiezasManagerImplementation.class.getName());
 
     /**
-     * 
+     *
      * @param pieza
      * @param idTrabajador
-     * @return 
+     * @return
      */
     @Override
     public Collection<Pieza> findAllPiezaByTrabajadorId(Pieza pieza, Integer idTrabajador) {
         List<Pieza> piezas = null;
         try {
-            LOG.log(Level.INFO, "PiezaManager: Buscando todas las piezas del trabajador {0} from REST service (XML).", pieza.getTrabajador().getFullName());
+            LOG.log(Level.INFO, "PiezaManager: Buscando todas las piezas del trabajador con ID: " + idTrabajador);
             piezas = webClient.findAllPiezaByTrabajadorId_xml(new GenericType<List<Pieza>>() {
             }, idTrabajador);
         } catch (ClientErrorException ex) {
@@ -49,44 +51,68 @@ public class PiezasManagerImplementation implements PiezasManager {
     }
 
     /**
-     * 
+     *
      * @param pieza
      * @param idTrabajador
-     * @return 
+     * @return
      */
     @Override
     public Collection<Pieza> findAllPiezaByStock(Pieza pieza, Integer idTrabajador) {
         List<Pieza> piezas = null;
         try {
-            LOG.log(Level.INFO, "PiezaManager: Buscando todas las piezas del trabajador '{0}' ", pieza.getTrabajador().getFullName());
-            piezas = webClient.findAllPiezaInStock_xml(new GenericType<List<Pieza>>() {}, idTrabajador);
+            LOG.log(Level.INFO, "PiezaManager: Buscando todas las piezas en Stock del trabajador con ID: " + idTrabajador);
+            piezas = webClient.findAllPiezaInStock_xml(new GenericType<List<Pieza>>() {
+            }, idTrabajador);
         } catch (ClientErrorException ex) {
-            LOG.log(Level.SEVERE, "PiezasManager: Error al intentar buscar todas las piezas del trabajador", ex.getMessage());
+            LOG.log(Level.SEVERE, "PiezasManager: Error al intentar buscar todas las piezas en stock", ex.getMessage());
         }
         return piezas;
     }
 
     /**
-     * 
+     *
      * @param pieza
      * @param nombre
-     * @return 
+     * @return
      */
     @Override
-    public Collection<Pieza> findAllPiezaByName(Pieza pieza, String nombre) {
+    public Collection<Pieza> findAllPiezaByName(Pieza pieza, String nombre){
         List<Pieza> piezas = null;
         try {
-            LOG.log(Level.INFO, "PiezaManager: Buscando todas las piezas del trabajador '{0}' ", pieza.getTrabajador().getFullName());
-            piezas = webClient.findAllPiezaByName_xml(new GenericType<List<Pieza>>() {}, nombre);
+            LOG.log(Level.INFO, "PiezaManager: Buscando todas las piezas con el nombre: " + nombre);
+            piezas = webClient.findAllPiezaByName_xml(new GenericType<List<Pieza>>() {
+            }, nombre);
         } catch (ClientErrorException ex) {
-            LOG.log(Level.SEVERE, "PiezasManager: Error al intentar buscar todas las piezas del trabajador", ex.getMessage());
+            LOG.log(Level.SEVERE, "PiezasManager: Error al intentar buscar todas las piezas por nombre", ex.getMessage());
+        }
+        return piezas;
+    }
+    
+    /**
+     *
+     * @param pieza
+     * @param nombre
+     * @return
+     */
+    @Override
+    public Collection<Pieza> piezaExiste(Pieza pieza, String nombre) throws PiezaExisteException{
+        List<Pieza> piezas = null;
+        try {
+            LOG.log(Level.INFO, "PiezaManager: Buscando todas las piezas con el nombre: " + nombre);
+            piezas = webClient.findAllPiezaByName_xml(new GenericType<List<Pieza>>() {
+            }, nombre);
+            if(!piezas.isEmpty()){
+                throw new PiezaExisteException();
+            }
+        } catch (ClientErrorException ex) {
+            LOG.log(Level.SEVERE, "PiezasManager: Error al intentar buscar todas las piezas por nombre", ex.getMessage());
         }
         return piezas;
     }
 
     /**
-     * 
-     * @param pieza 
+     *
+     * @param pieza
      */
     @Override
     public void createPieza(Pieza pieza) {
@@ -100,49 +126,47 @@ public class PiezasManagerImplementation implements PiezasManager {
     }
 
     /**
-     * 
-     * @param pieza 
+     *
+     * @param pieza
      */
     @Override
-    public void removePieza(Pieza pieza) {
+    public void removePieza(Integer id) {
         try {
-            LOG.log(Level.INFO, "PiezasManager: Creando Pieza {0}...", pieza.getNombre());
-            //enviar los datos de la pieza al cliente web para su creacion 
-            webClient.remove_xml(pieza.getId());
+            LOG.log(Level.INFO, "PiezasManager: Borrando Pieza ");
+            //enviar los datos de la pieza al cliente web para su borrado
+            webClient.remove_xml(id);
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "PiezasManager: Error al intentar crear Pieza, {0}", ex.getMessage());
         }
     }
 
     /**
-     * 
+     *
      * @param id
-     * @return 
+     * @return
      */
     @Override
     public Pieza findPieza(Integer id) {
         Pieza pieza = null;
         try {
-            /*if(webClient.find_xml(Pieza.class, id)!=null){
-                //Pieza Existe
-            }*/
-            LOG.log(Level.INFO, "PiezasManager: Buscando Pieza {0}...", id);
+            pieza = webClient.find_xml(Pieza.class, id);
+            LOG.log(Level.INFO, "PiezasManager: Buscando Pieza con ID " + id);
         } catch (Exception ex) {
-            LOG.log(Level.SEVERE, "PiezasManager: Error al intentar crear Pieza, {0}", ex.getMessage());
+            LOG.log(Level.SEVERE, "PiezasManager: Error al intentar Buscar Pieza, {0}", ex.getMessage());
         }
         return pieza;
     }
 
     /**
-     * 
-     * @param pieza 
+     *
+     * @param pieza
      */
     @Override
-    public void editPieza(Pieza pieza) {
+    public void editPieza(Pieza pieza, Integer id) {
         try {
-            LOG.log(Level.INFO, "PiezasManager: Actualizando Pieza '{0}'...", pieza.getNombre());
+            LOG.log(Level.INFO, "PiezasManager: Actualizando Pieza "+pieza.getNombre());
             //enviar los datos de la pieza al cliente web para su creacion 
-            webClient.edit_xml(pieza);
+            webClient.edit_xml(pieza, id);
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "PiezasManager: Error al intentar crear Pieza, {0}", ex.getMessage());
         }
