@@ -10,10 +10,22 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 
-<Pane id="piezaPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.GestionClientesController">
+<Pane id="clientesPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.GestionClientesController">
    <children>
-       <fx:include fx:id="hBoxMenu" source="menu.fxml" />
+       <MenuBar fx:id="menuBar" layoutY="1.0" prefHeight="26.0" prefWidth="800.0">
+            <menus>
+                <Menu mnemonicParsing="false" text="Archivo">
+                    <items>
+                        <MenuItem fx:id="mnCerrarSecion" mnemonicParsing="false" text="Cerrar Sesión" />
+                        <MenuItem fx:id="mnSalir" mnemonicParsing="false" text="Salir" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar> 
       <Pane layoutX="12.0" layoutY="36.0" prefHeight="154.0" prefWidth="776.0" style="-fx-background-color: lightgrey; -fx-border-color: black;">
          <children>
             <Label layoutX="40.0" layoutY="24.0" text="GESTIÓN DE CLIENTES">

@@ -34,6 +34,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -77,6 +79,13 @@ public class GestionClientesController {
     //Stage
     private Stage stage;
 
+    @FXML
+    private MenuBar menuBar;
+    @FXML
+    private MenuItem mnCerrarSecion;
+    @FXML
+    private MenuItem mnSalir;
+    
     @FXML
     private TextField usuarioTxt;
     @FXML
@@ -198,6 +207,10 @@ public class GestionClientesController {
             clientesTabla.getSelectionModel().selectedItemProperty().addListener(this::handleTableSelectionChanged);
             buscarCombo.getSelectionModel().selectedItemProperty().addListener(this::handleFiltros);
 
+            //Añade acciones a los menuItems de la barra menu
+            mnCerrarSecion.setOnAction(this::handleCerrarSesion);
+            mnSalir.setOnAction(this::handleCloseRequest);
+            
             //Show window (asynchronous)
             stage.show();
         } catch (Exception e) {
@@ -231,8 +244,7 @@ public class GestionClientesController {
             anadirBtn.setDisable(true);
             editarBtn.setDisable(false);
             borrarBtn.setDisable(false);
-
-            buscarCombo.setValue(null);
+            
             buscarTxt.setText("");
             buscarCombo.setDisable(true);
             buscarTxt.setDisable(true);
@@ -245,12 +257,15 @@ public class GestionClientesController {
             usuarioTxt.setText("");
             nombreTxt.setText("");
             correoTxt.setText("");
+            contrasenaTxt.setText("");
+            repiteContrasenaTxt.setText("");
+            fechaRegistroDate.setValue(LocalDate.now());
+
             contrasenaTxt.setDisable(false);
             repiteContrasenaTxt.setDisable(false);
 
             deshabilitarBotones(true);
             buscarCombo.setValue("Todos");
-            buscarCombo.setDisable(false);
             buscarCombo.setDisable(false);
         }
         //Focus login field
@@ -346,7 +361,7 @@ public class GestionClientesController {
                         cliente.setLogin(usuarioTxt.getText());
                         cliente.setFullName(nombreTxt.getText());
                         cliente.setEmail(correoTxt.getText());
-                        cliente.setPassword(Seguridad.cifrarConClavePublica(contrasenaTxt.getText()));
+                        cliente.setPassword(contrasenaTxt.getText());
                         cliente.setFechaRegistro(Date.from(fechaRegistroDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
                         cliente.setLastPasswordChange(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
                         cliente.setPrivilege(CLIENTE);
@@ -610,6 +625,45 @@ public class GestionClientesController {
         } else {
             buscarBtn.setDisable(true);
         }
+    }
+    
+    /**
+     * Al pulsar el menuItem Cerrar Secion cierra la venta de gestion trabajador
+     * y abre SignIn
+     *
+     * @param event El evento de acción.
+     */
+    private void handleCerrarSesion(ActionEvent event) {
+
+        LOG.info("Trabajador Controlador: Salir programa para SignIn");
+
+        try {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+
+            alert.setTitle("Salir");
+            alert.setHeaderText(null);
+            alert.setContentText("¿Seguro que quieres cerrar la ventana?");
+
+            alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.get().equals(ButtonType.OK)) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/SignIn.fxml"));
+                Parent root = (Parent) loader.load();
+                SignInController controller = ((SignInController) loader.getController());
+                controller.setStage(stage);
+                controller.initStage(root);
+            } else {
+                event.consume();
+                alert.close();
+            }
+        } catch (Exception ex) {
+
+            LOG.log(Level.SEVERE,
+                    "UI GestionUsuariosController: Error printing report: {0}",
+                    ex.getMessage());
+        }
+
     }
 
     /**
