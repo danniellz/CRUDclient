@@ -5,7 +5,6 @@
  */
 package GESRE.controller;
 
-
 import GESRE.entidades.Trabajador;
 import static GESRE.entidades.UserPrivilege.TRABAJADOR;
 import static GESRE.entidades.UserStatus.ENABLED;
@@ -534,7 +533,6 @@ public class GestionTrabajadorViewController {
      * @param event El evento de acción.
      */
     private void handleBtnAnadir(ActionEvent event) {
-        boolean errorPatrones = patronesTextoBien();
         boolean errorDatePicker = datePickerVacio();
         boolean errorContrasenias = comprobarContrasenias();
         //Se comprueba que no haya erroes en los campos de texto
@@ -757,9 +755,9 @@ public class GestionTrabajadorViewController {
         try {
 
             //Carga en la tabla todo los trabajadores
-          //  ObservableList<Trabajador> trabajadoresObservableLista = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
-         //   tablaTrabajadores.setItems(trabajadoresObservableLista);
-          //  tablaTrabajadores.refresh();
+            //ObservableList<Trabajador> trabajadoresObservableLista = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
+            //tablaTrabajadores.setItems(trabajadoresObservableLista);
+            //tablaTrabajadores.refresh();
             
             if (cbxFiltro.getValue().equals("Todos")) {
                 //Carga en la tabla todo los trabajadores
@@ -801,7 +799,7 @@ public class GestionTrabajadorViewController {
             LOGGER.info("Comenzandoa imprimir los datos de la tabla Trabajador...");
             JasperReport report
                     = JasperCompileManager.compileReport(getClass()
-                            .getResourceAsStream("/GESRE/archivos/informeReportGesre.jrxml"));
+                            .getResourceAsStream("/GESRE/archivos/informeTrabajador.jrxml"));
             //Data for the report: a collection of UserBean passed as a JRDataSource 
             //implementation 
             JRBeanCollectionDataSource dataItems

@@ -5,13 +5,13 @@
  */
 package GESRE.factoria;
 
-
+import GESRE.implementacion.ClienteManagerImplementacion;
 import GESRE.implementacion.IncidenciaManagerImplementation;
 import GESRE.implementacion.PiezasManagerImplementation;
 import GESRE.implementacion.TrabajadorManagerImplementacion;
-
 import GESRE.interfaces.IncidenciaManager;
 import GESRE.implementacion.UsuarioManagerImplentacion;
+import GESRE.interfaces.ClienteManager;
 import GESRE.interfaces.PiezasManager;
 import GESRE.interfaces.TrabajadorManager;
 import GESRE.interfaces.UsuarioManager;
@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 /**
  * Clase de factoría que gestiona las implementaciones.
  *
- * @author Jonathan, Daniel
+ * @author Jonathan, Daniel, Arizt, Mikel
  */
 public class GestionFactoria {
 
@@ -38,7 +38,6 @@ public class GestionFactoria {
         LOGGER.info("GestionFactoria: Creando la implementacion de Trabajador");
         TrabajadorManager trabajadorGestion = new TrabajadorManagerImplementacion();
         return trabajadorGestion;
-
     }
 
     public static PiezasManager getPiezaManager() {
@@ -54,11 +53,13 @@ public class GestionFactoria {
 
     
      public static UsuarioManager getUsuarioGestion() {
-        LOGGER.info("GestionFactoria: Creando la implementacion de Trabajador");
-
-        UsuarioManager UsuarioGestion = new UsuarioManagerImplentacion();
-
-        return UsuarioGestion;
-
+        LOGGER.info("GestionFactoria: Creando la implementacion de Usuario");
+        UsuarioManager UsuarioManager = new UsuarioManagerImplentacion();
+        return UsuarioManager;
+    }
+     
+      public static ClienteManager createClienteManager() {
+        ClienteManager clienteManager = new ClienteManagerImplementacion();
+        return clienteManager;
     }
 }

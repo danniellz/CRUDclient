@@ -85,7 +85,7 @@ public class UsuarioManagerImplentacion implements UsuarioManager {
     public Collection<Usuario> buscarUsuarioPorLoginCrear(String login) throws LoginExisteException {
         List<Usuario> usuarios = null;
         try {
-            LOGGER.info("TrabajadorManagerImplementation: Buscando trabajador por el nombre");
+            LOGGER.info("UsuarioManagerImplementation: Buscando trabajador por el nombre");
             //Solicitar a webClient los datos de del trabajador buscadon por su nombre.
             usuarios = webClient.buscarUserPorLogin_XML(new GenericType<List<Usuario>>() {
             }, login);
@@ -108,7 +108,7 @@ public class UsuarioManagerImplentacion implements UsuarioManager {
     public Collection<Usuario> buscarUserPorLoginSignIn(String login) throws LoginNoExisteException {
         List<Usuario> usuarios = null;
         try {
-            LOGGER.info("TrabajadorManagerImplementation: Buscando trabajador por el nombre");
+            LOGGER.info("UsuarioManagerImplementation: Buscando Usuario por el login");
             //Solicitar a webClient los datos de del trabajador buscadon por su nombre.
             usuarios = webClient.buscarUserPorLogin_XML(new GenericType<List<Usuario>>() {
             }, login);
@@ -125,7 +125,7 @@ public class UsuarioManagerImplentacion implements UsuarioManager {
     public Collection<Usuario> buscarUsuarioPorEmailCrear(String email) throws EmailExisteException {
         List<Usuario> usuarios = null;
         try {
-            LOGGER.info("UsuarioManagerImplementation: Buscando trabajador por el nombre");
+            LOGGER.info("UsuarioManagerImplementation: Buscando usuario  por el email");
             //Solicitar a webClient los datos de del trabajador buscadon por su nombre.
             usuarios = webClient.buscarUsuarioPorEmail_XML(new GenericType<List<Usuario>>() {
             }, email);
@@ -143,7 +143,7 @@ public class UsuarioManagerImplentacion implements UsuarioManager {
     public Collection<Usuario> buscarUsuarioPorLoginYContrasenia_Usuario(String login, String password) throws UsuarioNoExisteException {
         List<Usuario> usuarios = null;
         try {
-            LOGGER.info("UsuarioManagerImplementation: Buscando trabajador por login y contraseñas");
+            LOGGER.info("UsuarioManagerImplementation: Buscando usuario por login y contraseñas");
             usuarios = webClient.buscarUsuarioPorLoginYContrasenia_XML(new GenericType<List<Usuario>>() {
             }, login, password);
             if (!usuarios.isEmpty()) {

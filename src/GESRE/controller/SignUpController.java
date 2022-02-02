@@ -1,12 +1,23 @@
 package GESRE.controller;
 
-//import exceptions.ConnectionException;
-//import exceptions.DatabaseNotFoundException;
-//import exceptions.IncorrectPasswordException;
-//import exceptions.MaxConnectionException;
-//import exceptions.UserAlreadyExistException;
-//import exceptions.UserNotFoundException;
+import static GESRE.controller.GestionTrabajadorViewController.LOGGER;
+import GESRE.entidades.Cliente;
+import static GESRE.entidades.UserPrivilege.CLIENTE;
+import static GESRE.entidades.UserPrivilege.TRABAJADOR;
+import static GESRE.entidades.UserStatus.ENABLED;
+import GESRE.entidades.Usuario;
+import GESRE.excepcion.DatabaseDesconectadoException;
+import GESRE.excepcion.EmailExisteException;
+import GESRE.excepcion.LoginExisteException;
+import GESRE.excepcion.ServerDesconectadoException;
+import GESRE.excepcion.UsuarioNoExisteException;
+import GESRE.factoria.GestionFactoria;
+import GESRE.implementacion.ClienteManagerImplementacion;
+import GESRE.interfaces.ClienteManager;
+import GESRE.interfaces.UsuarioManager;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,6 +58,16 @@ public class SignUpController {
      * this is the pattern structures the form of the Email
      */
     public static final Pattern VALIDEMAIL = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+    /**
+     * Atributo estático y constante que guarda los caracteres máximos admitidos
+     * en los campos de nombre de usuario.
+     */
+    private static final int MAX_LENGHT_USER = 25;
+
+    /**
+     * Atributo estático y constante que guarda el patron correcto del usuario.
+     */
+    public static final Pattern VALID_USUARIO = Pattern.compile("^[A-Z0-9]+$", Pattern.CASE_INSENSITIVE);
 
     private Stage stage;
 
@@ -100,6 +121,11 @@ public class SignUpController {
     @FXML
     private Button registerBtn;
 
+    //GESTION MANAGER
+    ClienteManager clienteManager = GestionFactoria.createClienteManager();
+
+    UsuarioManager usuarioManager = GestionFactoria.getUsuarioGestion();
+
     /**
      * Defines which view is going to show up when the application executes.
      *
@@ -124,6 +150,7 @@ public class SignUpController {
         //Window properties
         stage.setTitle("SING UP");
         stage.setResizable(false);
+        stage.setOnCloseRequest(this::closeProgramSingUp);
         //Controls
         registerBtn.setDisable(true);
         userErrorLbl.setVisible(false);
@@ -133,15 +160,17 @@ public class SignUpController {
         repeatPasswordErrorLbl.setVisible(false);
 
         charlimit();
+
+        userTxt.textProperty().addListener(this::handleValidarTexto);
         fullNameTxt.focusedProperty().addListener(this::focusLostEspChar);
         emailTxt.focusedProperty().addListener(this::domainControl);
-        stage.setOnCloseRequest(this::closeProgramSingUp);
-
-        disableButtonWhenTextFieldsEmpty();
-        signInHl.addEventHandler(ActionEvent.ACTION, this::clickHyperlink);
-//        registerBtn.setOnAction(this::registerValidation);
         passwordTxt.focusedProperty().addListener(this::focusChanged);
         repeatPasswordTxt.focusedProperty().addListener(this::focusChangeRepeatPassword);
+
+        registerBtn.setOnAction(this::registerValidation);
+        signInHl.addEventHandler(ActionEvent.ACTION, this::clickHyperlink);
+
+        disableButtonWhenTextFieldsEmpty();
         //Show window (asynchronous)
         stage.show();
     }
@@ -435,70 +464,80 @@ public class SignUpController {
      * Executes action when Sign Up button pressed.
      *
      * @param event determines which event has happened.
-     *
+     */
     private void registerValidation(ActionEvent event) {
+
         LOG.info("Clicked on button register");
         boolean errorPassEqual = false;
         errorPassEqual = checkPasswordsEqual();
 
-        User user = new User();
-        user.setLogin(userTxt.getText());
-        user.setEmail(emailTxt.getText());
-        user.setFullName(fullNameTxt.getText());
-        user.setPassword(passwordTxt.getText());
+        if (patronesTextoBien()) {
+            try {
+                //Comprueba si existe el login
+                LOGGER.info("Usuario Controlador: Comprobando si existe el login");
+                usuarioManager.buscarUsuarioPorLoginCrear(userTxt.getText());
+                //Comprueba si existe el email
+                LOGGER.info("Usuario Controlador: Comprobando si existe el email");
+                usuarioManager.buscarUsuarioPorEmailCrear(emailTxt.getText());
+                //Se recoge la fecha actual
+                Date date = new Date(System.currentTimeMillis());
 
-        try {
+                Cliente nuevoCliente = new Cliente();
+                nuevoCliente.setLogin(userTxt.getText());
+                nuevoCliente.setEmail(emailTxt.getText());
+                nuevoCliente.setFullName(fullNameTxt.getText());
+                nuevoCliente.setPassword(passwordTxt.getText());
+                nuevoCliente.setFechaRegistro(convertToDateViaSqlDate(LocalDate.now()));
+                nuevoCliente.setStatus(ENABLED);
+                nuevoCliente.setPrivilege(CLIENTE);
+                nuevoCliente.setLastPasswordChange(date);
 
-            Signable sign = new SignableFactory().getSignable();
-            sign.signUp(user);
+                clienteManager.createCliente(nuevoCliente);
 
-            //Show an alert confirming the user correct registration
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("SignUp");
-            alert.setHeaderText("Sign Up Confirmed!");
-            alert.setContentText("User registered successfully!");
-            alert.showAndWait();
+                //Show an alert confirming the nuevoCliente correct registration
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("SignUp");
+                alert.setHeaderText("Sign Up Confirmed!");
+                alert.setContentText("User registered successfully!");
+                alert.showAndWait();
+                //Open SignIn window after a correct registration
+                //Abre la vista de UIGrupo
+                LOGGER.info("Sign Up Controlador: Abriendo la vista UIGrupo");
 
-            //Open SignIn window after a correct registration
-            openSignInWindow();
-            LOG.info("User Registered, returning to SignIn window...");
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/SignIn.fxml"));
+                Parent root = (Parent) loader.load();
+                SignInController controller = ((SignInController) loader.getController());
+                controller.setStage(stage);
+                controller.initStage(root);
+                LOG.info("User Registered, returning to SignIn window...");
 
-        } catch (UserAlreadyExistException ex) {
-            //Show an error label if the user already exist, LOG SEVERE included with Exception
-            LOG.info("UserAlreadyExistException");
-            Logger.getLogger(SignUpController.class.getName()).log(Level.SEVERE, "User Already exist", ex);
-            userErrorLbl.setText("User already exist, try another");
-            userErrorLbl.setStyle("-fx-border-color: #DC143C; -fx-border-width: 1.5px ;");
-            userErrorLbl.setVisible(true);
-            userErrorLbl.setStyle("-fx-text-fill: #DC143C");
-        } catch (UserNotFoundException ex) {
-            Logger.getLogger(SignUpController.class.getName()).log(Level.SEVERE, "User not Found ", ex);
-        } catch (IncorrectPasswordException ex) {
-            Logger.getLogger(SignUpController.class.getName()).log(Level.SEVERE, "Incorrect Password", ex);
-        } catch (DatabaseNotFoundException ex) {
-            //Show an error Alert if there is a problem with the DataBase, LOG SEVERE included with Exception
-            LOG.info("DatabaseNotFoundException");
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Database Error");
-            alert.setHeaderText("Database Connection Error");
-            alert.setContentText("Database is not available, please, try again later");
-            alert.showAndWait();
-        } catch (ConnectionException ex) {
-            //Show an error Alert if there is not a connection with the Server, LOG SEVERE included with Exception
-            LOG.info("ConnectionException");
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Connecion Error");
-            alert.setHeaderText("Server Connection Error");
-            alert.setContentText("Server is not available, please, try again later");
-            alert.showAndWait();
-        } catch (MaxConnectionException ex) {
-            //Show an error Alert if the max connection is reached, LOG SEVERE included with Exception
-            LOG.info("MaxConnectionException");
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Connection Limit Warning");
-            alert.setHeaderText("Max Connection Reached");
-            alert.setContentText("The Server is not available because the limit connection has been reached, please try again later");
-            alert.showAndWait();
+            } catch (IOException ie) {
+                LOGGER.severe(ie.getMessage());
+            } catch (LoginExisteException ex) {
+                //Show an error label if the nuevoCliente already exist, LOG SEVERE included with Exception
+                LOG.info("UserAlreadyExistException");
+                Logger.getLogger(SignUpController.class.getName()).log(Level.SEVERE, "User Already exist", ex);
+                userErrorLbl.setText("User already exist, try another");
+                userErrorLbl.setStyle("-fx-border-color: #DC143C; -fx-border-width: 1.5px ;");
+                userErrorLbl.setVisible(true);
+                userErrorLbl.setStyle("-fx-text-fill: #DC143C");
+            } catch (EmailExisteException ex) {
+                //Show an error label if the nuevoCliente already exist, LOG SEVERE included with Exception
+                LOG.info("UserAlreadyExistException");
+                Logger.getLogger(SignUpController.class.getName()).log(Level.SEVERE, "User Already exist", ex);
+                emailErrorLbl.setText("User already exist, try another");
+                emailErrorLbl.setStyle("-fx-border-color: #DC143C; -fx-border-width: 1.5px ;");
+                emailErrorLbl.setVisible(true);
+                emailErrorLbl.setStyle("-fx-text-fill: #DC143C");
+            } catch (Exception ex) {
+                //Show an error Alert if there is not a connection with the Server, LOG SEVERE included with Exception
+                LOG.info("ConnectionException");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Connecion Error");
+                alert.setHeaderText("Server Connection Error");
+                alert.setContentText("Server is not available, please, try again later");
+                alert.showAndWait();
+            }
         }
     }
 
@@ -584,6 +623,51 @@ public class SignUpController {
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "Error Starting LogOut Window", ex);
         }
+    }
+
+    /**
+     * Metodo que pasa la facha Date a un DateSQL
+     *
+     * @param dateToConvert Date a cambio de DateSql
+     * @return Devuelve el date en sql
+     */
+    public Date convertToDateViaSqlDate(LocalDate dateToConvert) {
+        return java.sql.Date.valueOf(dateToConvert);
+    }
+
+    private void handleValidarTexto(ObservableValue observable, String oldValue, String newValue) {
+        if (userTxt.getText().length() > MAX_LENGHT_USER) {
+            String nombre = userTxt.getText().substring(0, MAX_LENGHT_USER);
+            userTxt.setText(nombre);
+            userErrorLbl.setText("Maximo de caracteres alcanzados 50");
+            userErrorLbl.setTextFill(Color.web("#FF0000"));
+        } else {
+            userErrorLbl.setText("");
+        }
+    }
+
+    /**
+     * Comprueba que los patrone de nombre completo, email, precio/hora, fecha,
+     * nombre usuario contraseña y repetir contraseñas son correctos.
+     *
+     * @return Variable indicando si todos los patrones son correctos.
+     */
+    private boolean patronesTextoBien() {
+        boolean patronesTextoBien = true;
+        //Controlador de los campos de texto 
+        Matcher matcher = null;
+
+        //Valida que no tenga caractes especiales
+        matcher = VALID_USUARIO.matcher(userTxt.getText());
+        if (!matcher.find()) {
+            userTxt.setText("El usuario sólo debe contener letras y numeros");
+            userErrorLbl.setTextFill(Color.web("#FF0000"));
+            patronesTextoBien = false;
+        } else {
+            userErrorLbl.setText("");
+        }
+
+        return patronesTextoBien;
     }
 
 }
