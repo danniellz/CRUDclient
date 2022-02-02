@@ -47,16 +47,19 @@ public class GestionFactoria {
         LOGGER.info("GestionFactoria: Creando la implementacion de Incidencias");
         IncidenciaManager incidenciaManager = new IncidenciaManagerImplementation();
         return incidenciaManager;
-
-    
-     public static UsuarioManager getUsuarioGestion() {
-        LOGGER.info("GestionFactoria: Creando la implementacion de Usuario");
-        UsuarioManager UsuarioManager = new UsuarioManagerImplentacion();
-        return UsuarioManager;
     }
-     
-      public static ClienteManager createClienteManager() {
+    
+    public static UsuarioManager createUsuarioManager() {
+        LOGGER.info("GestionFactoria: Creando la implementacion de Usuario");
+        UsuarioManager usuarioManager = new UsuarioManagerImplentacion();
+        return usuarioManager;
+    }
+    
+    public static ClienteManager createClienteManager() {
+        
         ClienteManager clienteManager = new ClienteManagerImplementacion();
+        
         return clienteManager;
     }
+    
 }

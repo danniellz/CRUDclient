@@ -4,52 +4,65 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 
-<Pane id="piezaPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.GestionClientesController">
+<Pane id="clientesPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.GestionClientesController">
    <children>
+       <MenuBar fx:id="menuBar" layoutY="1.0" prefHeight="26.0" prefWidth="800.0">
+            <menus>
+                <Menu mnemonicParsing="false" text="Archivo">
+                    <items>
+                        <MenuItem fx:id="mnCerrarSecion" mnemonicParsing="false" text="Cerrar Sesión" />
+                        <MenuItem fx:id="mnSalir" mnemonicParsing="false" text="Salir" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar> 
       <Pane layoutX="12.0" layoutY="36.0" prefHeight="154.0" prefWidth="776.0" style="-fx-background-color: lightgrey; -fx-border-color: black;">
          <children>
-            <Label fx:id="messageLbl" alignment="CENTER" contentDisplay="CENTER" layoutX="61.0" layoutY="49.0" minHeight="-Infinity" prefHeight="17.0" text="Usuario" wrapText="true" />
-            <Label layoutX="225.0" layoutY="49.0" text="Nombre Completo" />
-            <Label layoutX="388.0" layoutY="49.0" text="Correo" />
-            <Button layoutX="601.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Añadir" />
-            <Button layoutX="601.0" layoutY="45.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Borrar" />
-            <Button layoutX="601.0" layoutY="78.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Editar" />
-            <Button layoutX="601.0" layoutY="116.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Limpiar" />
             <Label layoutX="40.0" layoutY="24.0" text="GESTIÓN DE CLIENTES">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
+            <Label fx:id="messageLbl" alignment="CENTER" contentDisplay="CENTER" layoutX="61.0" layoutY="49.0" minHeight="-Infinity" prefHeight="17.0" text="Usuario" wrapText="true" />
+            <TextField fx:id="usuarioTxt" layoutX="61.0" layoutY="68.0" />
+            <Label layoutX="225.0" layoutY="49.0" text="Nombre Completo" />
+            <TextField fx:id="nombreTxt" layoutX="225.0" layoutY="68.0" />
+            <Label layoutX="388.0" layoutY="49.0" text="Correo" />
+            <TextField fx:id="correoTxt" layoutX="388.0" layoutY="68.0" />
             <Label layoutX="61.0" layoutY="95.0" text="Contraseña" />
+            <PasswordField fx:id="contrasenaTxt" layoutX="61.0" layoutY="116.0" />
             <Label layoutX="228.0" layoutY="95.0" text="Repite Contraseña" />
-            <TextField layoutX="61.0" layoutY="68.0" />
-            <TextField layoutX="225.0" layoutY="68.0" />
-            <TextField layoutX="388.0" layoutY="68.0" />
-            <TextField layoutX="61.0" layoutY="116.0" />
-            <TextField layoutX="228.0" layoutY="116.0" />
+            <PasswordField fx:id="repiteContrasenaTxt" layoutX="228.0" layoutY="116.0" />
             <Label layoutX="388.0" layoutY="94.0" text="Fecha de Registro" />
-            <DatePicker layoutX="388.0" layoutY="116.0" />
+            <DatePicker fx:id="fechaRegistroDate" layoutX="388.0" layoutY="116.0" />
+            <Button fx:id="anadirBtn" layoutX="601.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Añadir" />
+            <Button fx:id="borrarBtn" layoutX="601.0" layoutY="45.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Borrar" />
+            <Button fx:id="editarBtn" layoutX="601.0" layoutY="78.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Editar" />
+            <Button fx:id="limpiarBtn" layoutX="601.0" layoutY="116.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Limpiar" />
          </children>
       </Pane>
-       <fx:include fx:id="hBoxMenu" source="menu.fxml" />
-      <TableView layoutY="249.0" prefHeight="351.0" prefWidth="800.0">
+      <Label layoutX="28.0" layoutY="212.0" text="Buscar por:" />
+      <ComboBox fx:id="buscarCombo" layoutX="101.0" layoutY="208.0" prefWidth="150.0" />
+      <TextField fx:id="buscarTxt" layoutX="273.0" layoutY="208.0" prefHeight="25.0" prefWidth="160.0" />
+      <Button fx:id="buscarBtn" layoutX="462.0" layoutY="208.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Buscar" />
+      <Button fx:id="trabajadoresBtn" layoutX="613.0" layoutY="208.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Ver Trabajadores" />
+      <TableView fx:id="clientesTabla" layoutY="249.0" prefHeight="351.0" prefWidth="800.0">
         <columns>
-          <TableColumn prefWidth="150.0" text="Usuario" />
-            <TableColumn prefWidth="200.0" text="Nombre completo" />
-            <TableColumn minWidth="0.0" prefWidth="300.0" text="Correo" />
-            <TableColumn minWidth="0.0" prefWidth="150.0" text="Fecha de Registro" />
+          <TableColumn fx:id="usuarioColumn" prefWidth="150.0" text="Usuario" />
+            <TableColumn fx:id="nombreColumn" prefWidth="200.0" text="Nombre completo" />
+            <TableColumn fx:id="correoColumn" minWidth="0.0" prefWidth="300.0" text="Correo" />
+            <TableColumn fx:id="fechaRegistroColumn" minWidth="0.0" prefWidth="150.0" text="Fecha de Registro" />
         </columns>
       </TableView>
-      <TextField layoutX="273.0" layoutY="208.0" prefHeight="25.0" prefWidth="160.0" />
-      <Label layoutX="28.0" layoutY="212.0" text="Buscar por:" />
-      <ComboBox layoutX="101.0" layoutY="208.0" prefWidth="150.0" />
-      <Button layoutX="613.0" layoutY="208.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Ver Trabajadores" />
-      <Button layoutX="462.0" layoutY="208.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Buscar" />
    </children>
 </Pane>
