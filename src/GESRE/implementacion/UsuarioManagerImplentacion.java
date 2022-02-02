@@ -166,8 +166,14 @@ public class UsuarioManagerImplentacion implements UsuarioManager {
     }
 
     @Override
-    public Collection<Usuario> buscarUsuarioParaEnviarMailRecuperarContrasenia_Usuario(Usuario usuario) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void buscarUsuarioParaEnviarMailRecuperarContrasenia_Usuario(Usuario usuario) {
+        try {
+            LOGGER.info("UsuarioManagerImplementation: Recuperando contraseña...");
+            // Enviar datos de usuario al webClient para su recuperacion.
+            webClient.buscarUsuarioParaEnviarMailRecuperarContrasenia_XML(usuario);
+        } catch (ClientErrorException e) {
+            LOGGER.severe(e.getMessage());
+        }
     }
 
     @Override

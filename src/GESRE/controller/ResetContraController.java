@@ -1,6 +1,12 @@
 package GESRE.controller;
 
+import GESRE.entidades.Usuario;
+import GESRE.excepcion.EmailExisteException;
+import GESRE.excepcion.ServerDesconectadoException;
+import GESRE.factoria.GestionFactoria;
+import GESRE.interfaces.UsuarioManager;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,9 +22,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -33,6 +37,10 @@ public class ResetContraController {
 
     //LOGGER
     private static final Logger LOG = Logger.getLogger(ResetContraController.class.getName());
+
+    /**
+     * patrón para el email
+     */
     public static final Pattern VALIDEMAIL = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
     //Attributes, @FXML allows interaction with controls from the FXML file
@@ -51,6 +59,14 @@ public class ResetContraController {
     private Button btnResetear;
     @FXML
     private Button btnVolver;
+    
+    /**
+     * Variable que hace una llamada al método que gestiona los grupos de la
+     * factoría.
+     */
+    UsuarioManager usuarioManager = GestionFactoria.getUsuarioGestion();
+    private Usuario usuario = null;
+    private List<Usuario> usuarios;
 
     /**
      * Establecer el Stage
@@ -80,6 +96,7 @@ public class ResetContraController {
             //Controles
             messageLbl.setVisible(false);
             btnResetear.setOnAction(this::handleBtnResetear);
+            txtCorreo.textProperty().addListener(this::limitCorreoTextField);
             //Mostrar ventana
             stage.show();
             LOG.info("Ventana Actual: ResetContra");
@@ -140,27 +157,76 @@ public class ResetContraController {
     }
 
     /**
-     * 
-     * @param resetearEvent 
+     * Botón que hará la operación de resetear la contraseña
+     *
+     * @param resetearEvent evento resetear contraseña
      */
     private void handleBtnResetear(ActionEvent resetearEvent) {
         Matcher matcher = VALIDEMAIL.matcher(txtCorreo.getText());
         if (txtCorreo.getText().isEmpty()) {
             LOG.warning("El campo Correo está vacio");
             messageLbl.setText("Porfavor, introduce un correo");
+            messageLbl.setStyle("-fx-text-fill: #DC143C");
+            txtCorreo.setStyle("-fx-border-color: #DC143C; -fx-border-width: 1.5px ;");
             messageLbl.setVisible(true);
+            txtCorreo.requestFocus();
         } else if (matcher.find()) {
             messageLbl.setVisible(false);
             txtCorreo.setStyle("");
             messageLbl.setStyle("-fx-border-color: WHITE;");
+            
+            try {
+                LOG.info("Verificando si el correo introducido existe...");
+                usuarios = (List<Usuario>) usuarioManager.buscarUsuarioPorEmailCrear(txtCorreo.getText());
+            } catch (EmailExisteException ex) {
+                LOG.info("El email pertenece al usuario: "+usuarios.toString());
+                usuarioManager.buscarUsuarioParaEnviarMailRecuperarContrasenia_Usuario(usuario);
+            } catch (ServerDesconectadoException ex) {
+                Logger.getLogger(ResetContraController.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
+           
+            
         } else {
             LOG.warning("Formato de correo no válido");
             messageLbl.setText("Por Favor, Introduce un Correo valido");
             txtCorreo.setStyle("-fx-border-color: #DC143C; -fx-border-width: 1.5px ;");
             messageLbl.setVisible(true);
             messageLbl.setStyle("-fx-text-fill: #DC143C");
+            txtCorreo.requestFocus();
 
+        }
+    }
+
+    /* Llamar a este método establece el control del campo Correo (textProperty())
+     *
+     * @param observable campo objetivo cuyo valor cambia
+     * @param oldValue valor previo al cambio
+     * @param newValue ultimo valor introducido
+     */
+    private void limitCorreoTextField(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+        try {
+            //si un 26 caracter es introducido, se borra
+            if (txtCorreo.getText().length() > 50) {
+                //Preparar mensaje del label
+                messageLbl.setText("Límite de 50 caracteres alcanzado");
+                //Borrar ultimo caracter introducido
+                txtCorreo.deleteNextChar();
+                //Color del campo rojo para feedback visual
+                txtCorreo.setStyle("-fx-border-color: #DC143C ; -fx-border-width: 1.5px ;");
+                //Activar label
+                messageLbl.setStyle("-fx-text-fill: #DC143C");
+                messageLbl.setVisible(true);
+
+            } else {
+                //Mientras los caracteres introducidos sean menor a 50, se desactiva el label y el campo vuelve a su color normal
+                txtCorreo.setStyle("-fx-border-color: White;");
+                messageLbl.setVisible(false);
+                messageLbl.setStyle("");
+            }
+
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error Setting User field control", ex);
         }
     }
 }

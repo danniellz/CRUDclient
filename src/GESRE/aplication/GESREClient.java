@@ -1,6 +1,8 @@
 package GESRE.aplication;
 
 import GESRE.controller.GestionTrabajadorViewController;
+import GESRE.controller.PiezaViewController;
+import GESRE.controller.ResetContraController;
 import GESRE.controller.IncidenciaCLViewController;
 import GESRE.controller.IncidenciaTRViewController;
 import GESRE.controller.PiezaViewController;

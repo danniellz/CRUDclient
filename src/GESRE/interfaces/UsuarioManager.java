@@ -56,7 +56,7 @@ public interface UsuarioManager {
 
     public Collection<Usuario> buscarTodosLosUsuarios_Usuario();
 
-    public Collection<Usuario> buscarUsuarioParaEnviarMailRecuperarContrasenia_Usuario(Usuario usuario);
+    public void buscarUsuarioParaEnviarMailRecuperarContrasenia_Usuario(Usuario usuario);
 
     public Usuario findAll_Usuarios();
 

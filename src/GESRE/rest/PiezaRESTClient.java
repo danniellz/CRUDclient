@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package GESRE.rest;
 
 import java.util.ResourceBundle;
@@ -12,9 +7,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 
 /**
- * Cliente REST de Jersey generado para el recurso REST:PiezaRESTClient
- * Contiene métodos necesarios para invocar un servicio web RESTful de Pieza que reside en un servidor Glassfish
- * 
+ * Cliente REST de Jersey generado para el recurso REST:PiezaRESTClient Contiene
+ * métodos necesarios para invocar un servicio web RESTful de Pieza que reside
+ * en un servidor Glassfish
+ *
  * Jersey REST client generated for REST resource:PiezaFacadeREST
  * [entidades.pieza]<br>
  * USAGE:
@@ -26,6 +22,7 @@ import javax.ws.rs.core.GenericType;
  * </pre>
  *
  * @author Daniel Brizuela
+ * @version 1.0
  */
 public class PiezaRESTClient {
 
@@ -37,6 +34,7 @@ public class PiezaRESTClient {
     private static final String BASE_URI = ResourceBundle.getBundle("GESRE.archivos.config").getString("RESTFUL_URI");
 
     /**
+     * Constructor REST pieza con conexión al servidor
      *
      */
     public PiezaRESTClient() {
@@ -45,11 +43,12 @@ public class PiezaRESTClient {
     }
 
     /**
+     * Método para buscar todas las piezas de un trabajador
      *
-     * @param <T>
-     * @param responseType
-     * @param idUsuario
-     * @return
+     * @param <T> clase generica
+     * @param responseType entidad pieza
+     * @param idUsuario identificador del trabajador
+     * @return devuelve una coleccion de todas las piezas de un trabajador
      * @throws ClientErrorException
      */
     public <T> T findAllPiezaByTrabajadorId_xml(GenericType<T> responseType, Integer idUsuario) throws ClientErrorException {
@@ -59,22 +58,26 @@ public class PiezaRESTClient {
     }
 
     /**
+     * Método para editar una pieza
      *
-     * @param requestEntity
-     * @param id
-     * @throws ClientErrorException
+     * @param requestEntity entidad pieza
+     * @param id identificador de pieza
+     * @throws ClientErrorException exepcion que salta si hay un error con el
+     * cliente
      */
     public void edit_xml(Object requestEntity, Integer id) throws ClientErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
     /**
+     * Método para buscar piezas por nombre entre todos los trabajadores
      *
-     * @param <T>
-     * @param responseType
-     * @param nombre
-     * @return
-     * @throws ClientErrorException
+     * @param <T> clase generica
+     * @param responseType entidad pieza
+     * @param nombre nombre de la pieza
+     * @return devuelve toda la informacion de la pieza del nombre introducido
+     * @throws ClientErrorException exepcion que salta si hay un error con el
+     * cliente
      */
     public <T> T findAllPiezaByName_xml(GenericType<T> responseType, String nombre) throws ClientErrorException {
         WebTarget resource = webTarget;
@@ -83,12 +86,14 @@ public class PiezaRESTClient {
     }
 
     /**
+     * Método para buscar una pieza
      *
-     * @param <T>
-     * @param responseType
-     * @param id
-     * @return
-     * @throws ClientErrorException
+     * @param <T> clase generica
+     * @param responseType entidad pieza
+     * @param id identificador de la pieza
+     * @return devuelve toda la informacion de una pieza
+     * @throws ClientErrorException exepcion que salta si hay un error con el
+     * cliente
      */
     public <T> T find_xml(Class<T> responseType, Integer id) throws ClientErrorException {
         WebTarget resource = webTarget;
@@ -97,21 +102,25 @@ public class PiezaRESTClient {
     }
 
     /**
+     * Método para crear nueva pieza
      *
-     * @param requestEntity
-     * @throws ClientErrorException
+     * @param requestEntity entidad pieza
+     * @throws ClientErrorException exepcion que salta si hay un error con el
+     * cliente
      */
     public void create_xml(Object requestEntity) throws ClientErrorException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
     /**
+     * Método para buscar todas las piezas en stock de un trabajador
      *
-     * @param <T>
-     * @param responseType
-     * @param idUsuario
-     * @return
-     * @throws ClientErrorException
+     * @param <T> clase generica
+     * @param responseType entidad pieza
+     * @param idUsuario identidicador del trabajador
+     * @return devuelve todas las piezas en stock del trabajador
+     * @throws ClientErrorException exepcion que salta si hay un error con el
+     * cliente
      */
     public <T> T findAllPiezaInStock_xml(GenericType<T> responseType, Integer idUsuario) throws ClientErrorException {
         WebTarget resource = webTarget;
@@ -120,11 +129,13 @@ public class PiezaRESTClient {
     }
 
     /**
+     * Método para buscar todas las piezas
      *
-     * @param <T>
-     * @param responseType
-     * @return
-     * @throws ClientErrorException
+     * @param <T> clase generica
+     * @param responseType entidad pieza
+     * @return devuelve una coleccion de todas las piezas
+     * @throws ClientErrorException exepcion que salta si hay un error con el
+     * cliente
      */
     public <T> T findAll_xml(Class<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
@@ -132,19 +143,21 @@ public class PiezaRESTClient {
     }
 
     /**
+     * Método para borrar una pieza
      *
-     * @param id
-     * @throws ClientErrorException
+     * @param id identificador de la pieza
+     * @throws ClientErrorException exepcion que salta si hay un error con el
+     * cliente
      */
     public void remove_xml(Integer id) throws ClientErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
 
     /**
-     *
+     * Cerrar cliente
      */
     public void close() {
         client.close();
     }
-    
+
 }
