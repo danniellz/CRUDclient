@@ -1,6 +1,9 @@
 package GESRE.aplication;
 
 import GESRE.controller.GestionTrabajadorViewController;
+import GESRE.controller.IncidenciaCLViewController;
+import GESRE.controller.IncidenciaTRViewController;
+import GESRE.controller.PiezaViewController;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,10 +37,11 @@ public class GESREClient extends Application {
         try {
             LOG.info("Iniciando Ventana...");
             //Load the FXML file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/SignUp.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/IncidenciaViewC.fxml"));
             Parent root = (Parent) loader.load();
             //Get controller
-            SignUpController controlador = loader.getController();
+            IncidenciaCLViewController controlador = loader.getController();
+           //GestionTrabajadorViewController controlador = loader.getController();
             //Set the stage
             controlador.setStage(primaryStage);
             //initialize the window
