@@ -10,41 +10,56 @@
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 
-<Pane id="piezaPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="signupsigninclient.controller.LogOutController">
+<Pane fx:id="incidenciaCPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GESRE.controller.IncidenciaCLViewController">
    <children>
+        <MenuBar fx:id="menuBar" layoutY="1.0" prefHeight="26.0" prefWidth="800.0">
+            <menus>
+                <Menu mnemonicParsing="false" text="Archivo">
+                    <items>
+                        <MenuItem fx:id="mnCerrarSecion" mnemonicParsing="false" text="Cerrar Sesión" />
+                        <MenuItem fx:id="mnSalir" mnemonicParsing="false" text="Salir" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar> 
       <Pane layoutX="12.0" layoutY="36.0" prefHeight="154.0" prefWidth="776.0" style="-fx-background-color: lightgrey; -fx-border-color: black;">
          <children>
-            <ComboBox id="TipoIncidencia" layoutX="33.0" layoutY="91.0" prefWidth="150.0" />
-            <Button id="Anadir" layoutX="601.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Añadir" />
-            <Button id="Borrar" layoutX="601.0" layoutY="45.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Borrar" />
-            <Button id="Editar" layoutX="601.0" layoutY="78.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Editar" />
-            <Button id="Limpiar" layoutX="601.0" layoutY="116.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Limpiar" />
-            <Label layoutX="33.0" layoutY="28.0" text="GESTIÓN DE INCIDENCIAS">
+            <ComboBox fx:id="cbxTipoIncidencia" layoutX="33.0" layoutY="91.0" prefWidth="150.0" />
+            <Button fx:id="btnAnadir" layoutX="601.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Añadir" />
+            <Button fx:id="btnEliminar" layoutX="601.0" layoutY="45.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Borrar" />
+            <Button fx:id="btnModificar" layoutX="601.0" layoutY="78.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Editar" />
+            <Button fx:id="btnLimpiar" layoutX="601.0" layoutY="116.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Limpiar" />
+            <Label fx:id="lblGestionIncidencia" layoutX="33.0" layoutY="28.0" text="GESTIÓN DE INCIDENCIAS">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <Label layoutX="33.0" layoutY="62.0" prefHeight="17.0" prefWidth="112.0" text="Tipo de Incidencia" />
-            <ComboBox id="EstadoIncidencia" layoutX="208.0" layoutY="91.0" prefWidth="150.0" />
-            <Label layoutX="208.0" layoutY="62.0" prefHeight="17.0" prefWidth="67.0" text="Estado" />
-            <Label layoutX="380.0" layoutY="37.0" prefHeight="17.0" prefWidth="59.0" text="Estrellas" />
-            <TextField id="Estr_TxtLabel" layoutX="379.0" layoutY="58.0" prefHeight="25.0" prefWidth="120.0" promptText="Valoracion sobre 5" />
-            <Label layoutX="379.0" layoutY="83.0" prefHeight="17.0" prefWidth="59.0" text="Horas" />
-            <TextField id="Hor_TxtLabel" layoutX="379.0" layoutY="104.0" prefHeight="25.0" prefWidth="120.0" promptText="Horas Limite" />
+            <Label fx:id="lblTipoIncidencia" layoutX="33.0" layoutY="62.0" prefHeight="17.0" prefWidth="112.0" text="Tipo de Incidencia" />
+            <ComboBox fx:id="cbxEstadoIncidencia" layoutX="208.0" layoutY="91.0" prefWidth="150.0" />
+            <Label fx:id="lblEstado" layoutX="208.0" layoutY="62.0" prefHeight="17.0" prefWidth="67.0" text="Estado" />
+            <Label fx:id="lblEstrella" layoutX="380.0" layoutY="37.0" prefHeight="17.0" prefWidth="59.0" text="Estrellas" />
+            <TextField fx:id="Estr_TxtLabel" layoutX="379.0" layoutY="58.0" prefHeight="25.0" prefWidth="120.0" promptText="Valoracion sobre 5" />
+            <Label fx:id="lblHoras" layoutX="379.0" layoutY="83.0" prefHeight="17.0" prefWidth="59.0" text="Horas" />
+            <TextField fx:id="Hor_TxtLabel" layoutX="379.0" layoutY="104.0" prefHeight="25.0" prefWidth="120.0" promptText="Horas Limite" />
          </children>
       </Pane>
-       <fx:include fx:id="hBoxMenu" source="menu.fxml" />
-      <TableView layoutY="249.0" prefHeight="351.0" prefWidth="800.0">
+     
+      <TableView fx:id="tablaIncidencias" layoutY="249.0" prefHeight="351.0" prefWidth="800.0">
         <columns>
-          <TableColumn prefWidth="239.0" text="Tipo Incidencia" />
-            <TableColumn prefWidth="199.0" text="Estado" />
-            <TableColumn minWidth="0.0" prefWidth="183.0" text="Estrellas" />
-            <TableColumn prefWidth="178.0" text="Horas" />
+          <TableColumn fx:id="tipoIncidenciaCL" prefWidth="239.0" text="Tipo Incidencia" />
+            <TableColumn fx:id="estadoCL" prefWidth="199.0" text="Estado" />
+            <TableColumn fx:id="estrellasCL" minWidth="0.0" prefWidth="183.0" text="Estrellas" />
+            <TableColumn fx:id="horasCL" prefWidth="178.0" text="Horas" />
         </columns>
+
       </TableView>
-      <Hyperlink alignment="CENTER" layoutX="520.0" layoutY="208.0" prefHeight="23.0" prefWidth="75.0" text="Usuario" />
-      <Button id="Informe" layoutX="614.0" layoutY="206.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Informe" />
-      <ToggleButton layoutX="48.0" layoutY="206.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="134.0" text="Incidencias Acabadas" />
+      <Hyperlink fx:id="hpl_Perfil" alignment="CENTER" layoutX="520.0" layoutY="208.0" prefHeight="23.0" prefWidth="75.0" text="Usuario" />
+      <Button fx:id="btnInforme" layoutX="614.0" layoutY="206.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="112.0" text="Informe" />
+      <ToggleButton fx:id="btnToogleFiltro" layoutX="48.0" layoutY="206.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="134.0" text="Incidencias Acabadas" />
+      <Label fx:id="lblError" disable="true" layoutX="236.0" layoutY="210.0" prefHeight="17.0" prefWidth="237.0" text="Label" />
    </children>
 </Pane>
