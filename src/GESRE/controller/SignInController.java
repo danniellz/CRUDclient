@@ -3,6 +3,8 @@ package GESRE.controller;
 import static GESRE.controller.GestionTrabajadorViewController.LOGGER;
 import GESRE.entidades.Cliente;
 import GESRE.entidades.Trabajador;
+import GESRE.entidades.UserPrivilege;
+import GESRE.entidades.UserStatus;
 import GESRE.entidades.Usuario;
 import GESRE.excepcion.LoginNoExisteException;
 import GESRE.excepcion.ServerDesconectadoException;
@@ -10,7 +12,10 @@ import GESRE.excepcion.UsuarioNoExisteException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.UsuarioManager;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -155,22 +160,51 @@ public class SignInController {
                         FXMLLoader loaderIC = new FXMLLoader(getClass().getResource("/GESRE/vistas/IncidenciaViewC.fxml"));
                         Parent rootIC = (Parent) loaderIC.load();
                         IncidenciaCLViewController controllerIC = ((IncidenciaCLViewController) loaderIC.getController());
-                       controllerIC.setStage(stage);
-                        
-                       // if (user instanceof Cliente) {
-                            
+                       // controllerIC.setStage(stage);
+                        Cliente useri = new Cliente();
+                        //   if (user instanceof Cliente) {
+                        LOG.info("ENVIANDO AL USUSARIO(CLIENTE)" + user.getIdUsuario());
+                        //Cliente clien = null;
+                        if (user != null) {
+                            /*  
+                            Collection<Usuario> useri = usuarioGestion.buscarUserPorLoginSignIn(user.getLogin());
+                           for (Usuario usuario1 : useri) {
+                                if(usuario1.getPrivilege().equals("CLIENTE") ){
+                                    LOG.severe("ESTO ES EL CLIENTE LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLl");
+                                    clien = new Cliente();
+                                    clien= (Cliente) useri;
+                                    
+                                }
+                            }*/
+                            useri.setIdUsuario(2);
+
+                            useri.setEmail("pepeUser@gmail.com");
+                            useri.setFullName("Pepe User");
+                            useri.setLogin("pepeUser");
+                            useri.setPassword("12345");
+                            useri.setStatus(UserStatus.ENABLED);
+                            useri.setPrivilege(UserPrivilege.CLIENTE);
+                            useri.setFechaRegistro(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                            useri.setLastPasswordChange(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
+                            controllerIC.setStage(stage, useri);
+
+                        }
+                        // if (user instanceof Cliente) {
                         //  controllerIC.setStage(stage, (Cliente) user);
-                      //  }
+                        //  }
                         controllerIC.initStage(rootIC);
                         break;
                 }
             }
         } catch (LoginNoExisteException lne) {
             LOG.severe(lne.getMessage());
+            errorLbl.setVisible(true);
             errorLbl.setText("Usuario no encontrado");
             errorLbl.setTextFill(Color.web("#FF0000"));
         } catch (UsuarioNoExisteException une) {
             LOG.severe(une.getMessage());
+            errorLbl.setVisible(true);
             errorLbl.setText("Contraseña incorrecta");
             errorLbl.setTextFill(Color.web("#FF0000"));
         } catch (IOException e) {

@@ -139,7 +139,7 @@ public class IncidenciaCLViewController {
     private TextField Estr_TxtLabel;
     @FXML
     private TextField Hor_TxtLabel;
-    
+
     ////////////////////////////////////////////////////////////
     //**********MenuItem******************
     @FXML
@@ -158,29 +158,28 @@ public class IncidenciaCLViewController {
     /**
      * @param args the command line arguments
      *
-     * public void setStage(Stage primaryStage) { stage = primaryStage;
-    }
+     * public void setStage(Stage primaryStage) { stage = primaryStage; }
      */
     Cliente c;
 
-    /*public void setStage(Stage piezaViewStage, Cliente cliente) {
+    public void setStage(Stage piezaViewStage, Cliente cliente) {
         stage = piezaViewStage;
 
         c = cliente;
-    }*/
-    
-    public void setStage(Stage primaryStage) {
+    }
+
+    /*  public void setStage(Stage primaryStage) {
       //  LOGGER.info("Trabajador Controlador: Estableciendo stage");
         this.stage = primaryStage;
         //c = cliente;
-    }
+    }*/
     public void initStage(Parent root) {
         try {
             LOG.info("Iniciando Stage...");
             //Crear la nueva escena
             Scene scene = new Scene(root);
-           // stage.setScene(scene);
-           stage.setScene(scene);
+            // stage.setScene(scene);
+            stage.setScene(scene);
             //________________propiedades de la Ventana_____________________
             stage.setResizable(false);
             stage.setTitle("Gestion Incidencias");
@@ -217,8 +216,8 @@ public class IncidenciaCLViewController {
             horasCL.setCellValueFactory(new PropertyValueFactory<>("horas"));
             //  LOG.info(usuario.toString());
 
-         //   IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findIncidenciaDeUnCliente(incidencia, c.getIdUsuario().toString()));
-         IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findAll());
+            IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findIncidenciaDeUnCliente(incidencia, c.getIdUsuario().toString()));
+
             tablaIncidencias.setItems(IncidenciaList);
 
             btnLimpiar.setOnAction(this::handleLimpiarFormulario);
@@ -231,7 +230,7 @@ public class IncidenciaCLViewController {
             hpl_Perfil.addEventHandler(ActionEvent.ACTION, this::handleMiPerfilperLink);
 
             //Añade acciones a los menuItems de la barra menu
-            //mnCerrarSecion.setOnAction(this::handleCerrarSesion);
+            mnCerrarSecion.setOnAction(this::handleCerrarSesion);
             mnSalir.setOnAction(this::handleSalir);
 
             //mostrar la Ventana
@@ -261,26 +260,7 @@ public class IncidenciaCLViewController {
         }
     }
 
-    /*
-    private void startIncidenciaInWindow(Stage primaryStage) throws IOException {
-        try {
-            LOG.info("Abriendo ventana Incidencia...");
-            //Carga el archivo FXML
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/view/IncidenciaViewC.fxml"));
-            Parent root = (Parent) loader.load();
-            //Obtiene el controlador
-            IncidenciaCLViewController incidenciaCLViewController = ((IncidenciaCLViewController) loader.getController());
-            //Establece el Stage
-            incidenciaCLViewController.setStage(primaryStage);
-            //Inicializa la ventana
-            incidenciaCLViewController.initStage(root);
-        } catch (IOException ex) {
-            LOG.log(Level.SEVERE, "Error al intentar abrir la ventana de Gestion de Incidencia", ex);
-        }
-    }*/
-    
-  
-     
+
     private void handleLimpiarFormulario(ActionEvent event) {
         Estr_TxtLabel.setText("");
         Hor_TxtLabel.setText("");
@@ -500,11 +480,12 @@ public class IncidenciaCLViewController {
         if (btnToogleFiltro.isSelected()) {
             btnToogleFiltro.setText("Todas Incidencias");
             //Cambiar el hardcode de la consulta
-            IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findIncidenciaAcabadaDeUnUsuario(incidencia, "35"));
+            IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findIncidenciaAcabadaDeUnUsuario(incidencia, c.getIdUsuario().toString()));
+
             tablaIncidencias.setItems(IncidenciaList);
         } else {
             btnToogleFiltro.setText("Incidencias Acabadas");
-            IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findAll());
+            IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findIncidenciaDeUnCliente(incidencia, c.getIdUsuario().toString()));
             tablaIncidencias.setItems(IncidenciaList);
         }
     }
@@ -522,7 +503,7 @@ public class IncidenciaCLViewController {
             incidenciaSelec.setEstado(cbxEstadoIncidencia.getSelectionModel().getSelectedItem());
             incidenciaSelec.setEstrellas(new Integer(Estr_TxtLabel.getText()));
             incidenciaSelec.setHoras(new Integer(Hor_TxtLabel.getText()));
-
+            incidenciaSelec.setCliente(c);
             incidenciaManager.editIncidencia(incidenciaSelec, String.valueOf(incidenciaSelec.getId()));
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Modificar");
@@ -635,11 +616,11 @@ public class IncidenciaCLViewController {
             LOG.info("los campos NO ESTAN vacios");
             return false;
         }
-        
-        
+
     }
-     private void handleMiPerfilperLink(ActionEvent HyperLinkPress) {
-       
+
+    private void handleMiPerfilperLink(ActionEvent HyperLinkPress) {
+
         try {
             LOG.info("Starting SignUp Window...");
             //Load the FXML file
@@ -648,7 +629,7 @@ public class IncidenciaCLViewController {
             //Get controller
             PerfilClienteController perfil = ((PerfilClienteController) loader.getController());
             //Set the stage
-            perfil.setStage(stage,c);
+            perfil.setStage(stage, c);
             //initialize the window
             perfil.initStage(root);
         } catch (IOException ex) {
