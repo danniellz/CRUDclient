@@ -146,7 +146,7 @@ public class UsuarioManagerImplentacion implements UsuarioManager {
             LOGGER.info("UsuarioManagerImplementation: Buscando usuario por login y contraseñas");
             usuarios = webClient.buscarUsuarioPorLoginYContrasenia_XML(new GenericType<List<Usuario>>() {
             }, login, password);
-            if (!usuarios.isEmpty()) {
+            if (usuarios.isEmpty()) {
                 throw new UsuarioNoExisteException();
             }
         } catch (ClientErrorException e) {
