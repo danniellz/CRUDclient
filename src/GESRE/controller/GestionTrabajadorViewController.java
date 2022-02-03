@@ -14,6 +14,7 @@ import GESRE.excepcion.ServerDesconectadoException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.TrabajadorManager;
 import GESRE.interfaces.UsuarioManager;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -230,7 +231,7 @@ public class GestionTrabajadorViewController {
      * Variable que hace una llamada al método que gestiona los usuarios de la
      * factoría.
      */
-    UsuarioManager usuarioManager = GestionFactoria.getUsuarioGestion();
+    UsuarioManager usuarioManager = GestionFactoria.getUsuarioManager();
 
     /**
      * Variable de tipo stage que se usa para visualizar la ventana.
@@ -244,7 +245,7 @@ public class GestionTrabajadorViewController {
      */
     public void setStage(Stage primaryStage) {
         LOGGER.info("Trabajador Controlador: Estableciendo stage");
-        this.stage = primaryStage;
+        stage = primaryStage;
     }
 
     /**
@@ -307,7 +308,7 @@ public class GestionTrabajadorViewController {
             btnLimpiar.setOnAction(this::handleBtnLimpiar);
             btnBuscar.setOnAction(this::handleBtnBuscar);
             btnInforme.setOnAction(this::handleImprimirInfotmeAction);
-            //btnGestionarClientes.setOnAction(this::handleGestionClientesAction);
+            btnGestionarClientes.setOnAction(this::GestionClientesAction);
 
             //Añade acciones a los menuItems de la barra menu
             mnCerrarSecion.setOnAction(this::handleCerrarSesion);
@@ -625,6 +626,7 @@ public class GestionTrabajadorViewController {
                     //Actualiza la tabla 
                     ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
                     tablaTrabajadores.setItems(trabajadoresObservableList);
+                    tablaTrabajadores.refresh();
                     lblErrorBuscar.setText("Se ha modificado correctamente");
                     lblErrorBuscar.setTextFill(Color.web("GREEN"));
                 } catch (LoginExisteException e) {
@@ -758,7 +760,6 @@ public class GestionTrabajadorViewController {
             //ObservableList<Trabajador> trabajadoresObservableLista = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
             //tablaTrabajadores.setItems(trabajadoresObservableLista);
             //tablaTrabajadores.refresh();
-            
             if (cbxFiltro.getValue().equals("Todos")) {
                 //Carga en la tabla todo los trabajadores
                 ObservableList<Trabajador> trabajadoresObservableList = FXCollections.observableArrayList(trabajadorGestion.buscarTodosLosTrabajadores());
@@ -825,11 +826,26 @@ public class GestionTrabajadorViewController {
     }
 
     /**
+     * Metedo que que inicia la ventana Gestion de cliente
      *
-     * @param event
+     * @param event Accion del evento
      */
-    private void handleGestionClientesAction(ActionEvent event) {
+    private void GestionClientesAction(ActionEvent event) {
+        try {
+            LOGGER.info("Starting Gestion cliente window...");
+            //Load the FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/GestionClientesView.fxml"));
+            Parent root = (Parent) loader.load();
+            //Get controller
+            GestionClientesController controlador = ((GestionClientesController) loader.getController());
+            //Set the stage
+            controlador.setStage(stage);
+            //initialize the window
+            controlador.initStage(root);
 
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, "Error Starting SignIn window", ex);
+        }
     }
 
     /**

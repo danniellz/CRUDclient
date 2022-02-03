@@ -1,7 +1,11 @@
 package GESRE.controller;
 
+import static GESRE.controller.GestionTrabajadorViewController.LOGGER;
+import GESRE.entidades.Cliente;
+import GESRE.entidades.Trabajador;
 import GESRE.entidades.Usuario;
 import GESRE.excepcion.LoginNoExisteException;
+import GESRE.excepcion.ServerDesconectadoException;
 import GESRE.excepcion.UsuarioNoExisteException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.UsuarioManager;
@@ -50,6 +54,8 @@ public class SignInController {
     @FXML
     private Hyperlink signUpHl;
     @FXML
+    private Hyperlink contraHL;
+    @FXML
     private Label errorLbl;
     private String username, password;
 
@@ -80,9 +86,10 @@ public class SignInController {
             stage.setOnCloseRequest(this::handleCloseRequest);
             //Controls
             loginBtn.addEventHandler(ActionEvent.ACTION, this::handleButtonLogin);
-            signUpHl.addEventHandler(ActionEvent.ACTION, this::handleSignUpHyperLink);
             userTxt.textProperty().addListener(this::handleUserControl);
             passwordTxt.textProperty().addListener(this::handlePasswordControl);
+            contraHL.addEventHandler(ActionEvent.ACTION, this::handleRecuperarContraseniaHyperLink);
+            signUpHl.addEventHandler(ActionEvent.ACTION, this::handleSignUpHyperLink);
             errorLbl.setVisible(false);
             errorLbl.setStyle("-fx-text-fill: red");
             //Show window (asynchronous)
@@ -107,7 +114,7 @@ public class SignInController {
 
         try {
 
-            UsuarioManager usuarioGestion = GestionFactoria.getUsuarioGestion();
+            UsuarioManager usuarioGestion = GestionFactoria.getUsuarioManager();
             //Comprueba si existe el login
             LOG.info("SignIn Controlador: Comprobando si existe el login");
 
@@ -123,13 +130,38 @@ public class SignInController {
 
                 switch (user.getPrivilege()) {
                     case ADMIN:
-                        //Abre la vista de UILibro
+                        //Abre la vista de Trabajador
                         LOG.info("SignIn Controlador: Abriendo la vista TrabajadorView");
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/TrabajadorView.fxml"));
                         Parent root = (Parent) loader.load();
                         GestionTrabajadorViewController controller = ((GestionTrabajadorViewController) loader.getController());
                         controller.setStage(stage);
                         controller.initStage(root);
+                        break;
+                    case TRABAJADOR:
+                        //Abre la vista de Piezas
+                        LOG.info("SignIn Controlador: Abriendo la vista IncidenciaViewT");
+                        FXMLLoader loaderP = new FXMLLoader(getClass().getResource("/GESRE/vistas/PiezaView.fxml"));
+                        Parent rootP = (Parent) loaderP.load();
+                        PiezaViewController controllerP = ((PiezaViewController) loaderP.getController());
+                        controllerP.setStage(stage, user.getIdUsuario());
+
+                        controllerP.initStage(rootP);
+                        break;
+                    case CLIENTE:
+                        LOGGER.info(user.toString());
+                        //Abre la vista de Incidencias Cliente
+                        LOG.info("SignIn Controlador: Abriendo la vista IncidenciaViewT");
+                        FXMLLoader loaderIC = new FXMLLoader(getClass().getResource("/GESRE/vistas/IncidenciaViewC.fxml"));
+                        Parent rootIC = (Parent) loaderIC.load();
+                        IncidenciaCLViewController controllerIC = ((IncidenciaCLViewController) loaderIC.getController());
+                       controllerIC.setStage(stage);
+                        
+                       // if (user instanceof Cliente) {
+                            
+                        //  controllerIC.setStage(stage, (Cliente) user);
+                      //  }
+                        controllerIC.initStage(rootIC);
                         break;
                 }
             }
@@ -143,102 +175,15 @@ public class SignInController {
             errorLbl.setTextFill(Color.web("#FF0000"));
         } catch (IOException e) {
             LOG.severe(e.getMessage());
+        } catch (ServerDesconectadoException sde) {
+            LOG.log(Level.SEVERE, "Stage init error", sde);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setTitle("ERROR SERVIDOR");
+            alert.setContentText("No hay conecxion con el servidor. Intentalo mas tarde");
+            alert.showAndWait();
         }
 
-        /*  username = userTxt.getText();
-        password = passwordTxt.getText();
-        try {
-            LOG.info("Login Button Pressed");
-            //if the user or password fields are empty, show the error label
-            if ((username.equals("") || password.equals(""))
-                    || (username.equals("") && password.equals(""))) {
-                LOG.info("Null Value In User or Password Field");
-
-                //Show Error label for Empty fields
-                errorLbl.setText("The fields have to be filled");
-                errorLbl.setVisible(true);
-                userTxt.setStyle("-fx-border-color: #DC143C	; -fx-border-width: 1.5px ;");
-                passwordTxt.setStyle("-fx-border-color: #DC143C	; -fx-border-width: 1.5px ;");
-            } else {
-                LOG.info("Proccesing User Info...");
-                //User user = new User();
-                //user.setLogin(username);
-               // user.setPassword(password);
-
-                //Get the SignableImplement from the factory and save it into the Signable interface
-               // Signable sign = SignableFactory.getSignable();
-
-                //Save user data and send it to the signIn method then return the user object with all the data
-               // user = sign.signIn(user);
-                LOG.info("User data retrieved!");
-
-                //Open LogOut Window if the SignIn Process is well
-                try {
-                    LOG.info("Starting LogOut Window...");
-                    //Load the FXML file
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/signupsigninclient/view/LogOut.fxml"));
-                    Parent root = (Parent) loader.load();
-                    //Get controller
-                    LogOutController logOutController = ((LogOutController) loader.getController());
-                    //Set the stage
-                    logOutController.setStage(stage);
-                    //initialize the window
-                 //   LOG.info("Sending data for: " + user.getFullName());
-                 //   logOutController.initStage(root, user);
-                } catch (IOException ex) {
-                    LOG.log(Level.SEVERE, "Error Starting LogOut Window", ex);
-                }
-            }
-        } catch (UserNotFoundException ex) {
-            //Show an error label if the username is incorrect, LOG SEVERE included with Exception
-            LOG.severe("User doesn't exist");
-            errorLbl.setText("Incorrect Username");
-            errorLbl.setVisible(true);
-            userTxt.setStyle("-fx-border-color: #DC143C; -fx-border-width: 1.5px;");
-            passwordTxt.setStyle("-fx-border-color: #DC143C; -fx-border-width: 1.5px;");
-        } catch (IncorrectPasswordException ex) {
-            LOG.severe("Incorrect password");
-            //Show an error label if the password is incorrect, LOG SEVERE included with Exception
-            errorLbl.setText("Incorrect Password");
-            errorLbl.setVisible(true);
-            userTxt.setStyle("-fx-border-color: #DC143C; -fx-border-width: 1.5px;");
-            passwordTxt.setStyle("-fx-border-color: #DC143C; -fx-border-width: 1.5px;");
-        } catch (ConnectionException ex) {
-            LOG.severe("Server Connection Error");
-            //Show an error Alert if there is not connection with the server, LOG SEVERE included with Exception
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Connecion Error");
-            alert.setHeaderText("Server Connection Error");
-            alert.setContentText("Server is not available, please, try again later");
-            alert.showAndWait();
-        } catch (MaxConnectionException ex) {
-            LOG.severe("Max Connection Reached");
-            //Show an error Alert if the Max connection with the server is reached, LOG SEVERE included with Exception
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Connection Limit Warning");
-            alert.setHeaderText("Max Connection Reached");
-            alert.setContentText("The Server is not available because the limit connection has been reached, please try again later");
-            alert.showAndWait();
-        } catch (DatabaseNotFoundException ex) {
-            LOG.severe("Database Error");
-            //Show an error Alert if there is a problem with the DataBase, LOG SEVERE included with Exception
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Database Error");
-            alert.setHeaderText("Database Connection Error");
-            alert.setContentText("Database is not available, please, try again later");
-            alert.showAndWait();
-        } catch (UserAlreadyExistException ex) {
-            LOG.log(Level.SEVERE, "User already exist Error", ex);
-        } catch (Exception ex) {
-            //Show an error Alert if an unknow error occured
-            LOG.log(Level.SEVERE, "An Unknown error has occurred", ex);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Unknown error");
-            alert.setContentText("An unknow error has occured, please, try again later");
-            alert.showAndWait(); 
-        }
-         */
     }
 
     /**
@@ -274,10 +219,39 @@ public class SignInController {
      * @param HyperLinkPress Action event at pressing the HyperLink
      */
     private void handleSignUpHyperLink(ActionEvent HyperLinkPress) {
-        try {
+        /* try {
             //Call the method to open the SignUp Window
             LOG.info("SignUp Hyper Link Pressed");
             startSignUpWindow();
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, "HyperLink Error", ex);
+        }*/
+        try {
+            LOG.info("Starting SignUp Window...");
+            //Load the FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/SignUp.fxml"));
+            Parent root = (Parent) loader.load();
+            //Get controller
+            SignUpController signUpController = ((SignUpController) loader.getController());
+            //Set the stage
+            signUpController.setStage(stage);
+            //initialize the window
+            signUpController.initStage(root);
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, "Error Starting SignUp Window", ex);
+        }
+    }
+
+    /**
+     * Calling this method will open the SignUp window
+     *
+     * @param HyperLinkPress Action event at pressing the HyperLink
+     */
+    private void handleRecuperarContraseniaHyperLink(ActionEvent HyperLinkPress) {
+        try {
+            //Call the method to open the SignUp Window
+            LOG.info("SignUp Hyper Link Pressed");
+            startRecuperarContraseniaWindow();
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "HyperLink Error", ex);
         }
@@ -293,10 +267,33 @@ public class SignInController {
         try {
             LOG.info("Starting SignUp Window...");
             //Load the FXML file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/signupsigninclient/view/SignUp.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/SignUp.fxml"));
             Parent root = (Parent) loader.load();
             //Get controller
             SignUpController signUpController = ((SignUpController) loader.getController());
+            //Set the stage
+            signUpController.setStage(stage);
+            //initialize the window
+            signUpController.initStage(root);
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, "Error Starting SignUp Window", ex);
+        }
+    }
+
+    /**
+     * Open the SignUp window
+     *
+     * @param primaryStage stage object (window)
+     * @throws IOException Throws an error if the SignUp window fails to open
+     */
+    private void startRecuperarContraseniaWindow() throws IOException {
+        try {
+            LOG.info("Starting SignUp Window...");
+            //Load the FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/ResetContra.fxml"));
+            Parent root = (Parent) loader.load();
+            //Get controller
+            ResetContraController signUpController = ((ResetContraController) loader.getController());
             //Set the stage
             signUpController.setStage(stage);
             //initialize the window

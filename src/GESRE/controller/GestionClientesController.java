@@ -1,14 +1,15 @@
 package GESRE.controller;
 
+import static GESRE.controller.GestionTrabajadorViewController.LOGGER;
 import GESRE.entidades.Cliente;
 import static GESRE.entidades.UserPrivilege.CLIENTE;
 import static GESRE.entidades.UserStatus.ENABLED;
 import GESRE.excepcion.EmailExisteException;
 import GESRE.excepcion.LoginExisteException;
+import GESRE.excepcion.ServerDesconectadoException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.ClienteManager;
 import GESRE.interfaces.UsuarioManager;
-import GESRE.seguridad.Seguridad;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -52,7 +53,6 @@ import javafx.stage.WindowEvent;
 public class GestionClientesController {
 
     //
-
     /**
      * Patron para el campo usuario
      */
@@ -85,7 +85,7 @@ public class GestionClientesController {
     private MenuItem mnCerrarSecion;
     @FXML
     private MenuItem mnSalir;
-    
+
     @FXML
     private TextField usuarioTxt;
     @FXML
@@ -133,11 +133,12 @@ public class GestionClientesController {
     private ObservableList<Cliente> datosClientes;
 
     private final ClienteManager clienteManager = GestionFactoria.createClienteManager();
-    private final UsuarioManager usuarioManager = GestionFactoria.createUsuarioManager();
+    private final UsuarioManager usuarioManager = GestionFactoria.getUsuarioManager();
 
     /**
-     * 
+     *
      * Metodo para definir el stage de la ventana
+     *
      * @param gestionClientesStage Stage de la ventana
      */
     public void setStage(Stage gestionClientesStage) {
@@ -146,6 +147,7 @@ public class GestionClientesController {
 
     /**
      * Metodo para inicializar la ventana
+     *
      * @param root
      */
     public void initStage(Parent root) {
@@ -209,8 +211,8 @@ public class GestionClientesController {
 
             //Añade acciones a los menuItems de la barra menu
             mnCerrarSecion.setOnAction(this::handleCerrarSesion);
-            mnSalir.setOnAction(this::handleCloseRequest);
-            
+            mnSalir.setOnAction(this::handleSalir);
+
             //Show window (asynchronous)
             stage.show();
         } catch (Exception e) {
@@ -221,6 +223,7 @@ public class GestionClientesController {
 
     /**
      * Metodo para controlar la seleccion en la tabla
+     *
      * @param observable Campo a observar
      * @param oldValue Valor antiguo
      * @param newValue Valor nuevo
@@ -228,9 +231,9 @@ public class GestionClientesController {
     private void handleTableSelectionChanged(ObservableValue observable, Object oldValue, Object newValue) {
 
         if (newValue != null) {
-            
+
             LOG.info("Cliente seleccionado en la tabla");
-            
+
             Cliente cliente = (Cliente) newValue;
             usuarioTxt.setText(cliente.getLogin());
             nombreTxt.setText(cliente.getFullName());
@@ -244,15 +247,15 @@ public class GestionClientesController {
             anadirBtn.setDisable(true);
             editarBtn.setDisable(false);
             borrarBtn.setDisable(false);
-            
+
             buscarTxt.setText("");
             buscarCombo.setDisable(true);
             buscarTxt.setDisable(true);
             buscarBtn.setDisable(true);
         } else {
-            
+
             LOG.info("Cliente deseleccionado de la tabla");
-            
+
             //If there is not a row selected, clean window fields and disable create, modify and delete buttons
             usuarioTxt.setText("");
             nombreTxt.setText("");
@@ -274,6 +277,7 @@ public class GestionClientesController {
 
     /**
      * Metodo para validar el texto de los campos
+     *
      * @param observable Campo a observar
      * @param oldValue Valor antiguo
      * @param newValue Valor nuevo
@@ -312,12 +316,13 @@ public class GestionClientesController {
 
     /**
      * Metodo para controlar la accion del boton limpiar
+     *
      * @param limpiarEvent Evento de limpiar
      */
     private void handleBtnLimpiar(ActionEvent limpiarEvent) {
-        
+
         LOG.info("Limpiando datos");
-        
+
         usuarioTxt.setText("");
         nombreTxt.setText("");
         correoTxt.setText("");
@@ -331,31 +336,33 @@ public class GestionClientesController {
 
     /**
      * Metodo para controlar la accion del boton buscar
+     *
      * @param buscarEvent Evento de buscar
      */
     private void handleBtnBuscar(ActionEvent buscarEvent) {
-        
+
         LOG.info("Buscando cliente");
-        
+
         datosClientes = FXCollections.observableArrayList(clienteManager.findClienteByFullName(buscarTxt.getText()));
         clientesTabla.setItems(datosClientes);
     }
 
     /**
      * Metodo para controlar la accion del boton añadir
+     *
      * @param anadirEvent Evento de añadir
      */
     private void handleBtnAnadir(ActionEvent anadirEvent) {
-        
+
         LOG.info("Creando cliente");
-        
+
         if (patronesCorrectos()) {
             if (contrasenaCorrecta()) {
                 if (contrasenaTxt.getText().equals(repiteContrasenaTxt.getText())) {
                     try {
                         usuarioManager.buscarUsuarioPorLoginCrear(usuarioTxt.getText());
                         usuarioManager.buscarUsuarioPorEmailCrear(correoTxt.getText());
-                        
+
                         Cliente cliente = new Cliente();
 
                         cliente.setLogin(usuarioTxt.getText());
@@ -393,9 +400,9 @@ public class GestionClientesController {
                             deshabilitarBotones(true);
                             usuarioTxt.requestFocus();
                         }
-                        
+
                         LOG.info("Cliente creado correctamente");
-                        
+
                     } catch (LoginExisteException ex) {
                         LOG.severe("Ya existe un cliente con ese login");
                         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -409,6 +416,13 @@ public class GestionClientesController {
                         alert.setHeaderText(null);
                         alert.setTitle("Error");
                         alert.setContentText("Ya existe un cliente con ese correo");
+                        alert.showAndWait();
+                    } catch (ServerDesconectadoException sde) {
+                        LOG.log(Level.SEVERE, "Stage init error", sde);
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setHeaderText(null);
+                        alert.setTitle("ERROR SERVIDOR");
+                        alert.setContentText("No hay conecxion con el servidor. Intentalo mas tarde");
                         alert.showAndWait();
                     }
                 } else {
@@ -424,6 +438,7 @@ public class GestionClientesController {
 
     /**
      * Metodo para la accion del boton borrar
+     *
      * @param borrarEvent Evento de borrar
      */
     private void handleBtnBorrar(ActionEvent borrarEvent) {
@@ -472,6 +487,7 @@ public class GestionClientesController {
 
     /**
      * Metodo para controlar la accion del boton editar
+     *
      * @param editarEvent Evento de editar
      */
     private void handleBtnEditar(ActionEvent editarEvent) {
@@ -484,15 +500,15 @@ public class GestionClientesController {
                 Optional<ButtonType> option = alert.showAndWait();
                 if (option.get() == ButtonType.OK) {
                     Cliente clienteSeleccionado = (Cliente) clientesTabla.getSelectionModel().getSelectedItem();
-                    
+
                     Cliente clienteModificado = clienteSeleccionado;
-                    
+
                     clienteModificado.setLogin(usuarioTxt.getText());
                     clienteModificado.setFullName(nombreTxt.getText());
                     clienteModificado.setEmail(correoTxt.getText());
                     clienteModificado.setFechaRegistro(Date.from(fechaRegistroDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                    
-                    if (clienteSeleccionado!=null & clienteModificado!=null) {
+
+                    if (clienteSeleccionado != null & clienteModificado != null) {
                         //Borrar cliente
                         clienteManager.editCliente(clienteModificado, clienteSeleccionado.getIdUsuario());
 
@@ -530,18 +546,18 @@ public class GestionClientesController {
     }
 
     private void handleBtnTrabajadores(ActionEvent trabajadoresEvent) {
-        try{
+        try {
             LOG.info("Iniciando ventana Gestion de Trabajadores");
             //Load the FXML file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/GestionTrabajadoresView.fxml"));
-            Parent root = (Parent)loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/TrabajadorView.fxml"));
+            Parent root = (Parent) loader.load();
             //Get controller
-            GestionTrabajadoresController controlador = ((GestionTrabajadoresController)loader.getController());
+            GestionTrabajadorViewController controlador = ((GestionTrabajadorViewController) loader.getController());
             //Set the stage
             controlador.setStage(stage);
             //initialize the window
             controlador.initStage(root);
-        }catch(IOException ex){
+        } catch (IOException ex) {
             LOG.severe("No se ha podido abrir la ventana");
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);
@@ -550,9 +566,10 @@ public class GestionClientesController {
             alert.showAndWait();
         }
     }
-    
+
     /**
      * Metodo para controlar el cierre de la aplicacion
+     *
      * @param closeEvent Evento de cerrar
      */
     public void handleCloseRequest(WindowEvent closeEvent) {
@@ -577,6 +594,7 @@ public class GestionClientesController {
 
     /**
      * Metodo para controlar los filtros de busqueda
+     *
      * @param observable Campo observable
      * @param oldValue Valor antiguo
      * @param newValue Valor nuevo
@@ -608,6 +626,7 @@ public class GestionClientesController {
 
     /**
      * Metodo para controlar el campo buscar
+     *
      * @param observable Campo observable
      * @param oldValue Valor antiguo
      * @param newValue Valor nuevo
@@ -626,7 +645,7 @@ public class GestionClientesController {
             buscarBtn.setDisable(true);
         }
     }
-    
+
     /**
      * Al pulsar el menuItem Cerrar Secion cierra la venta de gestion trabajador
      * y abre SignIn
@@ -667,7 +686,44 @@ public class GestionClientesController {
     }
 
     /**
+     * Cuadro de diálogo que se abre al pulsar la menuItem Salir de la pantalla
+     * para confirmar si se quiere cerrar la aplicación.
+     *
+     * @param event El evento de acción.
+     */
+    private void handleSalir(ActionEvent event) {
+        try {
+            LOGGER.info("Trabajador Controlador: Salir programa");
+
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+
+            alert.setTitle("Salir");
+            alert.setHeaderText(null);
+            alert.setContentText("¿Seguro que quieres cerrar la ventana?");
+
+            alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.get().equals(ButtonType.OK)) {
+                LOG.info("Trabajador Controlador: Cerrando aplicacion");
+                stage.close();
+                Platform.exit();
+            } else {
+                event.consume();
+                alert.close();
+            }
+        } catch (Exception ex) {
+
+            LOGGER.log(Level.SEVERE,
+                    "UI GestionUsuariosController: Error printing report: {0}",
+                    ex.getMessage());
+        }
+
+    }
+
+    /**
      * Metodo para comprobar que los patrones de texto sean correctos
+     *
      * @return Devuelve si los campos cumplen con los patrones o no
      */
     private boolean patronesCorrectos() {
@@ -700,7 +756,7 @@ public class GestionClientesController {
             }
             correcto = false;
         }
-        
+
         if (!correcto) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);
@@ -714,18 +770,19 @@ public class GestionClientesController {
 
     /**
      * Metodo para comprobar que la contraseña cumple con los patrones
+     *
      * @return Devuelve si la contraseña cumple con los patrones
      */
     private boolean contrasenaCorrecta() {
         Matcher matcher = null;
         String mensaje = "El formato de la contraseña es incorrecto";
         boolean correcto = true;
-        
+
         matcher = PATRON_CONTRA.matcher(contrasenaTxt.getText());
         if (!matcher.find()) {
             correcto = false;
         }
-        
+
         if (!correcto) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);
@@ -733,10 +790,10 @@ public class GestionClientesController {
             alert.setContentText(mensaje);
             alert.showAndWait();
         }
-        
+
         return correcto;
     }
-    
+
     /**
      * Metodo para definir el formato de fecha en la tabla
      */
@@ -762,6 +819,7 @@ public class GestionClientesController {
 
     /**
      * Metodo para comprobar que todos los campos estan informados
+     *
      * @return Devuelve si todos los campos estan informados o no
      */
     private boolean camposInformados() {
@@ -774,6 +832,7 @@ public class GestionClientesController {
 
     /**
      * metodo para habilitar y deshabilitar los botones
+     *
      * @param deshabilitar Si se quieren habilitar o deshabilitar
      */
     private void deshabilitarBotones(Boolean deshabilitar) {

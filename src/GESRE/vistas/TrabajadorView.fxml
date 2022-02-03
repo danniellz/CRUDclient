@@ -78,7 +78,7 @@
         <ComboBox fx:id="cbxFiltro" layoutX="12.0" layoutY="310.0" prefHeight="25.0" prefWidth="125.0" promptText="Filtro" />
         <TextField fx:id="txtBuscar" layoutX="142.0" layoutY="310.0" prefHeight="25.0" prefWidth="184.0" promptText="Nombre del Trabajador" />
         <Button fx:id="btnBuscar" layoutX="334.0" layoutY="310.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Buscar" />
-        <Button fx:id="btnGEstionarClientes" layoutX="635.0" layoutY="310.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="143.0" text="Gestionar Clientes" />
+        <Button fx:id="btnGestionarClientes" layoutX="635.0" layoutY="310.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="143.0" text="Gestionar Clientes" />
         <TableView fx:id="tablaTrabajadores" layoutX="13.0" layoutY="342.0" prefHeight="251.0" prefWidth="776.0">
             <columns>
                 <TableColumn fx:id="nombreUsuarioCL" prefWidth="183.99993896484375" text="Usuario" />

@@ -5,9 +5,11 @@
  */
 package GESRE.controller;
 
+import GESRE.entidades.Cliente;
 import GESRE.entidades.EstadoIncidencia;
 import GESRE.entidades.Incidencia;
 import GESRE.entidades.TipoIncidencia;
+import GESRE.entidades.Usuario;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.IncidenciaManager;
 import java.io.IOException;
@@ -32,6 +34,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
@@ -143,22 +146,40 @@ public class IncidenciaCLViewController {
     @FXML
     private MenuItem mnSalir;
 
+    @FXML
+    private Hyperlink hpl_Perfil;
+
     private ObservableList<Incidencia> IncidenciaList;
+
+    //   Cliente cliente = null;
+    private Integer idCliente;
 
     /**
      * @param args the command line arguments
-     */
-    public void setStage(Stage primaryStage) {
-        stage = primaryStage;
+     *
+     * public void setStage(Stage primaryStage) { stage = primaryStage;
     }
+     */
+    Cliente c;
 
+    /*public void setStage(Stage piezaViewStage, Cliente cliente) {
+        stage = piezaViewStage;
+
+        c = cliente;
+    }*/
+    
+    public void setStage(Stage primaryStage) {
+      //  LOGGER.info("Trabajador Controlador: Estableciendo stage");
+        this.stage = primaryStage;
+        //c = cliente;
+    }
     public void initStage(Parent root) {
         try {
             LOG.info("Iniciando Stage...");
             //Crear la nueva escena
             Scene scene = new Scene(root);
-            stage.setScene(scene);
-
+           // stage.setScene(scene);
+           stage.setScene(scene);
             //________________propiedades de la Ventana_____________________
             stage.setResizable(false);
             stage.setTitle("Gestion Incidencias");
@@ -193,8 +214,10 @@ public class IncidenciaCLViewController {
             estadoCL.setCellValueFactory(new PropertyValueFactory<>("estado"));
             estrellasCL.setCellValueFactory(new PropertyValueFactory<>("estrellas"));
             horasCL.setCellValueFactory(new PropertyValueFactory<>("horas"));
+            //  LOG.info(usuario.toString());
 
-            IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findAll());
+         //   IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findIncidenciaDeUnCliente(incidencia, c.getIdUsuario().toString()));
+         IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findAll());
             tablaIncidencias.setItems(IncidenciaList);
 
             btnLimpiar.setOnAction(this::handleLimpiarFormulario);
@@ -214,7 +237,6 @@ public class IncidenciaCLViewController {
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Fallo al iniciar la Ventana de Gestion de Incidencias", e);
         }
-
     }
 
     public void handleCloseRequest(WindowEvent closeEvent) {
@@ -237,6 +259,7 @@ public class IncidenciaCLViewController {
         }
     }
 
+    /*
     private void startIncidenciaInWindow(Stage primaryStage) throws IOException {
         try {
             LOG.info("Abriendo ventana Incidencia...");
@@ -252,8 +275,10 @@ public class IncidenciaCLViewController {
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "Error al intentar abrir la ventana de Gestion de Incidencia", ex);
         }
-    }
-
+    }*/
+    
+  
+     
     private void handleLimpiarFormulario(ActionEvent event) {
         Estr_TxtLabel.setText("");
         Hor_TxtLabel.setText("");
@@ -403,7 +428,7 @@ public class IncidenciaCLViewController {
                 incidencia.setEstado(cbxEstadoIncidencia.getSelectionModel().getSelectedItem());
                 incidencia.setEstrellas(new Integer(Estr_TxtLabel.getText()));
                 incidencia.setHoras(new Integer(Hor_TxtLabel.getText()));
-
+                incidencia.setCliente(c);
                 incidenciaManager.createIncidencia(incidencia);
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -473,7 +498,7 @@ public class IncidenciaCLViewController {
         if (btnToogleFiltro.isSelected()) {
             btnToogleFiltro.setText("Todas Incidencias");
             //Cambiar el hardcode de la consulta
-            IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findIncidenciaAcabadaDeUnUsuario(incidencia, "2"));
+            IncidenciaList = FXCollections.observableArrayList(incidenciaManager.findIncidenciaAcabadaDeUnUsuario(incidencia, "35"));
             tablaIncidencias.setItems(IncidenciaList);
         } else {
             btnToogleFiltro.setText("Incidencias Acabadas");

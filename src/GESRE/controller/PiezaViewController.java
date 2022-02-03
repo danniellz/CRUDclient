@@ -142,6 +142,7 @@ public class PiezaViewController {
         idTrabajador = id;
     }
 
+
     /**
      * Inicializar Ventana
      *
@@ -202,7 +203,7 @@ public class PiezaViewController {
             btnBorrar.setOnAction(this::handleBtnBorrar);
             btnBuscar.setOnAction(this::handleBtnBuscar);
             btnInforme.setOnAction(this::handleBtnInforme);
-            //btnGestionIncidencia.setOnAction(this::startIncidenciaViewTWindow);
+            btnGestionIncidencia.setOnAction(this::startIncidenciaViewTWindow);
 
             //Añade acciones a los menuItems de la barra menu
             mnCerrarSesion.setOnAction(this::handleCerrarSesion);
@@ -253,23 +254,23 @@ public class PiezaViewController {
      * @throws IOException salta una excepcion si la ventana de IncidenciaViewT
      * falla en abrirse
      */
-    /*private void startIncidenciaViewTWindow(Stage primaryStage) throws IOException {
+    private void startIncidenciaViewTWindow(ActionEvent even) {
         try {
-            LOG.info("PiezaViewController: Abriendo ventana IncidenciaViewTWindow...");
+            LOG.info("IncidenciaViewController: Abriendo ventana IncidenciaViewTWindow...");
             //Carga el archivo FXML
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/IncidenciaViewT.fxml"));
             Parent root = (Parent) loader.load();
             //Obtiene el controlador
-            IncidenciaCLViewController controlador = ((IncidenciaCLViewController) loader.getController());
+            IncidenciaTRViewController controlador = ((IncidenciaTRViewController) loader.getController());
             //Establece el Stage
-            controlador.setStage(primaryStage);
+            controlador.setStage(stage);
             //Inicializa la ventana
             controlador.initStage(root);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "PiezaViewController: Error al intentar abrir la ventana de IncidenciaViewT", ex);
         }
 
-    }*/
+    }
     /**
      * Llamar a este método limpiara todos los campos si están informados
      */
