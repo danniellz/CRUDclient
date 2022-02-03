@@ -549,10 +549,18 @@ public class SignUpController {
      */
     private void clickHyperlink(ActionEvent HyperLinkPress) {
         try {
-            LOG.info("SignUp Hyper Link Pressed");
-            startSignInWindow(stage);
+            LOG.info("Inicializando Ventana SignIn...");
+            //Load the FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/SignIn.fxml"));
+            Parent root = (Parent) loader.load();
+            //Get controller
+            SignInController signinController = ((SignInController) loader.getController());
+            //Set the stage
+            signinController.setStage(stage);
+            //initialize the window
+            signinController.initStage(root);
         } catch (IOException ex) {
-            LOG.log(Level.SEVERE, "HyperLink Error", ex);
+            LOG.log(Level.SEVERE, "Error Starting SignUp Window", ex);
         }
     }
 
