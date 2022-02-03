@@ -1,4 +1,4 @@
 /**
- * Este paquete contiene la clase MAIN
+ * Este paquete contiene las interfaces
  */
 package GESRE.interfaces;
