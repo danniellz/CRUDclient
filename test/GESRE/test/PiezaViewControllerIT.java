@@ -564,7 +564,7 @@ public class PiezaViewControllerIT extends ApplicationTest {
         verifyThat("#txtNombreFiltro", isEnabled());
 
         clickOn("#txtNombreFiltro");
-        write("Tornillo Pequeño");
+        write("Tornillo Pequeno");
         clickOn("#btnBuscar");
 
         //verificar si se ha encontrado la pieza
