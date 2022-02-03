@@ -23,12 +23,12 @@
          </font>
       </Button>
       <Label fx:id="errorLbl" layoutX="153.0" layoutY="150.0" prefHeight="17.0" prefWidth="294.0" />
-      <Hyperlink fx:id="signUpHl1" layoutX="206.0" layoutY="280.0" text="¿No tienes una Cuenta?, Regístrate">
+      <Hyperlink fx:id="signUpHl" layoutX="206.0" layoutY="280.0" text="¿No tienes una Cuenta?, Regístrate">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Hyperlink>
-      <Hyperlink fx:id="signUpHl" layoutX="219.0" layoutY="257.0" text="¿Has olvidado tu Contraseña?">
+      <Hyperlink fx:id="contraHL" layoutX="219.0" layoutY="257.0" text="¿Has olvidado tu Contraseña?">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>

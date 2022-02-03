@@ -5,31 +5,25 @@
  */
 package GESRE.controller;
 
-import GESRE.entidades.Cliente;
+import static GESRE.controller.GestionTrabajadorViewController.LOGGER;
 import GESRE.entidades.EstadoIncidencia;
 import GESRE.entidades.Incidencia;
 import GESRE.entidades.Pieza;
 import GESRE.entidades.Recoge;
 import GESRE.entidades.TipoIncidencia;
+import GESRE.entidades.Trabajador;
+import GESRE.entidades.Usuario;
+import GESRE.excepcion.ServerDesconectadoException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.IncidenciaManager;
 import GESRE.interfaces.PiezasManager;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static javafx.application.Application.launch;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -45,7 +39,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -54,7 +47,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javafx.util.Callback;
 
 /**
  *
@@ -168,6 +160,28 @@ public class IncidenciaTRViewController {
 
     private ObservableList<Incidencia> IncidenciaList;
 
+    Trabajador trabajador;
+
+    public Trabajador getTrabajador() {
+        return trabajador;
+    }
+
+    public void setTrabajador(Trabajador trabajador) {
+        this.trabajador = trabajador;
+    }
+    
+    Usuario usuario;
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+    
+    
+
     /**
      * @param args the command line arguments
      */
@@ -245,16 +259,15 @@ public class IncidenciaTRViewController {
 
             //boton para abrir la gestion de incidencia
             //*********VACIO******
-            // btnGestionPiezas.setOnAction(this::handlePiezas);
-            
-            
+            btnGestionPiezas.setOnAction(this::handlePiezas);
+
             //Añade acciones a los menuItems de la barra menu
-            //mnCerrarSecion.setOnAction(this::handleCerrarSesion);
+            mnCerrarSecion.setOnAction(this::handleCerrarSesion);
             mnSalir.setOnAction(this::handleSalir);
 
             //mostrar la Ventana
             stage.show();
-        } catch (Exception e) {
+        } catch (ServerDesconectadoException e) {
             LOG.log(Level.SEVERE, "Fallo al iniciar la Ventana de Gestion de Incidencias", e);
         }
 
@@ -305,6 +318,29 @@ public class IncidenciaTRViewController {
         cbxPieza.getSelectionModel().select(-1);
         habilitarBotones();
     }
+
+    /**
+     * Llamar a este método abrirá la ventana de PiezaView (Gestion de piezas
+     * del trabajador)
+     *
+     * @param primaryStage objeto Stage (Ventana)
+     * @throws IOException salta una excepcion si la ventana de PiezaView falla
+     * en abrirse
+     */
+    private void handlePiezas(ActionEvent even) {
+        
+        try {
+            LOG.info("PiezaViewController: Abriendo ventana IncidenciaViewTWindow...");
+            FXMLLoader loaderP = new FXMLLoader(getClass().getResource("/GESRE/vistas/PiezaView.fxml"));
+            Parent rootP = (Parent) loaderP.load();
+            PiezaViewController controllerP = ((PiezaViewController) loaderP.getController());
+            controllerP.setStage(stage, trabajador.getIdUsuario()); //falla
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, "PiezaViewController: Error al intentar abrir la ventana de IncidenciaViewT", ex);
+        }
+
+    }
+
     /**
      * Cuadro de diálogo que se abre al pulsar la menuItem Salir de la pantalla
      * para confirmar si se quiere cerrar la aplicación.

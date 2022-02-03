@@ -5,7 +5,6 @@ import GESRE.excepcion.UsuarioNoExisteException;
 import GESRE.factoria.GestionFactoria;
 import GESRE.interfaces.ClienteManager;
 import GESRE.interfaces.UsuarioManager;
-import GESRE.seguridad.Seguridad;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -66,7 +65,7 @@ public class PerfilClienteController {
     private Button guardarBtn;
     
     private final ClienteManager clienteManager = GestionFactoria.createClienteManager();
-    private final UsuarioManager usuarioManager = GestionFactoria.createUsuarioManager();
+    private final UsuarioManager usuarioManager = GestionFactoria.getUsuarioManager();
 
     /**
      * Metodo para definir el stage de la ventana

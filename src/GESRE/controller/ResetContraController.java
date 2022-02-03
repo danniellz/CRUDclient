@@ -64,7 +64,7 @@ public class ResetContraController {
      * Variable que hace una llamada al método que gestiona los grupos de la
      * factoría.
      */
-    UsuarioManager usuarioManager = GestionFactoria.getUsuarioGestion();
+    UsuarioManager usuarioManager = GestionFactoria.getUsuarioManager();
     private Usuario usuario = null;
     private List<Usuario> usuarios;
 

@@ -124,7 +124,7 @@ public class SignUpController {
     //GESTION MANAGER
     ClienteManager clienteManager = GestionFactoria.createClienteManager();
 
-    UsuarioManager usuarioManager = GestionFactoria.getUsuarioGestion();
+    UsuarioManager usuarioManager = GestionFactoria.getUsuarioManager();
 
     /**
      * Defines which view is going to show up when the application executes.

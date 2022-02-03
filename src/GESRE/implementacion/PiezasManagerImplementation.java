@@ -29,7 +29,7 @@ public class PiezasManagerImplementation implements PiezasManager {
      * @throws GESRE.excepcion.ServerDesconectadoException suelta una excepcion
      * si no hay conexion con el servidor
      */
-    public PiezasManagerImplementation() throws ServerDesconectadoException {
+    public PiezasManagerImplementation()  {
         webClient = new PiezaRESTClient();
     }
     //LOGGER

@@ -37,7 +37,7 @@ public class GestionFactoria {
         return trabajadorGestion;
     }
 
-    public static PiezasManager getPiezaManager() throws ServerDesconectadoException {
+    public static PiezasManager getPiezaManager() {
         LOGGER.info("GestionFactoria: Creando la implementacion de Piezas");
         PiezasManager piezaManager = new PiezasManagerImplementation();
         return piezaManager;
@@ -49,7 +49,7 @@ public class GestionFactoria {
         return incidenciaManager;
     }
     
-    public static UsuarioManager createUsuarioManager() {
+    public static UsuarioManager getUsuarioManager() {
         LOGGER.info("GestionFactoria: Creando la implementacion de Usuario");
         UsuarioManager usuarioManager = new UsuarioManagerImplentacion();
         return usuarioManager;
