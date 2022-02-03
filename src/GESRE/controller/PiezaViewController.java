@@ -936,7 +936,7 @@ public class PiezaViewController {
             //Compilar informe
             JasperReport reporte = JasperCompileManager.compileReport(getClass().getResourceAsStream("/GESRE/archivos/informePiezas.jrxml"));
             //Datos para el reporte, coleccion de piezas
-            JRBeanCollectionDataSource datos = new JRBeanCollectionDataSource((Collection<Pieza>) this.tablaPiezas.getItems());
+            JRBeanCollectionDataSource datos = new JRBeanCollectionDataSource((Collection<Pieza>) tablaPiezas.getItems());
             //Map de parametros
             Map<String, Object> parametros = new HashMap<>();
             //Rellenar el reporte con los datos
@@ -946,10 +946,10 @@ public class PiezaViewController {
             jasperViewer.setVisible(true);
         } catch (JRException ex) {
             //ventana de error si falla al imprimir reporte
-            alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("Ha ocurrido un error al intentar imprimir el reporte de la tabla Piezas");
-            alert.setTitle("Error de Impresión");
-            alert.show();
+            Alert alerta = new Alert(Alert.AlertType.ERROR);
+            alerta.setHeaderText("Ha ocurrido un error al intentar imprimir el reporte de la tabla Piezas");
+            alerta.setTitle("Error de Impresión");
+            alerta.show();
             LOG.log(Level.SEVERE, "PiezaViewController: Error al imprimir el reporte de piezas {0}", ex.getMessage());
         }
     }
