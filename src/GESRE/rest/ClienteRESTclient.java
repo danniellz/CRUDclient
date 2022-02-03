@@ -7,6 +7,7 @@ package GESRE.rest;
 
 import GESRE.entidades.Cliente;
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -29,7 +30,7 @@ public class ClienteRESTclient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/GESREserver/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("GESRE.archivos.config").getString("RESTFUL_URI");
 
     public ClienteRESTclient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
