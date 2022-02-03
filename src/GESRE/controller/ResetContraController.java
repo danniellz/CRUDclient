@@ -66,7 +66,6 @@ public class ResetContraController {
      */
     UsuarioManager usuarioManager = GestionFactoria.getUsuarioManager();
     private Usuario usuario = null;
-    private List<Usuario> usuarios;
 
     /**
      * Establecer el Stage
@@ -96,6 +95,7 @@ public class ResetContraController {
             //Controles
             messageLbl.setVisible(false);
             btnResetear.setOnAction(this::handleBtnResetear);
+            btnVolver.setOnAction(this::startSignInWindow);
             txtCorreo.textProperty().addListener(this::limitCorreoTextField);
             //Mostrar ventana
             stage.show();
@@ -136,10 +136,9 @@ public class ResetContraController {
     /**
      * Abrir de la ventana de SignIn
      *
-     * @param primaryStage Objeto Stage (ventana)
      * @throws IOException salta un error si la ventana falla en abrirse
      */
-    private void startSignInWindow() throws IOException {
+    private void startSignInWindow(ActionEvent event) {
         try {
             LOG.info("Inicializando Ventana SignIn...");
             //Load the FXML file
@@ -175,15 +174,10 @@ public class ResetContraController {
             txtCorreo.setStyle("");
             messageLbl.setStyle("-fx-border-color: WHITE;");
             
-            try {
-                LOG.info("Verificando si el correo introducido existe...");
-                usuarios = (List<Usuario>) usuarioManager.buscarUsuarioPorEmailCrear(txtCorreo.getText());
-            } catch (EmailExisteException ex) {
-                LOG.info("El email pertenece al usuario: "+usuarios.toString());
-                usuarioManager.buscarUsuarioParaEnviarMailRecuperarContrasenia_Usuario(usuario);
-            } catch (ServerDesconectadoException ex) {
-                Logger.getLogger(ResetContraController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            usuario = new Usuario();
+            usuario.setEmail(txtCorreo.getText());
+            usuarioManager.buscarUsuarioParaEnviarMailRecuperarContrasenia_Usuario(usuario);
+
 
            
             

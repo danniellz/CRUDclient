@@ -1,11 +1,14 @@
 package GESRE.test;
 
-import GESRE.aplication.GESREClient;
 import GESRE.controller.PiezaViewController;
 import GESRE.entidades.Pieza;
+import java.io.IOException;
 import java.util.Random;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
@@ -20,11 +23,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Ignore;
+import org.testfx.api.FxAssert;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
 import static org.testfx.matcher.base.NodeMatchers.isDisabled;
 import static org.testfx.matcher.base.NodeMatchers.isEnabled;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
+import org.testfx.matcher.base.WindowMatchers;
 import static org.testfx.matcher.control.ButtonMatchers.isDefaultButton;
 import org.testfx.matcher.control.ComboBoxMatchers;
 import static org.testfx.matcher.control.ComboBoxMatchers.hasSelectedItem;
@@ -71,29 +76,14 @@ public class PiezaViewControllerIT extends ApplicationTest {
      */
     @Override
     public void start(Stage stage) throws Exception {
-        new GESREClient().start(stage);
+        iniciarVentanaPieza(stage);
         txtNombre = lookup("#txtNombre").query();
         txtADescripcion = lookup("#txtADescripcion").query();
         txtStock = lookup("#txtStock").query();
         txtNombreFiltro = lookup("#txtNombreFiltro").query();
         tablaPiezas = lookup("#tablaPiezas").queryTableView();
         cbxFiltro = lookup("#cbxFiltro").queryComboBox();
-    }
-
-    /**
-     * Iniciar sesion
-     */
-    @Test
-    @Ignore
-    public void testA_signIn() {
-        verifyThat("#signInPanel", isVisible());
-        clickOn("#userTxt");
-        write("admin");
-        clickOn("#passwordTxt");
-        write("123456");
-        clickOn("#loginBtn");
-        verifyThat("#piezaPanel", isVisible());
-
+        LOG.info("Iniciando Ventana...");
     }
 
     /**
@@ -101,6 +91,7 @@ public class PiezaViewControllerIT extends ApplicationTest {
      */
     @Test
     public void testB_estadoInicialVentana() {
+
         //Comprobar que esta en la ventana Gestion de piezas
         verifyThat("#piezaPanel", isVisible());
         //Comprobar si el campo Nombre esta en focus
@@ -615,7 +606,6 @@ public class PiezaViewControllerIT extends ApplicationTest {
         verifyThat("#btnGestionIncidencia", isEnabled());
         clickOn("#btnGestionIncidencia");
         verifyThat("#incidenciaTPanel", isVisible());
-
         clickOn("#btnGestionPiezas");
         verifyThat("#piezaPanel", isVisible());
     }
@@ -627,6 +617,7 @@ public class PiezaViewControllerIT extends ApplicationTest {
     public void testQ_informePiezas() {
         verifyThat("#piezaPanel", isVisible());
         clickOn("#btnInforme");
+        //FxAssert.verifyThat(window("JasperViewer"), WindowMatchers.isShowing());
     }
 
     /**
@@ -699,6 +690,22 @@ public class PiezaViewControllerIT extends ApplicationTest {
         //Obtener los datos de la fila seleccionada
         Pieza piezaSeleccionada = (Pieza) tablaPiezas.getSelectionModel().getSelectedItem();
         return piezaSeleccionada;
+    }
+
+    public void iniciarVentanaPieza(Stage stage) throws Exception {
+        try {
+            //Load the FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/PiezaView.fxml"));
+            Parent root = (Parent) loader.load();
+            //Get controller
+            PiezaViewController controlador = ((PiezaViewController) loader.getController());
+            //Set the stage
+            controlador.setStage(stage, 3);
+            //initialize the window
+            controlador.initStage(root);
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, "Error Starting SignIn window", ex);
+        }
     }
 
 }

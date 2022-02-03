@@ -328,15 +328,22 @@ public class IncidenciaTRViewController {
      * en abrirse
      */
     private void handlePiezas(ActionEvent even) {
-        
         try {
             LOG.info("PiezaViewController: Abriendo ventana IncidenciaViewTWindow...");
             FXMLLoader loaderP = new FXMLLoader(getClass().getResource("/GESRE/vistas/PiezaView.fxml"));
             Parent rootP = (Parent) loaderP.load();
             PiezaViewController controllerP = ((PiezaViewController) loaderP.getController());
             controllerP.setStage(stage, trabajador.getIdUsuario()); //falla
+            controllerP.initStage(rootP);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "PiezaViewController: Error al intentar abrir la ventana de IncidenciaViewT", ex);
+        } catch (ServerDesconectadoException ex) {
+            LOG.severe(ex.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setTitle("ERROR SERVIDOR");
+            alert.setContentText("No hay conexión con el servidor. Intentalo más tarde.");
+            alert.showAndWait();
         }
 
     }

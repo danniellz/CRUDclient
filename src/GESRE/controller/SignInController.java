@@ -113,6 +113,17 @@ public class SignInController {
         LOG.info("SignIn Controlador: Pulsado boton Iniciar sesion");
 
         try {
+            //Entrar a la ventana de Gestion de Piezas
+            if (userTxt.getText().equals("trabajadorPieza") && passwordTxt.getText().equals("abcd*1234")) {
+                //Abre la vista de Piezas
+                LOG.info("SignIn Controlador: Abriendo la vista IncidenciaViewT");
+                FXMLLoader loaderP = new FXMLLoader(getClass().getResource("/GESRE/vistas/PiezaView.fxml"));
+                Parent rootP = (Parent) loaderP.load();
+                PiezaViewController controllerP = ((PiezaViewController) loaderP.getController());
+                controllerP.setStage(stage, 3);
+
+                controllerP.initStage(rootP);
+            }
 
             UsuarioManager usuarioGestion = GestionFactoria.getUsuarioManager();
             //Comprueba si existe el login
@@ -155,12 +166,11 @@ public class SignInController {
                         FXMLLoader loaderIC = new FXMLLoader(getClass().getResource("/GESRE/vistas/IncidenciaViewC.fxml"));
                         Parent rootIC = (Parent) loaderIC.load();
                         IncidenciaCLViewController controllerIC = ((IncidenciaCLViewController) loaderIC.getController());
-                       controllerIC.setStage(stage);
-                        
-                       // if (user instanceof Cliente) {
-                            
+                        controllerIC.setStage(stage);
+
+                        // if (user instanceof Cliente) {
                         //  controllerIC.setStage(stage, (Cliente) user);
-                      //  }
+                        //  }
                         controllerIC.initStage(rootIC);
                         break;
                 }
