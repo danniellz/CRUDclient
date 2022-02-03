@@ -32,20 +32,20 @@ import javafx.stage.WindowEvent;
  * @author Mikel Matilla
  */
 public class PerfilClienteController {
-    
+
     //LOGGER
     private static final Logger LOG = Logger.getLogger(PerfilClienteController.class.getName());
-    
+
     private Stage stage;
     private Cliente cliente;
-    
+
     @FXML
     private MenuBar menuBar;
     @FXML
     private MenuItem mnCerrarSecion;
     @FXML
     private MenuItem mnSalir;
-    
+
     @FXML
     private TextField usuarioTxt;
     @FXML
@@ -58,17 +58,18 @@ public class PerfilClienteController {
     private PasswordField nuevaContrasenaTxt;
     @FXML
     private PasswordField repiteContrasenaTxt;
-    
+
     @FXML
     private Button volverBtn;
     @FXML
     private Button guardarBtn;
-    
+
     private final ClienteManager clienteManager = GestionFactoria.createClienteManager();
     private final UsuarioManager usuarioManager = GestionFactoria.getUsuarioManager();
 
     /**
      * Metodo para definir el stage de la ventana
+     *
      * @param perfilClienteStage Stage de la ventana
      * @param cliente Cliente de la sesion
      */
@@ -79,6 +80,7 @@ public class PerfilClienteController {
 
     /**
      * Metodo para inicializar la ventana
+     *
      * @param root
      */
     public void initStage(Parent root) {
@@ -94,41 +96,44 @@ public class PerfilClienteController {
             stage.setTitle("Perfil Cliente");
             stage.setResizable(false);
             stage.setOnCloseRequest(this::handleCloseRequest);
-            
+
             //Controles
-            usuarioTxt.setText(cliente.getLogin());
-            nombreTxt.setText(cliente.getFullName());
-            correoTxt.setText(cliente.getEmail());
-            
+            if (cliente != null) {
+                usuarioTxt.setText(cliente.getLogin());
+                nombreTxt.setText(cliente.getFullName());
+                correoTxt.setText(cliente.getEmail());
+            }
+
             usuarioTxt.setEditable(false);
             nombreTxt.setEditable(false);
             correoTxt.setEditable(false);
-            
+
             guardarBtn.setDisable(true);
-            
+
             contrasenaTxt.requestFocus();
-            
+
             //Listeners
             volverBtn.setOnAction(this::handleBtnVolver);
             guardarBtn.setOnAction(this::handleBtnGuardar);
-            
+
             usuarioTxt.textProperty().addListener(this::handleValidarTexto);
             nombreTxt.textProperty().addListener(this::handleValidarTexto);
             correoTxt.textProperty().addListener(this::handleValidarTexto);
             contrasenaTxt.textProperty().addListener(this::handleValidarTexto);
             nuevaContrasenaTxt.textProperty().addListener(this::handleValidarTexto);
             repiteContrasenaTxt.textProperty().addListener(this::handleValidarTexto);
-            
+
             //Show window (asynchronous)
             stage.show();
         } catch (Exception e) {
             LOG.severe("No se ha podido iniciar la ventana");
         }
-        
+
     }
-    
+
     /**
      * Metodo para controlar la accion del boton volver
+     *
      * @param volverEvent Evento de volver
      */
     private void handleBtnVolver(ActionEvent volverEvent) {
@@ -152,9 +157,10 @@ public class PerfilClienteController {
             alert.showAndWait();
         }
     }
-    
+
     /**
      * Metodo para controlar la accion del boton guardar
+     *
      * @param guardarEvent Evento de guardar
      */
     private void handleBtnGuardar(ActionEvent guardarEvent) {
@@ -168,7 +174,7 @@ public class PerfilClienteController {
                 alert.setTitle("Info");
                 alert.setContentText("Contraseña modificada correctamente");
                 alert.showAndWait();
-                
+
                 try {
                     LOG.info("Abriendo ventana Gestion de Incidencias...");
                     //Carga el archivo FXML
@@ -203,9 +209,10 @@ public class PerfilClienteController {
             alert.showAndWait();
         }
     }
-    
+
     /**
      * Metodo para validar el texto de los campos
+     *
      * @param observable Campo a observar
      * @param oldValue Valor antiguo
      * @param newValue Valor nuevo
@@ -241,9 +248,10 @@ public class PerfilClienteController {
             guardarBtn.setDisable(true);
         }
     }
-    
+
     /**
      * Metodo para controlar el cierre de la aplicacion
+     *
      * @param closeEvent Evento de cerrar
      */
     public void handleCloseRequest(WindowEvent closeEvent) {
@@ -265,31 +273,33 @@ public class PerfilClienteController {
             LOG.log(Level.SEVERE, "Close request error", e);
         }
     }
-    
+
     /**
      * Metodo para comprobar que todos los campos estan informados
+     *
      * @return Devuelve si todos los campos estan informados o no
      */
     private boolean camposInformados() {
         return !(contrasenaTxt.getText().isEmpty() || nuevaContrasenaTxt.getText().isEmpty() || repiteContrasenaTxt.getText().isEmpty());
     }
-    
+
     /**
      * Metodo para comprobar que la contraseña cumple con los patrones
+     *
      * @return Devuelve si la contraseña cumple con los patrones
      */
     private boolean contrasenaCorrecta() {
         boolean correcta = false;
-        
+
         try {
-            if (usuarioManager.buscarUsuarioPorLoginYContrasenia_Usuario(cliente.getLogin(), contrasenaTxt.getText())!=null) {
+            if (usuarioManager.buscarUsuarioPorLoginYContrasenia_Usuario(cliente.getLogin(), contrasenaTxt.getText()) != null) {
                 correcta = true;
             }
         } catch (UsuarioNoExisteException ex) {
             Logger.getLogger(PerfilClienteController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return correcta;
     }
-    
+
 }

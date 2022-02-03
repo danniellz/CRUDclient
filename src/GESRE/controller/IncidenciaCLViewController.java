@@ -139,6 +139,7 @@ public class IncidenciaCLViewController {
     private TextField Estr_TxtLabel;
     @FXML
     private TextField Hor_TxtLabel;
+    
     ////////////////////////////////////////////////////////////
     //**********MenuItem******************
     @FXML
@@ -227,6 +228,7 @@ public class IncidenciaCLViewController {
             btnEliminar.setOnAction(this::handleEliminar);
             //el boton de Busqueda funciona con un toogle button
             btnToogleFiltro.setOnAction(this::handleFiltro);
+            hpl_Perfil.addEventHandler(ActionEvent.ACTION, this::handleMiPerfilperLink);
 
             //Añade acciones a los menuItems de la barra menu
             //mnCerrarSecion.setOnAction(this::handleCerrarSesion);
@@ -632,6 +634,25 @@ public class IncidenciaCLViewController {
         } else {
             LOG.info("los campos NO ESTAN vacios");
             return false;
+        }
+        
+        
+    }
+     private void handleMiPerfilperLink(ActionEvent HyperLinkPress) {
+       
+        try {
+            LOG.info("Starting SignUp Window...");
+            //Load the FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/PerfilClienteView.fxml"));
+            Parent root = (Parent) loader.load();
+            //Get controller
+            PerfilClienteController perfil = ((PerfilClienteController) loader.getController());
+            //Set the stage
+            perfil.setStage(stage,c);
+            //initialize the window
+            perfil.initStage(root);
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, "Error Starting SignUp Window", ex);
         }
     }
 }
