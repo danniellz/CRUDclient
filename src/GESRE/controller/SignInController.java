@@ -119,7 +119,7 @@ public class SignInController {
 
         try {
             //Entrar a la ventana de Gestion de Piezas
-            if (userTxt.getText().equals("trabajadorPieza") && passwordTxt.getText().equals("abcd*1234")) {
+            /*if (userTxt.getText().equals("trabajadorPieza") && passwordTxt.getText().equals("abcd*1234")) {
                 //Abre la vista de Piezas
                 LOG.info("SignIn Controlador: Abriendo la vista IncidenciaViewT");
                 FXMLLoader loaderP = new FXMLLoader(getClass().getResource("/GESRE/vistas/PiezaView.fxml"));
@@ -128,7 +128,7 @@ public class SignInController {
                 controllerP.setStage(stage, 3);
 
                 controllerP.initStage(rootP);
-            }
+            }*/
 
             UsuarioManager usuarioGestion = GestionFactoria.getUsuarioManager();
             //Comprueba si existe el login
@@ -138,7 +138,7 @@ public class SignInController {
 
             //Comprueba si el login y la contraseña están bien
             LOG.info("SignIn Controlador: Comprobando login y contraseña");
-
+            LOG.info(passwordTxt.getText());
             usuarioGestion.buscarUsuarioPorLoginYContrasenia_Usuario(userTxt.getText(), passwordTxt.getText());
 
             for (Usuario user : usuario) {
@@ -172,13 +172,12 @@ public class SignInController {
                         Parent rootIC = (Parent) loaderIC.load();
                         IncidenciaCLViewController controllerIC = ((IncidenciaCLViewController) loaderIC.getController());
 
-                      
                         Cliente useri = new Cliente();
-                       
+
                         LOG.info("ENVIANDO AL USUSARIO(CLIENTE)" + user.getIdUsuario());
-                       
+
                         if (user != null) {
-                           
+
                             useri.setIdUsuario(2);
 
                             useri.setEmail("pepeUser@gmail.com");
@@ -194,10 +193,6 @@ public class SignInController {
 
                         }
 
-                      
-
-
-                       
                         controllerIC.initStage(rootIC);
                         break;
                 }

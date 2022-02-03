@@ -174,9 +174,8 @@ public class ResetContraController {
             txtCorreo.setStyle("");
             messageLbl.setStyle("-fx-border-color: WHITE;");
             
-            usuario = new Usuario();
-            usuario.setEmail(txtCorreo.getText());
-            usuarioManager.buscarUsuarioParaEnviarMailRecuperarContrasenia_Usuario(usuario);
+           
+            usuarioManager.resetPasswordByLogin_Usuario(txtCorreo.getText());
 
 
            

@@ -203,7 +203,7 @@ public class PiezaViewController {
             btnBorrar.setOnAction(this::handleBtnBorrar);
             btnBuscar.setOnAction(this::handleBtnBuscar);
             btnInforme.setOnAction(this::handleBtnInforme);
-            btnGestionIncidencia.setOnAction(this::startIncidenciaViewTWindow);
+           // btnGestionIncidencia.setOnAction(this::startIncidenciaViewTWindow);
 
             //Añade acciones a los menuItems de la barra menu
             mnCerrarSesion.setOnAction(this::handleCerrarSesion);
