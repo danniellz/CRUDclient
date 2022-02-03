@@ -143,9 +143,9 @@ public class PerfilClienteController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GESRE/vistas/IncidenciaViewC.fxml"));
             Parent root = (Parent) loader.load();
             //Obtiene el controlador
-            GestionClientesController controlador = ((GestionClientesController) loader.getController());
+            IncidenciaCLViewController controlador = ((IncidenciaCLViewController) loader.getController());
             //Establece el Stage
-            controlador.setStage(stage);
+            controlador.setStage(stage,cliente);
             //Inicializa la ventana
             controlador.initStage(root);
         } catch (IOException ex) {
