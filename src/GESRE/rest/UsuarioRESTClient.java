@@ -22,7 +22,7 @@ import javax.ws.rs.core.GenericType;
  *        client.close();
  * </pre>
  *
- * @author JonY
+ * @author Jonathan Viñan
  */
 public class UsuarioRESTClient {
 

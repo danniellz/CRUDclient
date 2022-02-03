@@ -52,7 +52,7 @@ public interface UsuarioManager {
 
     public Collection<Usuario> buscarUsuarioPorLoginYContrasenia_Usuario(String login, String password) throws UsuarioNoExisteException;
 
-    public Usuario resetPasswordByLogin_Usuario(String email);
+    public void resetPasswordByLogin_Usuario(String email);
 
     public Collection<Usuario> buscarTodosLosUsuarios_Usuario();
 

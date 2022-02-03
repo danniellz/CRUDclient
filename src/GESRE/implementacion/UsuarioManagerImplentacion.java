@@ -156,8 +156,17 @@ public class UsuarioManagerImplentacion implements UsuarioManager {
     }
 
     @Override
-    public Usuario resetPasswordByLogin_Usuario(String email) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void resetPasswordByLogin_Usuario(String email) {
+
+        try {
+            LOGGER.info("UsuarioManagerImplementation: Recuperando contraseña...");
+            webClient.resetPasswordByLogin_XML(new GenericType<Usuario>() {
+            }, email);
+
+        } catch (ClientErrorException e) {
+            LOGGER.severe(e.getMessage());
+        }
+
     }
 
     @Override
@@ -166,7 +175,8 @@ public class UsuarioManagerImplentacion implements UsuarioManager {
     }
 
     @Override
-    public void buscarUsuarioParaEnviarMailRecuperarContrasenia_Usuario(Usuario usuario) {
+    public void buscarUsuarioParaEnviarMailRecuperarContrasenia_Usuario(Usuario usuario
+    ) {
         try {
             LOGGER.info("UsuarioManagerImplementation: Recuperando contraseña...");
             // Enviar datos de usuario al webClient para su recuperacion.
