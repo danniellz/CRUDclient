@@ -3,6 +3,12 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<style name="style1">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{stock} == 0]]></conditionExpression>
+			<style forecolor="#DC143C" isBold="true"/>
+		</conditionalStyle>
+	</style>
 	<field name="nombre" class="java.lang.String"/>
 	<field name="descripcion" class="java.lang.String"/>
 	<field name="stock" class="java.lang.Integer"/>
@@ -74,7 +80,7 @@
 				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="418" y="0" width="53" height="20" uuid="1befe05c-85f7-4475-8ac3-ddf4012902e6"/>
+				<reportElement style="style1" mode="Opaque" x="418" y="0" width="53" height="20" uuid="1befe05c-85f7-4475-8ac3-ddf4012902e6"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[$F{stock}]]></textFieldExpression>
 			</textField>
