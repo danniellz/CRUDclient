@@ -1,106 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f5ede580-789e-483d-aa7f-7fc97f683ba1">
-	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
-	<style name="style1">
-		<conditionalStyle>
-			<conditionExpression><![CDATA[$F{stock} == 0]]></conditionExpression>
-			<style forecolor="#DC143C" isBold="true"/>
-		</conditionalStyle>
-	</style>
-	<field name="nombre" class="java.lang.String"/>
-	<field name="descripcion" class="java.lang.String"/>
-	<field name="stock" class="java.lang.Integer"/>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band height="79" splitType="Stretch">
-			<staticText>
-				<reportElement x="209" y="31" width="155" height="22" uuid="4795ddc7-9d6f-48fc-97a5-49f6cdd950f4"/>
-				<textElement>
-					<font size="14" isBold="true" isUnderline="true"/>
-				</textElement>
-				<text><![CDATA[Reporte de las Piezas]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="13" y="-12" width="55" height="22" uuid="cb7c6b1a-cf6a-4b91-b3b1-e773c4d789c2"/>
-				<textElement>
-					<font size="12" isBold="true" isItalic="true" isUnderline="false"/>
-				</textElement>
-				<text><![CDATA[GESRE]]></text>
-			</staticText>
-			<textField pattern="EEEEE dd MMMMM yyyy">
-				<reportElement x="364" y="-12" width="191" height="20" uuid="2a0eb545-f3b0-449c-892a-35a1b1cf1a5f"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-		</band>
-	</title>
-	<pageHeader>
-		<band height="27" splitType="Stretch"/>
-	</pageHeader>
-	<columnHeader>
-		<band height="29" splitType="Stretch">
-			<rectangle>
-				<reportElement x="0" y="-10" width="555" height="30" backcolor="#CCCCFF" uuid="ae6cc336-2342-4c8d-9279-fd364024ac1b"/>
-			</rectangle>
-			<staticText>
-				<reportElement x="53" y="0" width="100" height="20" uuid="3c57bfdd-630f-44d9-aa2a-4aea0c3acea5"/>
-				<textElement>
-					<font isBold="true" isUnderline="false"/>
-				</textElement>
-				<text><![CDATA[NOMBRE]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="235" y="0" width="100" height="20" uuid="34dffb49-c56b-4b27-8766-22206c041df8"/>
-				<textElement>
-					<font isBold="true" isUnderline="false"/>
-				</textElement>
-				<text><![CDATA[DESCRIPCIÓN]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="433" y="0" width="100" height="20" uuid="219e03ad-721d-4e91-9e21-e6b83c4f8775"/>
-				<textElement>
-					<font isBold="true" isUnderline="false"/>
-				</textElement>
-				<text><![CDATA[STOCK]]></text>
-			</staticText>
-		</band>
-	</columnHeader>
-	<detail>
-		<band height="21" splitType="Stretch">
-			<textField>
-				<reportElement x="53" y="0" width="100" height="20" uuid="30fd4ab3-64ee-4442-8ee6-ea06053af4d4"/>
-				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="235" y="1" width="100" height="20" uuid="d4af3256-21c4-49d2-a8f5-f641076490f1"/>
-				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement style="style1" mode="Opaque" x="418" y="0" width="53" height="20" uuid="1befe05c-85f7-4475-8ac3-ddf4012902e6"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[$F{stock}]]></textFieldExpression>
-			</textField>
-		</band>
-	</detail>
-	<columnFooter>
-		<band height="45" splitType="Stretch"/>
-	</columnFooter>
-	<pageFooter>
-		<band height="54" splitType="Stretch">
-			<textField>
-				<reportElement x="514" y="34" width="41" height="20" uuid="67e0d3c9-297b-4381-97f5-f94aec090e10"/>
-				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<line>
-				<reportElement x="0" y="22" width="555" height="1" uuid="7b53ed93-df94-4dfe-8259-60aa60add316"/>
-			</line>
-		</band>
-	</pageFooter>
-	<summary>
-		<band height="42" splitType="Stretch"/>
-	</summary>
+    <property name="ireport.zoom" value="1.0"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <style name="style1">
+        <conditionalStyle>
+            <conditionExpression><![CDATA[$F{stock} == 0]]></conditionExpression>
+            <style forecolor="#DC143C" isBold="true"/>
+        </conditionalStyle>
+    </style>
+    <field name="nombre" class="java.lang.String"/>
+    <field name="descripcion" class="java.lang.String"/>
+    <field name="stock" class="java.lang.Integer"/>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <title>
+        <band height="79" splitType="Stretch">
+            <staticText>
+                <reportElement x="209" y="31" width="155" height="22" uuid="4795ddc7-9d6f-48fc-97a5-49f6cdd950f4"/>
+                <textElement>
+                    <font size="14" isBold="true" isUnderline="true"/>
+                </textElement>
+                <text><![CDATA[Reporte de las Piezas]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="13" y="-12" width="55" height="22" uuid="cb7c6b1a-cf6a-4b91-b3b1-e773c4d789c2"/>
+                <textElement>
+                    <font size="12" isBold="true" isItalic="true" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[GESRE]]></text>
+            </staticText>
+            <textField pattern="EEEEE dd MMMMM yyyy">
+                <reportElement x="364" y="-12" width="191" height="20" uuid="2a0eb545-f3b0-449c-892a-35a1b1cf1a5f"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+    <pageHeader>
+        <band height="27" splitType="Stretch"/>
+    </pageHeader>
+    <columnHeader>
+        <band height="29" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="-10" width="555" height="30" backcolor="#CCCCFF" uuid="ae6cc336-2342-4c8d-9279-fd364024ac1b"/>
+            </rectangle>
+            <staticText>
+                <reportElement x="53" y="0" width="100" height="20" uuid="3c57bfdd-630f-44d9-aa2a-4aea0c3acea5"/>
+                <textElement>
+                    <font isBold="true" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[NOMBRE]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="235" y="0" width="100" height="20" uuid="34dffb49-c56b-4b27-8766-22206c041df8"/>
+                <textElement>
+                    <font isBold="true" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[DESCRIPCIÓN]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="433" y="0" width="100" height="20" uuid="219e03ad-721d-4e91-9e21-e6b83c4f8775"/>
+                <textElement>
+                    <font isBold="true" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[STOCK]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="21" splitType="Stretch">
+            <textField>
+                <reportElement x="53" y="0" width="100" height="20" uuid="30fd4ab3-64ee-4442-8ee6-ea06053af4d4"/>
+                <textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="235" y="1" width="100" height="20" uuid="d4af3256-21c4-49d2-a8f5-f641076490f1"/>
+                <textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement style="style1" mode="Opaque" x="418" y="0" width="53" height="20" uuid="1befe05c-85f7-4475-8ac3-ddf4012902e6"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[$F{stock}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    <columnFooter>
+        <band height="45" splitType="Stretch"/>
+    </columnFooter>
+    <pageFooter>
+        <band height="54" splitType="Stretch">
+            <textField>
+                <reportElement x="514" y="34" width="41" height="20" uuid="67e0d3c9-297b-4381-97f5-f94aec090e10"/>
+                <textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement x="0" y="22" width="555" height="1" uuid="7b53ed93-df94-4dfe-8259-60aa60add316"/>
+            </line>
+        </band>
+    </pageFooter>
+    <summary>
+        <band height="42" splitType="Stretch"/>
+    </summary>
 </jasperReport>
