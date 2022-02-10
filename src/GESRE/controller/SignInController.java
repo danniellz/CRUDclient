@@ -119,7 +119,7 @@ public class SignInController {
 
         try {
             //Entrar a la ventana de Gestion de Piezas
-            /*if (userTxt.getText().equals("trabajadorPieza") && passwordTxt.getText().equals("abcd*1234")) {
+            if (userTxt.getText().equals("trabajadorPieza") && passwordTxt.getText().equals("abcd*1234")) {
                 //Abre la vista de Piezas
                 LOG.info("SignIn Controlador: Abriendo la vista IncidenciaViewT");
                 FXMLLoader loaderP = new FXMLLoader(getClass().getResource("/GESRE/vistas/PiezaView.fxml"));
@@ -128,7 +128,7 @@ public class SignInController {
                 controllerP.setStage(stage, 3);
 
                 controllerP.initStage(rootP);
-            }*/
+            }
 
             UsuarioManager usuarioGestion = GestionFactoria.getUsuarioManager();
             //Comprueba si existe el login
